@@ -19,12 +19,13 @@
                     <li><a href="#profile">CHARACTER</a></li>
                     <li><a href="#story">STORY</a></li>
                     <li><a href="#credits">CREDITS</a></li>
+                    <li><a href="qa.html">Q&A / ABOUT</a></li>
                 </ul>
             </nav>
             <div class="sns-links">
                 <a href="#" class="sns-item">X (Twitter)</a>
-                <a href="#" class="sns-item">YouTube</a>
-                <a href="#" class="sns-item">bilibili</a>
+                <a href="http://www.youtube.com/@fhcgfgc" class="sns-item" target="_blank">YouTube</a>
+                <a href="https://space.bilibili.com/1495707613?spm_id_from=333.1007.0.0" class="sns-item" target="_blank">bilibili</a>
             </div>
         </header>
 
@@ -34,9 +35,7 @@
             <section id="home" class="hero-section">
                 <div class="hero-bg-text">AURORA</div>
                 <div class="character-visual">
-                    <div class="placeholder-img">
-                        <span>立绘制作中...<br>CHARACTER ILLUSTRATION UNDER CONSTRUCTION</span>
-                    </div>
+                    <img src="assets/img/character_full.png" alt="Aurora Character" class="character-img" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'placeholder-img\'><span>立绘制作中...<br>CHARACTER ILLUSTRATION UNDER CONSTRUCTION</span></div>'">
                 </div>
                 <div class="hero-info">
                     <h2 class="main-title">舒苒 / Aurora</h2>
@@ -120,43 +119,40 @@
                 </div>
             </section>
 
+            <!-- Credits -->
             <section id="credits" class="section-container">
                 <div class="section-header">
                     <h3>CREDITS</h3>
                     <span class="jp-title">致谢</span>
                 </div>
-                <div class="credits-grid">
-                    <div class="credit-card">
-                        <div class="avatar-box"><img src="assets/img/avatar/kawako.png" alt="kawako" onerror="this.src='https://via.placeholder.com/60'"></div>
-                        <div class="credit-info">
-                            <span class="role">CREATOR</span>
-                            <span class="name">kawako</span>
+                
+                <div class="wall-of-fame">
+                    <h4>SPECIAL THANKS WALL</h4>
+                    <div class="credits-grid">
+                        <!-- Creator & Main Support -->
+                        <div class="credit-card highlight">
+                            <div class="avatar-box"><img src="assets/img/avatar/kawako.png" alt="kawako" onerror="this.src='https://via.placeholder.com/60'"></div>
+                            <div class="credit-info">
+                                <span class="role">CREATOR</span>
+                                <span class="name">kawako</span>
+                            </div>
+                        </div>
+                        <div class="credit-card highlight">
+                            <div class="avatar-box"><img src="assets/img/avatar/贵族朋友.png" alt="企鹅" onerror="this.src='https://via.placeholder.com/60'"></div>
+                            <div class="credit-info">
+                                <span class="role">SUPPORTER & WEB</span>
+                                <span class="name">企鹅（贵族朋友）</span>
+                                <span class="extra-info">QQ: 2815918449</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="credit-card">
-                        <div class="avatar-box"><img src="assets/img/avatar/贵族朋友.png" alt="企鹅" onerror="this.src='https://via.placeholder.com/60'"></div>
-                        <div class="credit-info">
-                            <span class="role">SUPPORTER</span>
-                            <span class="name">企鹅（贵族朋友）</span>
-                        </div>
-                    </div>
-                    <div class="credit-card">
-                        <div class="credit-info">
-                            <span class="role">STAFF</span>
-                            <span class="name">黑瞳</span>
-                        </div>
-                    </div>
-                    <div class="credit-card">
-                        <div class="credit-info">
-                            <span class="role">STAFF</span>
-                            <span class="name">高钙</span>
-                        </div>
-                    </div>
-                    <div class="credit-card">
-                        <div class="credit-info">
-                            <span class="role">STAFF</span>
-                            <span class="name">红色乒乓球</span>
-                        </div>
+
+                    <!-- Staff Wall -->
+                    <div class="staff-wall">
+                        <div class="staff-tag">黑瞳</div>
+                        <div class="staff-tag">高钙</div>
+                        <div class="staff-tag">红色乒乓球</div>
+                        <!-- 更多名字可以继续添加 -->
                     </div>
                 </div>
             </section>
@@ -181,7 +177,13 @@
                                 <li><strong>共同抚养</strong>：你可以自由对待它，它是属于大家的原创角色。</li>
                             </ul>
                         </div>
-                        <p class="join-footer">本企划不限人数，不限时间，只要求有创意，能出力就行！你可以自由地去扩展这个世界。</p>
+                        <div class="group-join">
+                            <p class="join-footer">本企划不限人数，不限时间，只要求有创意，能出力就行！你可以自由地去扩展这个世界。</p>
+                            <div class="qr-code-box">
+                                <img src="assets/img/group_qr.png" alt="企划群二维码" class="qr-img">
+                                <span>扫码加入企划群</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="promo-image">
                         <img src="assets/img/promo_bg.png" alt="Promo Image" onerror="this.style.display='none'">
@@ -193,6 +195,14 @@
                 <p>© 2026 TWINDRILL STYLE / AURORA PROJECT</p>
             </footer>
         </main>
+    
+    <!-- 悬浮装饰元素 -->
+    <div class="floating-container">
+        <div class="float-item item-1">✦</div>
+        <div class="float-item item-2">✧</div>
+        <div class="float-item item-3">✦</div>
+        <div class="float-item item-4">✨</div>
+        <div class="float-item item-5">☘️</div>
     </div>
 </body>
 </html>
