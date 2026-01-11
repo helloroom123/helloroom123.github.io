@@ -272,22 +272,46 @@ body {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .navbar {
-        padding: 20px;
-        flex-direction: column;
-        gap: 15px;
+        padding: 15px 20px;
+        flex-direction: row; /* Row for logo and potential hamburger */
+        justify-content: space-between;
         background: #fff;
+        height: auto;
     }
 
+    /* Make nav links scrollable horizontally on mobile instead of hidden */
     .nav-links {
-        display: none; 
+        display: flex;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background: #fff;
+        padding: 10px 0;
+        overflow-x: auto;
+        white-space: nowrap;
+        border-bottom: 1px solid #eee;
+        -webkit-overflow-scrolling: touch;
+        gap: 20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .nav-links a {
+        font-size: 12px;
     }
 
     .hero-section {
         flex-direction: column-reverse; /* Image on top/middle, Text below on mobile */
-        padding: 100px 5% 50px;
+        padding: 120px 5% 50px; /* Top padding for navbar + links */
         height: auto;
         min-height: 100vh;
-        justify-content: center;
+        justify-content: flex-end;
+    }
+
+    .hero-bg-text {
+        font-size: 25vw; /* Make it visible but background */
+        top: 30%;
     }
 
     .character-visual {
@@ -295,6 +319,7 @@ body {
         height: 50vh;
         justify-content: center;
         align-items: flex-end;
+        margin-bottom: 20px;
     }
 
     .character-img {
@@ -306,7 +331,7 @@ body {
         width: 100%;
         padding-right: 0;
         text-align: center;
-        margin-top: 30px;
+        margin-top: 0;
     }
     
     .sub-title {
@@ -316,10 +341,20 @@ body {
         margin-left: auto;
         margin-right: auto;
         display: inline-block;
+        font-size: 1rem;
     }
 
     .main-title {
-        font-size: 3rem;
+        font-size: 2.5rem; /* Smaller for mobile */
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+    }
+
+    .content-section, .qa-container, .staff-container, .fanart-container {
+        padding: 80px 20px;
     }
 
     .story-content {
@@ -341,17 +376,29 @@ body {
     }
     
     .qa-item {
-        padding: 30px;
+        padding: 25px;
     }
     
     .question {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
         flex-direction: column;
         align-items: flex-start;
         gap: 10px;
     }
     
     .question::before {
+        font-size: 2rem;
+    }
+
+    .answer {
+        font-size: 1rem;
+    }
+
+    .staff-info h3 {
+        font-size: 1.5rem;
+    }
+
+    .page-header h2 {
         font-size: 2.5rem;
     }
 }
