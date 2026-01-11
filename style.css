@@ -5,18 +5,9 @@
     --accent-color: #00A86B; /* Emerald Green */
     --bg-color: #fff;
     --text-color: #333;
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.3);
 }
 
-.bg-green {
-    background-color: var(--accent-color);
-    color: #fff;
-}
-
-.bg-green .section-title::before {
-    background: rgba(255,255,255,0.2);
-}
+/* Remove glass and fancy shadows for sharper official look */
 
 * {
     margin: 0;
@@ -74,7 +65,7 @@ body {
     100% { left: 100%; }
 }
 
-/* Navigation */
+/* Navigation - Sharper, simpler */
 .navbar {
     position: fixed;
     top: 0;
@@ -85,14 +76,15 @@ body {
     justify-content: space-between;
     align-items: center;
     z-index: 1000;
-    mix-blend-mode: difference;
-    color: #fff;
+    background: rgba(255,255,255,0.95); /* Solid white background like official site */
+    border-bottom: 1px solid #eee;
 }
 
 .logo {
     font-weight: 900;
     font-size: 24px;
     letter-spacing: 2px;
+    color: #000;
 }
 
 .nav-links {
@@ -102,8 +94,8 @@ body {
 
 .nav-links a {
     text-decoration: none;
-    color: #fff;
-    font-weight: 500;
+    color: #000; /* Black text */
+    font-weight: 700;
     text-transform: uppercase;
     font-size: 14px;
     letter-spacing: 1px;
@@ -116,8 +108,8 @@ body {
     bottom: -5px;
     left: 0;
     width: 0;
-    height: 2px;
-    background: #fff;
+    height: 3px; /* Thicker underline */
+    background: var(--accent-color); /* Green underline */
     transition: width 0.3s ease;
 }
 
@@ -125,33 +117,34 @@ body {
     width: 100%;
 }
 
-/* Hero Section */
+/* Hero Section - Official Site Style */
 .hero-section {
     height: 100vh;
     width: 100%;
     position: relative;
-    display: flex; /* Kept flex but will control children width carefully */
-    justify-content: space-between; /* Push text to left, image to right */
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     overflow: hidden;
-    background-color: #f5f5f5;
-    padding: 0 10%; /* More padding from sides */
+    background-color: #fff;
+    padding: 120px 10% 0; /* Add top padding to account for navbar */
 }
 
+/* Huge background text - signature style */
 .hero-bg-text {
     position: absolute;
-    font-size: 15vw;
+    font-size: 20vw;
     font-weight: 900;
-    color: rgba(0,0,0,0.03);
+    color: #f7f7f7; /* Very subtle grey */
     z-index: 1;
     white-space: nowrap;
     pointer-events: none;
     left: 50%;
-    transform: translateX(-50%);
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .character-visual {
-    /* Layout positioning */
     flex: 1;
     display: flex;
     justify-content: flex-end;
@@ -159,52 +152,57 @@ body {
     height: 100%;
     position: relative;
     z-index: 2;
-    /* Ensure image doesn't overlap text awkwardly */
     min-width: 0; 
 }
 
 .character-img {
-    height: 85vh; /* Reduced from 100%/90vh to keep it contained vertically */
+    height: 90vh;
     width: auto;
-    max-width: 100%; /* Ensure it doesn't overflow container */
+    max-width: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
-    /* Removed mix-blend-mode as it might cause issues with non-white backgrounds */
+    /* No shadow, clean cutout look */
 }
 
 .hero-info {
     position: relative;
     z-index: 3;
-    width: 45%; /* Explicitly take up left side */
-    padding-right: 50px; /* Space between text and potential image edge */
+    width: 45%;
+    padding-right: 50px;
 }
 
 .main-title {
-    font-size: 5rem; /* Bigger title */
+    font-size: 5rem;
     font-weight: 900;
-    margin-bottom: 20px;
-    line-height: 1;
+    margin-bottom: 10px;
+    line-height: 0.9;
     letter-spacing: -2px;
+    color: #000;
+    text-transform: uppercase;
 }
 
 .sub-title {
     font-size: 1.2rem;
-    font-weight: 300;
-    margin-bottom: 20px;
+    font-weight: 500;
+    margin-bottom: 30px;
     max-width: 500px;
+    color: #000;
+    border-left: 5px solid var(--accent-color); /* Green accent bar */
+    padding-left: 15px;
 }
 
 .quick-tags span {
     display: inline-block;
-    padding: 5px 10px;
+    padding: 8px 15px;
     background: #000;
     color: #fff;
-    font-size: 12px;
-    margin-right: 5px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 10px;
     text-transform: uppercase;
+    border-radius: 0; /* Sharp edges */
 }
 
-/* Content Sections */
+/* Content Sections - Cleaner, sharper */
 .content-section {
     padding: 100px 10%;
     position: relative;
@@ -213,49 +211,69 @@ body {
 }
 
 .section-title {
-    font-size: 3rem;
+    font-size: 4rem;
     font-weight: 900;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
     text-transform: uppercase;
     position: relative;
-    display: inline-block;
+    display: block;
+    border-bottom: 5px solid #000;
+    padding-bottom: 20px;
+    line-height: 1;
 }
 
 .section-title::before {
-    content: '';
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    width: 60px;
-    height: 60px;
-    background: #f0f0f0;
-    z-index: -1;
-    border-radius: 50%;
+    display: none; /* Remove circle */
 }
 
-/* News Section */
+.bg-green {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.bg-green .section-title {
+    border-bottom-color: #fff;
+}
+
+/* News Section - Ticker style list */
 .news-list {
     border-top: 2px solid #000;
 }
 
 .news-item {
-    padding: 20px 0;
-    border-bottom: 1px solid #eee;
+    padding: 25px 0;
+    border-bottom: 1px solid #ccc;
     display: flex;
-    gap: 30px;
-    align-items: baseline;
-    transition: background 0.3s;
+    gap: 40px;
+    align-items: center;
+    transition: all 0.2s;
 }
 
 .news-item:hover {
-    background: #f9f9f9;
-    padding-left: 10px;
+    background: #f0f0f0;
+    padding-left: 20px;
 }
 
 .news-date {
-    font-family: monospace;
-    font-weight: bold;
-    color: #666;
+    font-family: 'Montserrat', monospace;
+    font-weight: 700;
+    color: #000;
+    font-size: 1.1rem;
+}
+
+.news-item .category {
+    background: var(--accent-color);
+    color: #fff;
+    padding: 5px 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.news-title {
+    font-weight: 700;
+    color: #000;
+    text-decoration: none;
+    font-size: 1.1rem;
 }
 
 /* Story Section */
@@ -267,37 +285,40 @@ body {
 
 .story-text {
     flex: 1;
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     line-height: 1.8;
+    font-weight: 500;
 }
 
-/* Credits / Wall of Fame */
+/* Credits / Wall of Fame - Card Style Update */
 .credits-wall {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 40px;
 }
 
 .credit-card {
     background: #fff;
-    border: 1px solid #eee;
-    padding: 30px;
+    border: 2px solid #000; /* Solid bold border */
+    padding: 40px 20px;
     text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 0; /* Sharp corners */
 }
 
 .credit-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transform: translate(-5px, -5px);
+    box-shadow: 5px 5px 0px #000; /* Hard shadow */
 }
 
 .credit-avatar {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     margin: 0 auto 20px;
     overflow: hidden;
     background: #f0f0f0;
+    border: 2px solid #000;
 }
 
 .credit-avatar img {
@@ -307,16 +328,19 @@ body {
 }
 
 .credit-role {
-    font-size: 12px;
-    color: #999;
+    font-size: 14px;
+    color: var(--accent-color);
+    font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    display: block;
 }
 
 .credit-name {
-    font-weight: 700;
-    font-size: 1.2rem;
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: #000;
 }
 
 /* Project Join */
@@ -325,14 +349,14 @@ body {
     gap: 50px;
     background: #000;
     color: #fff;
-    padding: 50px;
-    border-radius: 20px;
+    padding: 60px;
+    border-radius: 0; /* Sharp corners */
     align-items: center;
 }
 
 .qr-code {
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     background: #fff;
     padding: 10px;
 }
@@ -343,26 +367,30 @@ body {
 }
 
 .join-text h3 {
-    font-size: 2rem;
+    font-size: 2.5rem;
     margin-bottom: 20px;
+    font-weight: 900;
 }
 
 /* Footer */
 .site-footer {
-    background: #111;
+    background: #000;
     color: #fff;
-    padding: 50px;
+    padding: 80px 50px;
     text-align: center;
-    font-size: 12px;
+    font-size: 14px;
     letter-spacing: 1px;
+    font-weight: 700;
 }
 
-/* Floating Elements (Teto style) */
+/* Floating Elements (Keeping generic for now, but sharper) */
 .floating-element {
     position: fixed;
     pointer-events: none;
     z-index: 5;
-    opacity: 0.1;
+    opacity: 0.2;
+    color: #000;
+    font-weight: 900;
     animation: float 20s infinite linear;
 }
 
@@ -371,25 +399,47 @@ body {
     100% { transform: translate(100px, -100px) rotate(360deg); }
 }
 
-/* QA & Staff Page Specifics (te-to.jp style) */
+/* QA & Staff Page Specifics (te-to.jp style -> bolder) */
 body.subpage {
-    background-color: #fdfdfd;
-    background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
-    background-size: 30px 30px;
+    background-color: #fff;
+    background-image: linear-gradient(#eee 1px, transparent 1px), linear-gradient(90deg, #eee 1px, transparent 1px);
+    background-size: 40px 40px; /* Grid pattern instead of dots */
 }
 
-.qa-container, .staff-container {
-    padding: 120px 20px;
-    max-width: 1000px;
+.qa-container, .staff-container, .fanart-container {
+    padding: 150px 5%;
+    max-width: 1200px;
     margin: 0 auto;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.page-header h2 {
+    font-size: 4rem;
+    font-weight: 900;
+    border-bottom: 5px solid #000;
+    display: inline-block;
+    padding-bottom: 10px;
+}
+
+.sub-header {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 15px;
+    color: #666;
 }
 
 .qa-item {
     background: #fff;
-    margin-bottom: 30px;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-bottom: 40px;
+    padding: 50px;
+    border: 2px solid #000; /* Solid border */
+    border-radius: 0;
+    box-shadow: 10px 10px 0px rgba(0,0,0,0.1); /* Hard shadow */
     position: relative;
     overflow: hidden;
 }
@@ -399,56 +449,61 @@ body.subpage {
     position: absolute;
     top: 0;
     left: 0;
-    width: 5px;
+    width: 10px; /* Thicker bar */
     height: 100%;
     background: var(--accent-color);
 }
 
 .question {
     font-weight: 900;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .question::before {
     content: 'Q.';
-    font-size: 2rem;
+    font-size: 3rem;
     color: var(--accent-color);
     font-family: 'Montserrat', sans-serif;
+    line-height: 1;
 }
 
 .answer {
-    font-size: 1.1rem;
-    color: #555;
+    font-size: 1.2rem;
+    color: #333;
     line-height: 1.8;
-    padding-left: 50px;
+    padding-left: 0;
+    font-weight: 500;
 }
 
 /* Staff OC Grid */
 .staff-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 50px;
 }
 
 .staff-card {
     background: #fff;
-    border-radius: 20px;
+    border-radius: 0;
+    border: 2px solid #000;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    transition: transform 0.3s;
+    box-shadow: 8px 8px 0px rgba(0,0,0,0.1); /* Hard shadow */
+    transition: transform 0.2s;
 }
 
 .staff-card:hover {
-    transform: translateY(-10px);
+    transform: translate(-5px, -5px);
+    box-shadow: 12px 12px 0px rgba(0,0,0,0.1);
 }
 
 .staff-img-container {
-    height: 300px;
+    height: 350px;
     overflow: hidden;
+    border-bottom: 2px solid #000;
 }
 
 .staff-img-container img {
@@ -463,47 +518,35 @@ body.subpage {
 }
 
 .staff-info {
-    padding: 30px;
+    padding: 40px;
 }
 
 .staff-info h3 {
-    font-size: 1.5rem;
-    margin-bottom: 5px;
-}
-
-.staff-role {
-    color: var(--accent-color);
-    font-weight: bold;
-    font-size: 12px;
-    letter-spacing: 1px;
-    margin-bottom: 15px;
-    display: block;
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 10px;
 }
 
 /* Fanart Page Styles */
-.fanart-container {
-    padding: 120px 40px;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
 .gallery-grid {
     columns: 3 300px;
-    column-gap: 20px;
+    column-gap: 30px;
 }
 
 .gallery-item {
     break-inside: avoid;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
     background: #fff;
-    border-radius: 10px;
+    border: 2px solid #000;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    transition: transform 0.3s;
+    box-shadow: 5px 5px 0px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
 }
 
 .gallery-item:hover {
-    transform: translateY(-5px);
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0px rgba(0,0,0,0.15);
 }
 
 .gallery-item img {
@@ -516,21 +559,53 @@ body.subpage {
 @media (max-width: 768px) {
     .navbar {
         padding: 20px;
-        background: rgba(0,0,0,0.8);
-        backdrop-filter: blur(10px);
+        flex-direction: column;
+        gap: 15px;
+        background: #fff;
     }
 
     .nav-links {
-        display: none; /* Simplification for mobile menu, or keep if simple */
+        display: none; 
+    }
+
+    .hero-section {
+        flex-direction: column-reverse; /* Image on top/middle, Text below on mobile */
+        padding: 100px 5% 50px;
+        height: auto;
+        min-height: 100vh;
+        justify-content: center;
+    }
+
+    .character-visual {
+        width: 100%;
+        height: 50vh;
+        justify-content: center;
+        align-items: flex-end;
+    }
+
+    .character-img {
+        height: 100%;
+        max-width: 100%;
     }
 
     .hero-info {
-        bottom: 5%;
-        left: 5%;
+        width: 100%;
+        padding-right: 0;
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    .sub-title {
+        border-left: none;
+        border-bottom: 4px solid var(--accent-color);
+        padding-bottom: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        display: inline-block;
     }
 
     .main-title {
-        font-size: 2.5rem;
+        font-size: 3rem;
     }
 
     .story-content {
@@ -539,7 +614,7 @@ body.subpage {
     
     .join-container {
         flex-direction: column;
-        padding: 30px;
+        padding: 40px 20px;
         text-align: center;
     }
 
@@ -552,15 +627,17 @@ body.subpage {
     }
     
     .qa-item {
-        padding: 20px;
+        padding: 30px;
     }
     
     .question {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
     }
     
-    .answer {
-        padding-left: 0;
-        margin-top: 10px;
+    .question::before {
+        font-size: 2.5rem;
     }
 }
