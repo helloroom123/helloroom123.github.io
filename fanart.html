@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Q&A - 舒苒 Aurora OFFICIAL SITE</title>
+    <title>FANART - 舒苒 Aurora OFFICIAL SITE</title>
     <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
     <div class="site-container">
-        <!-- 侧边导航栏 (保持一致) -->
+        <!-- 侧边导航栏 -->
         <header class="sidebar">
             <div class="logo-area">
                 <h1>舒苒<span>Aurora</span></h1>
@@ -19,9 +19,9 @@
                     <li><a href="index.html#profile">CHARACTER</a></li>
                     <li><a href="index.html#story">STORY</a></li>
                     <li><a href="index.html#credits">CREDITS</a></li>
-                    <li><a href="qa.html" class="active">Q&A / ABOUT</a></li>
+                    <li><a href="qa.html">Q&A / ABOUT</a></li>
                     <li><a href="staff_oc.html">STAFF OC</a></li>
-                    <li><a href="fanart.html">FANART</a></li>
+                    <li><a href="fanart.html" class="active">FANART</a></li>
                 </ul>
             </nav>
             <div class="sns-links">
@@ -34,45 +34,17 @@
         <!-- 主内容区 -->
         <main class="content">
             <div class="page-header">
-                <h2>Q&A / ABOUT</h2>
-                <span class="sub-header">关于企划</span>
+                <h2>FANART</h2>
+                <span class="sub-header">同人作品展示</span>
             </div>
 
-            <div class="qa-container">
-                <div class="qa-item">
-                    <div class="qa-header-box">
-                        <div class="question">
-                            <span class="q-mark">Q</span>
-                            <h3>这是一个什么样的企划？</h3>
-                        </div>
+            <div class="fanart-container">
+                <div class="gallery-grid">
+                    <div class="gallery-item">
+                        <img src="assets/img/fanart/1.jpeg" alt="Fanart 1">
                     </div>
-                    <div class="answer">
-                        <span class="a-mark">A</span>
-                        <div class="text">
-                            <p>这是一个<strong>OC（Original Character）共创企划</strong>。</p>
-                            <p>企划的核心内容是大家共同创立并完善一个名为<strong>“舒苒”</strong>的角色。目前我们正在不断完善她的设定中……</p>
-                            <p>舒苒不仅仅是一个角色，她属于所有创造她的人！同时她也是我们企划的看板娘。</p>
-                            <p>我们非常欢迎大家加入企划群，提出你的宝贵意见，一起完善舒苒！</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="qa-item">
-                    <div class="qa-header-box">
-                        <div class="question">
-                            <span class="q-mark">Q</span>
-                            <h3>除了完善舒苒，我还能做什么？可以加入自己的OC吗？</h3>
-                        </div>
-                    </div>
-                    <div class="answer">
-                        <span class="a-mark">A</span>
-                        <div class="text">
-                            <p>当然可以！该企划不单单是创建舒苒。</p>
-                            <p><strong>世界观互动：</strong>你可以加入自己的OC进入这个世界观进行互动。大家可以在企划内设计平行世界中属于自己的OC。</p>
-                            <p><strong>身份选择：</strong>企划内提供了丰富的身份选择，你可以自由续写角色设定。</p>
-                            <p><strong>未来展望：</strong>后期会有各位支持该企划的宝宝们的互动图。如果发展顺利，该企划甚至有游戏化、动画化的可能！</p>
-                            <p>感谢每一位支持企划的你！</p>
-                        </div>
+                    <div class="gallery-item">
+                        <img src="assets/img/fanart/2.jpeg" alt="Fanart 2">
                     </div>
                 </div>
             </div>
@@ -105,7 +77,6 @@
     <script>
         window.addEventListener('load', () => {
             const loader = document.getElementById('loadingScreen');
-            // Ensure minimum 1s display, but force hide after 5s max to prevent stuck
             const minTime = 1000; 
             const maxTime = 5000;
             const startTime = Date.now();
@@ -122,13 +93,10 @@
                 }, delay);
             };
 
-            // Normal load
             hideLoader();
 
-            // Fallback safety timer
             setTimeout(() => {
                 if (loader.style.display !== 'none') {
-                    console.log('Force hiding loader');
                     loader.style.opacity = '0';
                     loader.style.display = 'none';
                 }
