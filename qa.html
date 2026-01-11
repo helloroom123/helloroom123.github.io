@@ -90,5 +90,27 @@
         <div class="float-item item-4">✨</div>
         <div class="float-item item-5">☘️</div>
     </div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader-content">
+            <div class="loader-logo">舒苒<span>Aurora</span></div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loadingScreen');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 3000); // 3 seconds delay
+        });
+    </script>
 </body>
 </html>
