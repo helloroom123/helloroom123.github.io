@@ -6,110 +6,123 @@
     <title>STAFF OC - 舒苒 Aurora OFFICIAL SITE</title>
     <link rel="stylesheet" href="style.css?v=3">
 </head>
-<body>
-    <div class="site-container">
-        <!-- 侧边导航栏 -->
-        <header class="sidebar">
-            <div class="logo-area">
-                <h1>舒苒<span>Aurora</span></h1>
-            </div>
-            <nav class="main-nav">
-                <ul>
-                    <li><a href="index.html#home">TOP</a></li>
-                    <li><a href="index.html#profile">CHARACTER</a></li>
-                    <li><a href="index.html#story">STORY</a></li>
-                    <li><a href="index.html#credits">CREDITS</a></li>
-                    <li><a href="qa.html">Q&A / ABOUT</a></li>
-                    <li><a href="staff_oc.html" class="active">STAFF OC</a></li>
-                    <li><a href="fanart.html">FANART</a></li>
-                </ul>
-            </nav>
-            <div class="sns-links">
-                <a href="#" class="sns-item">X (Twitter)</a>
-                <a href="http://www.youtube.com/@fhcgfgc" target="_blank" class="sns-item">YouTube</a>
-                <a href="https://space.bilibili.com/1495707613" target="_blank" class="sns-item">bilibili</a>
-            </div>
-        </header>
+<body class="subpage">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo">舒苒 AURORA</div>
+        <div class="nav-links">
+            <a href="index.html#home">TOP</a>
+            <a href="index.html#profile">CHARACTER</a>
+            <a href="index.html#story">STORY</a>
+            <a href="index.html#credits">CREDITS</a>
+            <a href="qa.html">Q&A</a>
+            <a href="staff_oc.html">STAFF OC</a>
+            <a href="fanart.html">FANART</a>
+        </div>
+    </nav>
 
-        <!-- 主内容区 -->
-        <main class="content">
-            <div class="page-header">
-                <h2>STAFF OCs</h2>
-                <span class="sub-header">STAFF ORIGINAL CHARACTERS</span>
-            </div>
+    <!-- Content -->
+    <div class="staff-container">
+        <div class="page-header" style="text-align: center; margin-bottom: 50px;">
+            <h2 style="font-size: 3rem; margin-bottom: 10px;">STAFF OCs</h2>
+            <span class="sub-header" style="font-size: 1.2rem; color: #666;">STAFF ORIGINAL CHARACTERS</span>
+        </div>
 
-            <div class="oc-container">
-                <!-- Kawako Section -->
-                <div class="oc-section">
-                    <div class="oc-header">
-                        <div class="avatar"><img src="assets/img/avatar/kawako.png" alt="kawako" onerror="this.src='https://via.placeholder.com/50'"></div>
-                        <div class="info">
-                            <h3>kawako</h3>
-                            <span class="role">CREATOR</span>
-                        </div>
-                    </div>
-                    <div class="gallery-grid">
-                        <div class="gallery-item">
-                            <img src="assets/img/staff_oc/kawako/1.jpeg" alt="kawako oc 1">
-                        </div>
-                        <div class="gallery-item">
-                            <img src="assets/img/staff_oc/kawako/2.jpeg" alt="kawako oc 2">
-                        </div>
-                        <div class="gallery-item">
-                            <img src="assets/img/staff_oc/kawako/3.jpeg" alt="kawako oc 3">
-                        </div>
-                    </div>
-                    <div class="oc-desc">
-                        <p>（这里可以补充 kawako 的自设设定，目前展示设定图）</p>
+        <div class="staff-grid">
+            <!-- Kawako Section -->
+            <div class="staff-card">
+                <div class="staff-img-container">
+                     <img src="assets/img/avatar/kawako.png" alt="kawako">
+                </div>
+                <div class="staff-info">
+                    <span class="staff-role">CREATOR</span>
+                    <h3>kawako</h3>
+                    <div class="staff-desc">
+                         <p>（这里可以补充 kawako 的自设设定，目前展示设定图）</p>
                     </div>
                 </div>
-
-                <!-- Xier Section -->
-                <div class="oc-section">
-                    <div class="oc-header">
-                        <div class="avatar placeholder-avatar">希</div>
-                        <div class="info">
-                            <h3>希儿</h3>
-                            <span class="role">STAFF</span>
-                        </div>
-                    </div>
-                    <div class="gallery-grid single-img">
-                        <div class="gallery-item">
-                            <img src="assets/img/staff_oc/xier/1.png" alt="希儿 oc">
-                        </div>
-                    </div>
-                    <div class="oc-desc">
-                        <p>（这里可以补充希儿的自设设定）</p>
-                    </div>
-                </div>
-
-                <!-- Mixi Section -->
-                <div class="oc-section">
-                    <div class="oc-header">
-                        <div class="avatar placeholder-avatar">M</div>
-                        <div class="info">
-                            <h3>mixi</h3>
-                            <span class="role">STAFF</span>
-                        </div>
-                    </div>
-                    <div class="gallery-grid single-img">
-                        <div class="gallery-item">
-                            <img src="assets/img/staff_oc/mixi/1.jpg" alt="mixi oc">
-                        </div>
-                    </div>
-                    <div class="oc-desc">
-                        <p>（这里可以补充 mixi 的自设设定）</p>
+                 <!-- Images would go here or in a modal/separate gallery if using grid -->
+            </div>
+            
+             <!-- Re-implementing the gallery grid structure within the new layout if needed, 
+                  but te-to.jp uses cards. Let's stick to the gallery-grid inside the container if the user wants to see multiple images.
+                  Actually, let's adapt the previous content to the new container structure without losing images.
+             -->
+             
+        </div>
+        
+        <!-- Re-inserting the previous content structure but wrapped correctly -->
+        <div class="oc-container">
+            <!-- Kawako Section -->
+            <div class="oc-section" style="margin-bottom: 50px;">
+                <div class="oc-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <div class="avatar" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden;"><img src="assets/img/avatar/kawako.png" alt="kawako" style="width: 100%; height: 100%; object-fit: cover;"></div>
+                    <div class="info">
+                        <h3 style="font-size: 1.5rem;">kawako</h3>
+                        <span class="role" style="color: #e60012; font-weight: bold;">CREATOR</span>
                     </div>
                 </div>
-
+                <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="gallery-item">
+                        <img src="assets/img/staff_oc/kawako/1.jpeg" alt="kawako oc 1" style="width: 100%; border-radius: 10px;">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/img/staff_oc/kawako/2.jpeg" alt="kawako oc 2" style="width: 100%; border-radius: 10px;">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="assets/img/staff_oc/kawako/3.jpeg" alt="kawako oc 3" style="width: 100%; border-radius: 10px;">
+                    </div>
+                </div>
+                <div class="oc-desc" style="margin-top: 15px;">
+                    <p>（这里可以补充 kawako 的自设设定，目前展示设定图）</p>
+                </div>
             </div>
 
-            <footer class="site-footer">
-                <p>&copy; 2026 Aurora Project 企划项目组. 保留所有权利.</p>
-            </footer>
-        </main>
+            <!-- Xier Section -->
+            <div class="oc-section" style="margin-bottom: 50px;">
+                <div class="oc-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <div class="avatar placeholder-avatar" style="width: 60px; height: 60px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center;">希</div>
+                    <div class="info">
+                        <h3 style="font-size: 1.5rem;">希儿</h3>
+                        <span class="role" style="color: #e60012; font-weight: bold;">STAFF</span>
+                    </div>
+                </div>
+                <div class="gallery-grid single-img">
+                    <div class="gallery-item">
+                        <img src="assets/img/staff_oc/xier/1.png" alt="希儿 oc" style="width: 100%; max-width: 400px; border-radius: 10px;">
+                    </div>
+                </div>
+                <div class="oc-desc" style="margin-top: 15px;">
+                    <p>（这里可以补充希儿的自设设定）</p>
+                </div>
+            </div>
+
+            <!-- Mixi Section -->
+            <div class="oc-section" style="margin-bottom: 50px;">
+                <div class="oc-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 20px;">
+                    <div class="avatar placeholder-avatar" style="width: 60px; height: 60px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center;">M</div>
+                    <div class="info">
+                        <h3 style="font-size: 1.5rem;">mixi</h3>
+                        <span class="role" style="color: #e60012; font-weight: bold;">STAFF</span>
+                    </div>
+                </div>
+                <div class="gallery-grid single-img">
+                    <div class="gallery-item">
+                        <img src="assets/img/staff_oc/mixi/1.jpg" alt="mixi oc" style="width: 100%; max-width: 400px; border-radius: 10px;">
+                    </div>
+                </div>
+                <div class="oc-desc" style="margin-top: 15px;">
+                    <p>（这里可以补充 mixi 的自设设定）</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="site-footer">
+            <p>&copy; 2026 Aurora Project 企划项目组. 保留所有权利.</p>
+        </footer>
     </div>
-    
+
     <!-- 悬浮图片容器 -->
     <div class="floating-container">
         <div class="float-item item-1">✦</div>
