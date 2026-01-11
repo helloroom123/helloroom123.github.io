@@ -1,0 +1,489 @@
+:root {
+    --primary-color: #00a86b; /* 舒苒绿 */
+    --accent-color: #008756;
+    --bg-light: #f4f4f4;
+    --text-dark: #333;
+    --text-white: #ffffff;
+    --sidebar-width: 260px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+.site-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* 侧边栏 - 重音テト风格 */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: #fff;
+    position: fixed;
+    height: 100vh;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 0;
+    z-index: 1000;
+}
+
+.logo-area {
+    padding: 0 30px 40px;
+    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: 30px;
+}
+
+.logo-area h1 {
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--primary-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-area span {
+    font-size: 14px;
+    color: #999;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+.main-nav ul {
+    list-style: none;
+}
+
+.main-nav li a {
+    display: block;
+    padding: 15px 30px;
+    text-decoration: none;
+    color: #444;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.2s;
+    border-left: 0 solid var(--primary-color);
+}
+
+.main-nav li a:hover {
+    background-color: #f9f9f9;
+    color: var(--primary-color);
+    border-left-width: 8px;
+}
+
+.sns-links {
+    margin-top: auto;
+    padding: 0 30px;
+}
+
+.sns-item {
+    display: block;
+    text-decoration: none;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background: #eee;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.sns-item:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+/* 主内容区 */
+.content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    width: calc(100% - var(--sidebar-width));
+}
+
+/* Hero Section */
+.hero-section {
+    height: 80vh;
+    background-color: #fff;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 0 60px;
+}
+
+.hero-bg-text {
+    position: absolute;
+    font-size: 20vw;
+    font-weight: 900;
+    color: rgba(0, 168, 107, 0.05);
+    z-index: 1;
+    left: -5%;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.character-visual {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 60%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.placeholder-img {
+    width: 80%;
+    height: 90%;
+    background: #eef7f2;
+    border: 2px dashed var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--primary-color);
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.hero-info {
+    position: relative;
+    z-index: 3;
+    max-width: 500px;
+}
+
+.main-title {
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    line-height: 1.1;
+}
+
+.sub-title {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.quick-tags span {
+    display: inline-block;
+    padding: 5px 15px;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    margin-right: 10px;
+    border-radius: 2px;
+}
+
+/* 通用章节 */
+.section-container {
+    padding: 80px 60px;
+}
+
+.section-header {
+    margin-bottom: 50px;
+}
+
+.section-header h3 {
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--primary-color);
+    line-height: 1;
+}
+
+.jp-title {
+    font-size: 18px;
+    color: #999;
+    font-weight: 700;
+}
+
+.bg-green {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.section-header.white h3 {
+    color: #fff;
+}
+.section-header.white .jp-title {
+    color: rgba(255,255,255,0.7);
+}
+
+/* News Section */
+.news-section {
+    padding: 40px 60px;
+    background: #fff;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.news-header {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.news-header h3 {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--primary-color);
+}
+
+.news-list {
+    list-style: none;
+}
+
+.news-list li {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f9f9f9;
+    font-size: 14px;
+}
+
+.news-list .date {
+    color: #999;
+    width: 100px;
+    font-family: monospace;
+}
+
+.news-list .category {
+    background: #eee;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-right: 15px;
+    border-radius: 2px;
+}
+
+.news-list a {
+    text-decoration: none;
+    color: var(--text-dark);
+    transition: color 0.2s;
+}
+
+.news-list a:hover {
+    color: var(--primary-color);
+}
+
+/* Profile Box */
+.profile-box {
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.info-row {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+
+.info-row .label {
+    width: 150px;
+    font-weight: 900;
+    color: var(--primary-color);
+    font-size: 14px;
+}
+
+.info-row .value {
+    flex: 1;
+    font-weight: 500;
+}
+
+.appearance-detail {
+    margin-top: 40px;
+}
+
+.appearance-detail h4 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+/* Story Content */
+.story-card {
+    background: rgba(255,255,255,0.1);
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+}
+
+.story-card p {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+/* Credits Grid */
+.credits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.credit-card {
+    background: #fff;
+    padding: 20px;
+    border-bottom: 4px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #eee;
+    flex-shrink: 0;
+}
+
+.avatar-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.credit-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.credit-card .role {
+    font-size: 12px;
+    font-weight: 900;
+    color: #999;
+}
+
+.credit-card .name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* Join Section */
+.bg-primary-light {
+    background-color: #f0f9f5;
+}
+
+.join-content {
+    display: flex;
+    gap: 40px;
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.join-text {
+    flex: 1;
+}
+
+.join-text h4 {
+    font-size: 24px;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.can-do {
+    margin: 30px 0;
+    padding: 20px;
+    background: #f9f9f9;
+    border-left: 4px solid var(--primary-color);
+}
+
+.can-do h5 {
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.can-do ul {
+    list-style: none;
+}
+
+.can-do li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.can-do li::before {
+    content: '▶';
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+    font-size: 12px;
+}
+
+.promo-image {
+    flex: 1;
+    max-width: 400px;
+}
+
+.promo-image img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 968px) {
+    .join-content {
+        flex-direction: column;
+    }
+    .promo-image {
+        max-width: 100%;
+    }
+}
+
+/* Footer */
+.site-footer {
+    padding: 60px;
+    text-align: center;
+    background: #222;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 20px;
+    }
+    .content {
+        margin-left: 0;
+        width: 100%;
+    }
+    .site-container {
+        flex-direction: column;
+    }
+    .hero-section {
+        flex-direction: column;
+        height: auto;
+        padding: 60px 20px;
+    }
+    .character-visual {
+        position: relative;
+        width: 100%;
+        height: 400px;
+        margin-top: 40px;
+    }
+}
