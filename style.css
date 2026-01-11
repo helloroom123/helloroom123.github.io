@@ -2,11 +2,20 @@
 
 :root {
     --primary-color: #000;
-    --accent-color: #e60012; /* Teto Red-ish */
+    --accent-color: #00A86B; /* Emerald Green */
     --bg-color: #fff;
     --text-color: #333;
     --glass-bg: rgba(255, 255, 255, 0.8);
     --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+.bg-green {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.bg-green .section-title::before {
+    background: rgba(255,255,255,0.2);
 }
 
 * {
