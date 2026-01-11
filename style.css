@@ -1,6 +1,546 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Montserrat:wght@400;500;700;900&display=swap');
+
+:root {
+    --primary-color: #000;
+    --accent-color: #e60012; /* Teto Red-ish */
+    --bg-color: #fff;
+    --text-color: #333;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', 'Noto Sans SC', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease;
+}
+
+.loader {
+    width: 100%;
+    height: 4px;
+    background: #f0f0f0;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    overflow: hidden;
+}
+
+.loader::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: var(--accent-color);
+    animation: load 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes load {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    mix-blend-mode: difference;
+    color: #fff;
+}
+
+.logo {
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #fff;
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* Hero Section */
+.hero-section {
+    height: 100vh;
+    width: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.hero-bg-text {
+    position: absolute;
+    font-size: 15vw;
+    font-weight: 900;
+    color: rgba(0,0,0,0.03);
+    z-index: 1;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.character-visual {
+    position: relative;
+    z-index: 2;
+    height: 90vh;
+    display: flex;
+    align-items: flex-end;
+}
+
+.character-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+}
+
+.hero-info {
+    position: absolute;
+    bottom: 10%;
+    left: 10%;
+    z-index: 3;
+}
+
+.main-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.sub-title {
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin-bottom: 20px;
+    max-width: 500px;
+}
+
+.quick-tags span {
+    display: inline-block;
+    padding: 5px 10px;
+    background: #000;
+    color: #fff;
+    font-size: 12px;
+    margin-right: 5px;
+    text-transform: uppercase;
+}
+
+/* Content Sections */
+.content-section {
+    padding: 100px 10%;
+    position: relative;
+    z-index: 10;
+    background: #fff;
+}
+
+.section-title {
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 50px;
+    text-transform: uppercase;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    width: 60px;
+    height: 60px;
+    background: #f0f0f0;
+    z-index: -1;
+    border-radius: 50%;
+}
+
+/* News Section */
+.news-list {
+    border-top: 2px solid #000;
+}
+
+.news-item {
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    gap: 30px;
+    align-items: baseline;
+    transition: background 0.3s;
+}
+
+.news-item:hover {
+    background: #f9f9f9;
+    padding-left: 10px;
+}
+
+.news-date {
+    font-family: monospace;
+    font-weight: bold;
+    color: #666;
+}
+
+/* Story Section */
+.story-content {
+    display: flex;
+    gap: 50px;
+    align-items: center;
+}
+
+.story-text {
+    flex: 1;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* Credits / Wall of Fame */
+.credits-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.credit-card {
+    background: #fff;
+    border: 1px solid #eee;
+    padding: 30px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.credit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.credit-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    overflow: hidden;
+    background: #f0f0f0;
+}
+
+.credit-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.credit-role {
+    font-size: 12px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+}
+
+.credit-name {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+/* Project Join */
+.join-container {
+    display: flex;
+    gap: 50px;
+    background: #000;
+    color: #fff;
+    padding: 50px;
+    border-radius: 20px;
+    align-items: center;
+}
+
+.qr-code {
+    width: 150px;
+    height: 150px;
+    background: #fff;
+    padding: 10px;
+}
+
+.qr-code img {
+    width: 100%;
+    height: 100%;
+}
+
+.join-text h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+/* Footer */
+.site-footer {
+    background: #111;
+    color: #fff;
+    padding: 50px;
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+/* Floating Elements (Teto style) */
+.floating-element {
+    position: fixed;
+    pointer-events: none;
+    z-index: 5;
+    opacity: 0.1;
+    animation: float 20s infinite linear;
+}
+
+@keyframes float {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(100px, -100px) rotate(360deg); }
+}
+
+/* QA & Staff Page Specifics (te-to.jp style) */
+body.subpage {
+    background-color: #fdfdfd;
+    background-image: radial-gradient(#e0e0e0 1px, transparent 1px);
+    background-size: 30px 30px;
+}
+
+.qa-container, .staff-container {
+    padding: 120px 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.qa-item {
+    background: #fff;
+    margin-bottom: 30px;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.qa-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--accent-color);
+}
+
+.question {
+    font-weight: 900;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.question::before {
+    content: 'Q.';
+    font-size: 2rem;
+    color: var(--accent-color);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.answer {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.8;
+    padding-left: 50px;
+}
+
+/* Staff OC Grid */
+.staff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+}
+
+.staff-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+
+.staff-card:hover {
+    transform: translateY(-10px);
+}
+
+.staff-img-container {
+    height: 300px;
+    overflow: hidden;
+}
+
+.staff-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.staff-card:hover .staff-img-container img {
+    transform: scale(1.05);
+}
+
+.staff-info {
+    padding: 30px;
+}
+
+.staff-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.staff-role {
+    color: var(--accent-color);
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    display: block;
+}
+
 /* Fanart Page Styles */
 .fanart-container {
-    padding: 80px 40px;
-    max-width: 1200px;
+    padding: 120px 40px;
+    max-width: 1400px;
     margin: 0 auto;
+}
+
+.gallery-grid {
+    columns: 3 300px;
+    column-gap: 20px;
+}
+
+.gallery-item {
+    break-inside: avoid;
+    margin-bottom: 20px;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 20px;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(10px);
+    }
+
+    .nav-links {
+        display: none; /* Simplification for mobile menu, or keep if simple */
+    }
+
+    .hero-info {
+        bottom: 5%;
+        left: 5%;
+    }
+
+    .main-title {
+        font-size: 2.5rem;
+    }
+
+    .story-content {
+        flex-direction: column;
+    }
+    
+    .join-container {
+        flex-direction: column;
+        padding: 30px;
+        text-align: center;
+    }
+
+    .credits-wall {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-grid {
+        columns: 1;
+    }
+    
+    .qa-item {
+        padding: 20px;
+    }
+    
+    .question {
+        font-size: 1.2rem;
+    }
+    
+    .answer {
+        padding-left: 0;
+        margin-top: 10px;
+    }
 }
