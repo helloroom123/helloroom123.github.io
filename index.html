@@ -85,7 +85,7 @@
 
     <nav class="navbar">
         <div class="logo">舒苒 AURORA</div>
-        <div class="nav-links">
+        <div class="nav-links" tabindex="0" aria-label="Navigation Menu">
             <a href="#home">TOP</a>
             <a href="#news">NEWS</a>
             <a href="#profile">CHARACTER</a>
@@ -275,6 +275,26 @@
                     loader.style.display = 'none';
                 }, 500);
             }, 1000);
+        });
+
+        // Navigation Scroll Logic for Desktop/Keyboard
+        const navLinks = document.querySelector('.nav-links');
+        
+        navLinks.addEventListener('keydown', (e) => {
+            const scrollAmount = 100;
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navLinks.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                navLinks.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                navLinks.scrollTo({ left: 0, behavior: 'smooth' });
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                navLinks.scrollTo({ left: navLinks.scrollWidth, behavior: 'smooth' });
+            }
         });
     </script>
 </body>

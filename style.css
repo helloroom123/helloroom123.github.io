@@ -49,7 +49,7 @@ body {
     z-index: 100000; /* Highest priority */
     overflow-y: auto;
     padding: 20px;
-    display: flex;
+    display: none; /* Default hidden, toggled via JS/inline styles */
     justify-content: center;
     align-items: flex-start; /* Align to top for scrolling */
 }
@@ -217,6 +217,21 @@ body {
 .nav-links {
     display: flex;
     gap: 40px;
+    overflow-x: auto; /* 允许横向滚动 */
+    max-width: 100%; /* 确保不超过容器宽度 */
+    scrollbar-width: none; /* Firefox 隐藏滚动条 */
+    -ms-overflow-style: none; /* IE/Edge 隐藏滚动条 */
+    padding-bottom: 5px; /* 防止滚动条遮挡 */
+    outline: none; /* 移除默认focus轮廓，稍后自定义 */
+}
+
+.nav-links::-webkit-scrollbar {
+    display: none; /* Chrome/Safari 隐藏滚动条 */
+}
+
+.nav-links:focus {
+    /* 聚焦时显示微弱提示，或者保持无 */
+    /* border-bottom: 2px solid var(--accent-color); */
 }
 
 .nav-links a {
@@ -229,6 +244,8 @@ body {
     position: relative;
     padding: 5px 0;
     transition: color 0.3s;
+    white-space: nowrap; /* 防止换行 */
+    flex-shrink: 0; /* 防止压缩 */
 }
 
 .nav-links a::after {
