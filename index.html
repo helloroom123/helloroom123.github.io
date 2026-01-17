@@ -83,8 +83,16 @@
     <div id="promo-overlay">
         <div class="promo-content">
             <img src="assets/img/promo_popup.jpeg" alt="Promo" class="promo-img">
-            <button class="promo-btn" onclick="document.getElementById('promo-overlay').style.display='none'">我知道了</button>
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+                <button class="promo-btn" onclick="document.getElementById('promo-overlay').style.display='none'">我知道了</button>
+                <button class="promo-btn" id="disapprove-btn" style="background: #333; font-size: 0.8rem;">我不支持</button>
+            </div>
         </div>
+    </div>
+
+    <!-- Jump Scare Overlay -->
+    <div id="jumpscare-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:100001; background:#000;">
+        <img src="assets/img/jumpscare.png" style="width:100%; height:100%; object-fit:cover;">
     </div>
 
     <div id="flashlight-overlay"></div>
@@ -341,11 +349,30 @@
                     // Small delay to ensure display:flex is rendered before adding class
                     setTimeout(() => {
                         promoImg.classList.add('animate');
-                        promoBtn.classList.add('animate');
+                        // Animate both buttons
+                        document.querySelectorAll('.promo-btn').forEach(btn => btn.classList.add('animate'));
                     }, 100);
 
                 }, 500);
             }, 1000);
+        });
+
+        // Jump Scare Logic
+        document.getElementById('disapprove-btn').addEventListener('click', () => {
+            const jumpscare = document.getElementById('jumpscare-overlay');
+            const bgAudio = new Audio('assets/audio/scream.mp3'); // Optional: placeholder for sound
+            
+            jumpscare.style.display = 'block';
+            
+            // Optional: Shake effect or sound play here
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            
+            // Hide after a few seconds or keep it? Usually jumpscares are brief or require action.
+            // Let's keep it for 3 seconds then hide and maybe close promo to be "forgiving" or just hide jumpscare.
+            setTimeout(() => {
+                jumpscare.style.display = 'none';
+                alert('不支持是不行的哦~'); // Spooky follow-up
+            }, 3000);
         });
 
         // Navigation Scroll Logic for Desktop/Keyboard
