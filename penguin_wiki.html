@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企鹅 (战犯) - Aurora Wiki</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <link rel="stylesheet" href="style.css?v=7">
+    <style>
+        /* Specific overrides for Wiki Parody */
+        .wiki-parody-body {
+            background-color: #f6f6f6;
+            color: #202122;
+            font-family: sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .wiki-header-bar {
+            background: #fff;
+            border-bottom: 1px solid #a7a7a7;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .wiki-logo-text {
+            font-family: 'Hoefler Text', 'Linux Libertine', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .main-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border: 1px solid #a7a7a7;
+            border-top: none;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        .article-title {
+            font-family: 'Linux Libertine', Georgia, Times, serif;
+            font-size: 2.2rem;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+            font-weight: 400;
+            grid-column: 1 / -1;
+        }
+
+        .site-sub {
+            font-size: 0.8rem;
+            color: #54595d;
+            margin-top: -15px;
+            margin-bottom: 20px;
+            grid-column: 1 / -1;
+        }
+
+        .infobox-v2 {
+            border: 1px solid #a2a9b1;
+            background: #f8f9fa;
+            padding: 5px;
+            font-size: 0.9rem;
+            align-self: start;
+        }
+
+        .infobox-header {
+            background: #b0c4de;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .infobox-image {
+            text-align: center;
+            padding: 10px 0;
+        }
+        
+        .infobox-image img {
+            max-width: 250px;
+            border: 1px solid #ccc;
+        }
+
+        .infobox-row {
+            display: flex;
+            border-bottom: 1px solid #eaecf0;
+            padding: 5px 0;
+        }
+
+        .infobox-label {
+            font-weight: bold;
+            width: 100px;
+            padding-left: 10px;
+        }
+
+        .infobox-data {
+            flex: 1;
+        }
+
+        .mw-warning {
+            border: 1px solid #f28500;
+            background: #fef6e7;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            grid-column: 1 / -1;
+        }
+
+        .mw-warning-icon {
+            font-size: 2rem;
+            color: #f28500;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #0645ad;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        a.new {
+            color: #ba0000;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            .infobox-v2 {
+                order: -1;
+                width: 100%;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="wiki-parody-body">
+
+    <div class="wiki-header-bar">
+        <div class="wiki-logo-text">Aurora Wiki</div>
+        <input type="text" placeholder="搜索 Aurora Wiki" style="padding: 5px; border: 1px solid #ccc;">
+    </div>
+
+    <div class="main-content">
+        <h1 class="article-title">企鹅 (战犯)</h1>
+        <div class="site-sub">维基百科，自由的战犯百科全书</div>
+
+        <div class="mw-warning">
+            <div class="mw-warning-icon">⚠️</div>
+            <div>
+                <strong>本条目存在严重争议。</strong><br>
+                本条目可能包含对特定人物的过度自嘲、夸张描述或“甲级战犯”指控。请参阅<a href="#" class="new">讨论页</a>以了解更多详情。
+            </div>
+        </div>
+
+        <div class="infobox-v2">
+            <div class="infobox-header">企鹅</div>
+            <div class="infobox-image">
+                <img src="assets/img/avatar/penguin.png" alt="企鹅照片">
+                <div style="font-size:0.8rem; margin-top:5px;">企鹅的标准证件照</div>
+            </div>
+            <div class="infobox-row">
+                <div class="infobox-label">出生</div>
+                <div class="infobox-data">未知 (南极洲?)</div>
+            </div>
+            <div class="infobox-row">
+                <div class="infobox-label">职业</div>
+                <div class="infobox-data">网站开发者、<a href="#" class="new">甲级战犯</a></div>
+            </div>
+            <div class="infobox-row">
+                <div class="infobox-label">别名</div>
+                <div class="infobox-data">贵族朋友、南极悍匪</div>
+            </div>
+            <div class="infobox-row">
+                <div class="infobox-label">罪行</div>
+                <div class="infobox-data">拖延工期、代码写Bug、<br>在网站里埋Jump Scare</div>
+            </div>
+            <div class="infobox-row">
+                <div class="infobox-label">活跃时期</div>
+                <div class="infobox-data">2026年 - 至今</div>
+            </div>
+        </div>
+
+        <div class="article-text">
+            <p><strong>企鹅</strong>（英语：Penguin），全称“企鹅（贵族朋友）”，是 Aurora Project 企划的主要技术支持者与网站开发者。因其在开发过程中频繁制造 Bug、并在正常网页中植入惊悚元素（Jump Scare），被企划组成员戏称为“甲级战犯”。</p>
+
+            <h2>生平</h2>
+            <p>企鹅的具体身世不详，据称来自南极洲。在加入 <a href="index.html">Aurora Project</a> 之前，他曾是一名普通的 PHP 程序员，后转型为全栈（Bug）工程师。</p>
+
+            <h2>争议事件</h2>
+            <h3>Jump Scare 事件</h3>
+            <p>2026年1月，在 Aurora 官方网站上线前夕，企鹅在“项目加入”弹窗的“我不支持”按钮中，恶意植入了高频噪音与恐怖图片弹窗代码。此举导致多名早期测试用户受到惊吓，手机甚至产生剧烈震动。尽管本人辩称这是“为了增强用户互动的沉浸感”，但普遍被视为其“战犯”行为的确凿证据。</p>
+
+            <h3>代码拖延</h3>
+            <p>据内部知情人士（<a href="#" class="new">kawako</a>）透露，企鹅经常以“在抓鱼”为由推迟功能上线。实际上，他多数时间都在研究如何让 CSS 写得更像 2000 年代的风格。</p>
+
+            <h2>评价</h2>
+            <p>“他是一个好人，但是有时候真的想把他炖了。” —— 匿名 STAFF</p>
+            <p>“呱？” —— 企鹅本人回应</p>
+
+            <h2>参见</h2>
+            <ul>
+                <li><a href="index.html">Aurora Project</a></li>
+                <li><a href="#" class="new">南极洲犯罪记录</a></li>
+                <li><a href="#" class="new">代码屎山</a></li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
