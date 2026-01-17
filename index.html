@@ -79,6 +79,8 @@
         </div>
     </div>
 
+    <div id="flashlight-overlay"></div>
+
     <div class="loading-screen" id="loadingScreen">
         <div class="loader"></div>
     </div>
@@ -97,6 +99,7 @@
             <a href="#" onclick="document.getElementById('agreement-overlay').style.display='flex'; return false;">AGREEMENT</a>
             <a href="fanart.html">FANART</a>
             <a href="瓦狗97.html" style="color: #e60012;">GAME</a>
+            <div class="flashlight-toggle" id="flashlight-toggle"><span>🔦 OFF</span></div>
         </div>
     </nav>
 
@@ -296,6 +299,42 @@
                 navLinks.scrollTo({ left: navLinks.scrollWidth, behavior: 'smooth' });
             }
         });
+        // Flashlight Logic
+        const flashlightOverlay = document.getElementById('flashlight-overlay');
+        const flashlightToggle = document.getElementById('flashlight-toggle');
+        let isFlashlightOn = false;
+
+        function updateFlashlight(e) {
+            if (!isFlashlightOn) return;
+            const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            flashlightOverlay.style.setProperty('--cursor-x', x + 'px');
+            flashlightOverlay.style.setProperty('--cursor-y', y + 'px');
+        }
+
+        flashlightToggle.addEventListener('click', () => {
+            isFlashlightOn = !isFlashlightOn;
+            if (isFlashlightOn) {
+                flashlightOverlay.classList.add('active');
+                flashlightToggle.innerHTML = '<span style="color:var(--accent-color)">🔦 ON</span>';
+                document.addEventListener('mousemove', updateFlashlight);
+                document.addEventListener('touchmove', updateFlashlight, { passive: false });
+                document.addEventListener('touchstart', updateFlashlight, { passive: false });
+            } else {
+                flashlightOverlay.classList.remove('active');
+                flashlightToggle.innerHTML = '<span>🔦 OFF</span>';
+                document.removeEventListener('mousemove', updateFlashlight);
+                document.removeEventListener('touchmove', updateFlashlight);
+                document.removeEventListener('touchstart', updateFlashlight);
+            }
+        });
+
+        // Prevent touch scrolling when flashlight is on (optional, better UX for game-like feel)
+        /*
+        document.body.addEventListener('touchmove', function(e) {
+             if(isFlashlightOn) e.preventDefault(); 
+        }, { passive: false });
+        */
     </script>
 </body>
 </html>
