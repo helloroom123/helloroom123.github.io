@@ -360,19 +360,90 @@
         // Jump Scare Logic
         document.getElementById('disapprove-btn').addEventListener('click', () => {
             const jumpscare = document.getElementById('jumpscare-overlay');
-            const bgAudio = new Audio('assets/audio/scream.mp3'); // Optional: placeholder for sound
-            
             jumpscare.style.display = 'block';
-            
-            // Optional: Shake effect or sound play here
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-            
-            // Hide after a few seconds or keep it? Usually jumpscares are brief or require action.
-            // Let's keep it for 3 seconds then hide and maybe close promo to be "forgiving" or just hide jumpscare.
+
+            // 1. Audio: Web Audio API for generating Screech (High pitch noise)
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sawtooth'; // Harsh wave
+                oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                // Frequency sweep up and down rapidly
+                oscillator.frequency.exponentialRampToValueAtTime(8000, audioCtx.currentTime + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.2);
+                
+                // LFO for vibrato
+                const lfo = audioCtx.createOscillator();
+                lfo.type = 'square';
+                lfo.frequency.value = 50; // Fast oscillation
+                const lfoGain = audioCtx.createGain();
+                lfoGain.gain.value = 2000;
+                lfo.connect(lfoGain);
+                lfoGain.connect(oscillator.frequency);
+                lfo.start();
+
+                gainNode.gain.value = 1.0; // Max volume
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                
+                // Stop audio after 4 seconds
+                setTimeout(() => {
+                    oscillator.stop();
+                    lfo.stop();
+                    audioCtx.close();
+                }, 4000);
+            }
+
+            // 2. Vibration: Aggressive pattern
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 50, 500, 50, 500, 50, 500, 50, 1000]);
+            }
+
+            // 3. Infinite Popup Simulation (Visual Chaos)
+            let popupInterval = setInterval(() => {
+                const popup = document.createElement('div');
+                popup.style.position = 'fixed';
+                popup.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+                popup.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+                popup.style.width = '250px';
+                popup.style.padding = '10px';
+                popup.style.background = '#ccc';
+                popup.style.border = '2px solid #fff';
+                popup.style.borderRightColor = '#777';
+                popup.style.borderBottomColor = '#777';
+                popup.style.boxShadow = '5px 5px 10px rgba(0,0,0,0.5)';
+                popup.style.zIndex = '100002'; // Above jumpscare image
+                popup.style.fontFamily = 'Tahoma, sans-serif';
+                popup.style.fontSize = '12px';
+                popup.style.color = '#000';
+                
+                // Windows 9x Error style
+                popup.innerHTML = `
+                    <div style="background:navy;color:white;padding:2px;font-weight:bold;margin-bottom:10px;">System Error</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:30px;height:30px;background:red;border-radius:50%;color:white;display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:20px;">X</div>
+                        <div>不支持是不行的<br>必须支持 Aurora</div>
+                    </div>
+                `;
+                document.body.appendChild(popup);
+            }, 50); // Spawn every 50ms
+
+            // 4. End Chaos after 3.5 seconds
             setTimeout(() => {
+                clearInterval(popupInterval);
                 jumpscare.style.display = 'none';
-                alert('不支持是不行的哦~'); // Spooky follow-up
-            }, 3000);
+                // Remove all fake popups
+                document.querySelectorAll('div[style*="z-index: 100002"]').forEach(el => el.remove());
+                
+                // Final warning
+                alert('不支持是不行的哦~ (网页即将刷新)');
+                location.reload(); // Reload to clear the "mess"
+            }, 3500);
         });
 
         // Navigation Scroll Logic for Desktop/Keyboard
