@@ -518,6 +518,183 @@ body {
     letter-spacing: 1px;
 }
 
+/* Wiki Style Styles */
+.wiki-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    border: 3px solid #000;
+    box-shadow: 15px 15px 0px #000;
+    padding: 40px;
+}
+
+.wiki-header {
+    border-bottom: 3px solid #000;
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.wiki-title {
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 0.9;
+}
+
+.wiki-meta {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #666;
+    text-align: right;
+}
+
+.wiki-content-wrapper {
+    display: flex;
+    gap: 50px;
+}
+
+.wiki-main-text {
+    flex: 2;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+.wiki-intro p {
+    margin-bottom: 20px;
+}
+
+/* TOC */
+.wiki-toc {
+    background: #f9f9f9;
+    border: 2px solid #000;
+    padding: 20px;
+    margin: 30px 0;
+    display: inline-block;
+    min-width: 250px;
+}
+
+.wiki-toc-title {
+    font-weight: 900;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.wiki-toc ul {
+    list-style: none;
+    padding: 0;
+}
+
+.wiki-toc li {
+    margin-bottom: 10px;
+}
+
+.wiki-toc a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.wiki-toc a:hover {
+    color: var(--accent-color);
+}
+
+.wiki-section-header {
+    font-size: 2rem;
+    font-weight: 900;
+    margin: 50px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ccc;
+    position: relative;
+}
+
+.wiki-section-header::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: var(--accent-color);
+}
+
+.wiki-trivia-box {
+    background: rgba(0, 168, 107, 0.05);
+    border-left: 5px solid var(--accent-color);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+/* Infobox */
+.wiki-infobox {
+    flex: 1;
+    min-width: 300px;
+    max-width: 350px;
+    border: 2px solid #000;
+    background: #fff;
+    align-self: flex-start;
+}
+
+.infobox-title {
+    background: #000;
+    color: #fff;
+    text-align: center;
+    padding: 15px;
+    font-weight: 900;
+    font-size: 1.2rem;
+}
+
+.infobox-image {
+    padding: 10px;
+    background: #f9f9f9;
+    text-align: center;
+    border-bottom: 2px solid #000;
+}
+
+.infobox-image img {
+    width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+}
+
+.infobox-caption {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 10px;
+}
+
+.infobox-data {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.infobox-data th, .infobox-data td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+}
+
+.infobox-data th {
+    text-align: left;
+    background: #f4f4f4;
+    width: 40%;
+    font-weight: 700;
+    color: #333;
+}
+
+.infobox-data td {
+    color: #000;
+    font-weight: 500;
+}
+
+.infobox-data tr:last-child th, 
+.infobox-data tr:last-child td {
+    border-bottom: none;
+}
+
 /* Gallery/Fanart */
 .gallery-grid {
     columns: 3 300px;
@@ -655,6 +832,32 @@ footer p {
         font-size: 2.5rem;
         margin-bottom: 40px;
         border-bottom-width: 4px;
+    }
+
+    /* Wiki Mobile */
+    .wiki-container {
+        padding: 20px;
+        box-shadow: 5px 5px 0px #000;
+    }
+
+    .wiki-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .wiki-title {
+        font-size: 3rem;
+    }
+
+    .wiki-content-wrapper {
+        flex-direction: column-reverse; /* Infobox on top or bottom? usually top on wiki, but bottom here for reading flow */
+        gap: 30px;
+    }
+
+    .wiki-infobox {
+        width: 100%;
+        max-width: 100%;
     }
 
     /* Q&A适配 */

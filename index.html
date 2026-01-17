@@ -141,37 +141,84 @@
     <section id="profile" class="content-section">
         <h2 class="section-title">CHARACTER</h2>
         
-        <div class="staff-grid" style="grid-template-columns: 1fr; gap: 0;">
-            <div class="staff-card" style="box-shadow: 10px 10px 0px #000;">
-                <div class="staff-info" style="display: flex; flex-wrap: wrap; gap: 40px;">
-                    <div style="flex: 1; min-width: 300px;">
-                        <h3 style="font-size: 2rem; margin-bottom: 20px; border-bottom: 2px solid var(--accent-color); display: inline-block;">舒苒 / Aurora</h3>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <strong style="display: block; font-size: 0.9rem; color: #999;">AGE</strong>
-                            <span style="font-size: 1.2rem; font-weight: 700;">18</span>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <strong style="display: block; font-size: 0.9rem; color: #999;">PERSONALITY</strong>
-                            <span style="font-size: 1.1rem;">独立、内核强大、温柔、有时傲慢、理智</span>
-                        </div>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <strong style="display: block; font-size: 0.9rem; color: #999;">HOBBY</strong>
-                            <span style="font-size: 1.1rem;">管理琐事、解决麻烦</span>
-                        </div>
+        <div class="wiki-container">
+            <!-- Wiki Header -->
+            <div class="wiki-header">
+                <h1 class="wiki-title">舒苒</h1>
+                <div class="wiki-meta">Aurora / 翡翠绿 / 18岁</div>
+            </div>
 
-                        <div style="margin-bottom: 15px;">
-                            <strong style="display: block; font-size: 0.9rem; color: #999;">LIKE</strong>
-                            <span style="font-size: 1.1rem;">华美的扇子、绿色的宝石、青苹果</span>
-                        </div>
+            <div class="wiki-content-wrapper">
+                <!-- Main Content -->
+                <div class="wiki-main-text">
+                    <div class="wiki-intro">
+                        <p><strong>舒苒</strong> (Aurora)，是Aurora Project企划的核心角色。作为一名18岁的珠宝设计师，她以其独特的审美和坚韧的性格闻名。她的代表色为<span style="color:var(--accent-color)">翡翠绿 (Emerald Green)</span>。</p>
+                        <p>她出身富贵，却不因优渥的环境而骄纵。在复杂的家族斗争中，她展现出了超乎年龄的成熟与理智。她不仅在珠宝设计领域造诣颇深，更是一位热爱生活的园艺茶酿师。</p>
                     </div>
-                    
-                    <div style="flex: 1; min-width: 300px; background: #f9f9f9; padding: 20px; border-left: 4px solid var(--accent-color);">
-                        <h4 style="font-weight: 900; margin-bottom: 15px;">外貌设定 / APPEARANCE</h4>
-                        <p style="font-size: 1rem; line-height: 1.8;">淡黄色的头发扎着一个侧丸子头，头上有着一对白色的兔耳朵，眼睛是如宝石一样的淡绿色。头上装饰有茉莉花元素的大绿色蝴蝶结与珍珠。身穿露肩缎面墨绿色长裙，配戴珍珠串成的祖母绿宝石项链。</p>
+
+                    <div class="wiki-toc">
+                        <div class="wiki-toc-title">目录</div>
+                        <ul>
+                            <li><a href="#wiki-appearance">1 外貌设定</a></li>
+                            <li><a href="#wiki-personality">2 性格特征</a></li>
+                            <li><a href="#wiki-trivia">3 琐事与喜好</a></li>
+                        </ul>
                     </div>
+
+                    <h3 id="wiki-appearance" class="wiki-section-header">外貌设定</h3>
+                    <p>舒苒拥有标志性的淡黄色长发，通常梳成侧边丸子头，这已成为她的视觉符号之一。头顶的一对白色兔耳不仅增添了可爱感，更暗示了她敏锐的感知力。</p>
+                    <p>她的瞳孔呈现出如同上等祖母绿宝石般的通透绿色，眼神中常含着温柔却不失威严的光芒。在服饰上，她偏爱露肩缎面材质的墨绿色长裙，搭配珍珠串成的祖母绿项链，彰显其高贵典雅的气质。头上常装饰有茉莉花元素的大蝴蝶结，象征着她对自然的喜爱。</p>
+
+                    <h3 id="wiki-personality" class="wiki-section-header">性格特征</h3>
+                    <ul>
+                        <li><strong>独立坚韧</strong>：无论面对家族纷争还是创作瓶颈，她总能独自寻找出路。</li>
+                        <li><strong>温柔理智</strong>：对待他人总是温柔体贴，但处理问题时却异常冷静客观。</li>
+                        <li><strong>适度傲慢</strong>：作为顶级设计师和贵族，她有着属于自己的骄傲，但这并不令人反感。</li>
+                    </ul>
+
+                    <h3 id="wiki-trivia" class="wiki-section-header">琐事与喜好</h3>
+                    <div class="wiki-trivia-box">
+                        <p>她对于<strong>华美的扇子</strong>有着近乎偏执的喜爱，收藏了上百把不同工艺的折扇。闲暇时光，她喜欢品尝<strong>青苹果</strong>，那种酸甜清脆的口感能带给她灵感。除此之外，她最擅长的并非设计，而是<strong>管理琐事与解决麻烦</strong>，这或许源于她从小在大家族中练就的生存技能。</p>
+                    </div>
+                </div>
+
+                <!-- InfoBox (Right Side) -->
+                <div class="wiki-infobox">
+                    <div class="infobox-title">舒苒 (Aurora)</div>
+                    <div class="infobox-image">
+                        <img src="assets/img/character_full.png" alt="Aurora Portrait">
+                        <div class="infobox-caption">角色立绘</div>
+                    </div>
+                    <table class="infobox-data">
+                        <tr>
+                            <th>本名</th>
+                            <td>舒苒</td>
+                        </tr>
+                        <tr>
+                            <th>外文名</th>
+                            <td>Aurora</td>
+                        </tr>
+                        <tr>
+                            <th>年龄</th>
+                            <td>18岁</td>
+                        </tr>
+                        <tr>
+                            <th>代表色</th>
+                            <td><span style="color:var(--accent-color)">■</span> 翡翠绿</td>
+                        </tr>
+                        <tr>
+                            <th>职业</th>
+                            <td>珠宝设计师<br>园艺茶酿师</td>
+                        </tr>
+                        <tr>
+                            <th>萌点</th>
+                            <td>兔耳、侧丸子头、大小姐</td>
+                        </tr>
+                        <tr>
+                            <th>喜好</th>
+                            <td>扇子、宝石、青苹果</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
