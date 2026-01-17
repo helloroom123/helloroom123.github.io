@@ -32,6 +32,225 @@ body {
     font-weight: 400;
 }
 
+/* Newspaper Body Override */
+body.newspaper-body {
+    background-color: #f0e6d2; /* Old paper color */
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZjBlNmQyIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNkOWNhYjMiLz4KPC9zdmc+'); /* Subtle noise */
+    font-family: "SimSun", "Songti SC", "Noto Serif SC", serif; /* 宋体/衬线体 */
+    color: #2c2c2c;
+}
+
+/* Newspaper Container */
+.paper-container {
+    max-width: 1200px;
+    margin: 100px auto 50px; /* Top margin for fixed navbar */
+    padding: 20px;
+    background: #fffbf0;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    border: 1px solid #d4c5a9;
+}
+
+.paper-header {
+    text-align: center;
+    border-bottom: 2px double #000;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.paper-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-bottom: 1px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.paper-title {
+    font-family: "Times New Roman", Times, serif; /* 英文报纸标题风格 */
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -2px;
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+}
+
+.paper-subtitle {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    font-style: italic;
+    font-family: "KaiTi", "Kaiti SC", serif; /* 楷体作为副标题 */
+}
+
+.header-line {
+    border-top: 1px solid #000;
+    border-bottom: 4px solid #000;
+    height: 8px;
+    margin-top: 20px;
+}
+
+/* Grid Layout */
+.paper-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: auto auto auto;
+    gap: 20px;
+}
+
+/* Articles */
+.paper-article {
+    border: 1px solid #ccc;
+    padding: 15px;
+    background: #fff;
+    position: relative;
+}
+
+.article-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-tag {
+    display: inline-block;
+    background: #000;
+    color: #fff;
+    padding: 2px 5px;
+    font-size: 0.8rem;
+    font-family: sans-serif;
+    margin-bottom: 10px;
+}
+
+.paper-article h2 {
+    font-size: 2.5rem;
+    line-height: 1.1;
+    margin-bottom: 15px;
+    font-weight: 900;
+}
+
+.paper-article h3 {
+    font-size: 1.5rem;
+    border-bottom: 2px solid #000;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.drop-cap {
+    float: left;
+    font-size: 3.5rem;
+    line-height: 0.8;
+    margin-right: 5px;
+    font-weight: bold;
+    font-family: "Times New Roman", serif;
+}
+
+.caption {
+    font-size: 0.8rem;
+    color: #666;
+    font-style: italic;
+    text-align: right;
+    display: block;
+    margin-top: 5px;
+}
+
+/* Specific Grid Areas */
+.hero-article {
+    grid-column: 1 / span 3;
+    grid-row: 1 / span 2;
+    border: 2px solid #000;
+}
+
+.vertical-col {
+    grid-column: 4;
+    grid-row: 1 / span 2;
+    background: #f4f4f4;
+    border-left: 1px solid #000;
+}
+
+.small-box {
+    grid-column: 4;
+    grid-row: 3;
+    border: 3px double #000;
+    background: #e6f7ff;
+}
+
+.img-box {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.wide-bottom {
+    grid-column: 2 / span 2;
+    grid-row: 3;
+}
+
+.ad-box {
+    grid-column: 1 / span 4;
+    margin-top: 20px;
+    border: none;
+    background: transparent;
+}
+
+/* Inner Layouts */
+.cols-2 {
+    column-count: 2;
+    column-gap: 20px;
+    text-align: justify;
+}
+
+.log-item {
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #999;
+    padding-bottom: 5px;
+}
+
+.log-item .date {
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-right: 5px;
+    font-family: sans-serif;
+}
+
+.paper-footer {
+    text-align: center;
+    margin-top: 40px;
+    border-top: 1px solid #000;
+    padding-top: 10px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Mobile Responsiveness for Newspaper */
+@media (max-width: 768px) {
+    .paper-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+    .hero-article, .vertical-col, .small-box, .img-box, .wide-bottom, .ad-box {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .paper-title {
+        font-size: 3rem;
+    }
+
+    .paper-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .cols-2 {
+        column-count: 1;
+    }
+}
+
 /* 选中文字颜色 */
 ::selection {
     background: var(--accent-color);
@@ -364,6 +583,14 @@ body {
 }
 
 .nav-links a:hover::after {
+    width: 100%;
+}
+
+.nav-links a.active {
+    color: var(--accent-color);
+}
+
+.nav-links a.active::after {
     width: 100%;
 }
 
