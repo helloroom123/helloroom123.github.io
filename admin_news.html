@@ -189,11 +189,12 @@
         const category = document.getElementById('category').value;
         const content = document.getElementById('content').value;
         const imageUrl = document.getElementById('imageUrl').value;
-        const accessCode = document.getElementById('accessCode').value;
+        const accessCode = document.getElementById('accessCode').value.trim(); // 去除空格
         const status = document.getElementById('status');
 
-        // 简单的密钥检查 (实际建议使用 Supabase Auth)
+        // 简单的密钥检查
         if (accessCode !== 'Aurora2026ProjectGroupKey') {
+            console.log('Input:', accessCode);
             alert('密钥错误！禁止发布。');
             return;
         }
@@ -203,43 +204,25 @@
             return;
         }
 
-        // 检查本月发布限额 (Limit 10 per month)
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-        
-        status.textContent = '正在检查限额... / Checking limits...';
-
-        const { count, error: countError } = await supabase
-            .from('news_articles')
-            .select('*', { count: 'exact', head: true })
-            .gte('created_at', startOfMonth);
-
-        if (countError) {
-            console.error('Error checking limit:', countError);
-            alert('检查限额失败，请稍后重试');
-            status.textContent = '检查限额失败';
-            return;
-        }
-
-        if (count >= 10) {
-            alert(`本月发布额度已用完 (10/10)。\nMonthly limit reached for key: Aurora2026ProjectGroupKey.`);
-            status.textContent = '发布失败：本月限额已满 (10/10)';
-            status.style.color = 'red';
-            return;
-        }
-
         status.textContent = '正在发布... / Publishing...';
         
-        const { data, error } = await supabase
-            .from('news_articles')
-            .insert([
-                { title, category, content, image_url: imageUrl }
-            ]);
+        // 使用安全的 RPC 调用 (需要先在 Supabase 执行 SQL)
+        const { data, error } = await supabase.rpc('create_news_article', {
+            title: title,
+            content: content,
+            category: category,
+            image_url: imageUrl,
+            secret_key: accessCode
+        });
 
         if (error) {
             console.error('Error:', error);
             status.textContent = '发布失败: ' + error.message;
             status.style.color = 'red';
+            // 如果是因为函数不存在，提示用户
+            if (error.message.includes('function') && error.message.includes('does not exist')) {
+                alert('后端函数尚未配置，请联系开发人员执行 SQL 脚本。');
+            }
         } else {
             status.textContent = '发布成功！正在刷新...';
             status.style.color = 'green';
