@@ -1,0 +1,18 @@
+# Netlify Redirect Rules
+# Documentation: https://docs.netlify.com/routing/redirects/
+
+# 1. 强制 HTTPS (Netlify 默认开启，但也写上作为保险)
+# http://*  https://:splat  301!
+
+# 2. 路径别名 (例如让 /news 跳转到 /news_paper.html)
+/news          /news_paper.html        200
+/fanart        /fanart.html            200
+/qa            /qa.html                200
+/staff         /staff_oc.html          200
+/game          /瓦狗97.html             200
+
+# 3. 历史遗留链接重定向 (如果有旧页面改名了，可以在这里写 301 跳转)
+# /old-page.html  /new-page.html  301
+
+# 4. SPA 单页应用支持 (如果未来使用 React/Vue 路由模式，需要开启下面这行)
+# /*    /index.html   200
