@@ -564,12 +564,11 @@
             btn.innerText = 'UPLOADING...';
             btn.disabled = true;
 
-            // Using the API provided
-            fetch('https://i.111666.best/image', {
+            // Using the API provided (via Netlify Proxy)
+            fetch('/.netlify/functions/upload', {
                 method: 'POST',
-                headers: {
-                    'Auth-Token': 'AuroraFanartUpload_' + Math.random().toString(36).substr(2, 9)
-                },
+                // When sending FormData, DO NOT set Content-Type header manually.
+                // The browser will automatically set it with the correct boundary.
                 body: formData
             })
             .then(response => {
