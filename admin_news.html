@@ -2,13 +2,48 @@
 <html lang="zh-CN">
 <head>
     <script>
-        // Redirect logic: Force everything to Cloudflare Pages (except localhost)
-        const targetHost = 'aurora-project.pages.dev';
-        if (window.location.hostname !== targetHost && 
-            window.location.hostname !== 'localhost' && 
-            window.location.hostname !== '127.0.0.1') {
-            window.location.href = 'https://' + targetHost + window.location.pathname + window.location.search + window.location.hash;
-        }
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
+            }
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
+        })();
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
