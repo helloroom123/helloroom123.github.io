@@ -5,7 +5,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 const supabaseUrl = 'https://kvvfheqxyedqarplafqe.supabase.co';
 // Publishable Key (Safe for frontend)
-const supabaseKey = 'sb_publishable_4Rb9MRto0qgAn02E8j33vA_SfJIrHnf';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2dmZoZXF4eWVkcWFycGxhZnFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg3MDg4MzcsImV4cCI6MjA4NDI4NDgzN30.TICY21JDYQugBaQ-pOJEvCbpoVdmRDA88zDW3tgU9CY';
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
