@@ -38,6 +38,14 @@
 
         // Load News from Supabase
         async function loadDynamicNews() {
+            // Update Date
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+            const metaDiv = document.querySelector('.paper-meta');
+            if (metaDiv) {
+                 metaDiv.innerHTML = `<span>VOL. 01</span><span>${dateStr}</span><span>定价：免费</span>`;
+            }
+
             console.log('Fetching news from Supabase...');
             const { data, error } = await supabase
                 .from('news_articles')
@@ -66,12 +74,15 @@
                     const dateObj = new Date(news.created_at);
                     const date = isNaN(dateObj.getTime()) ? '刚刚' : dateObj.toLocaleDateString('zh-CN');
                     
+                    // 判断是否有图片
+                    const hasImage = !!news.image_url;
+
                     article.innerHTML = `
-                        <div class="article-inner">
+                        <div class="article-inner" style="display:flex; flex-direction:column; height:100%;">
                             <span class="article-tag" style="background:#333;color:#fff;">${news.category || 'NEWS'}</span>
                             <h3 style="margin:10px 0;">${news.title}</h3>
-                            ${news.image_url ? `<img src="${news.image_url}" style="width:100%;height:150px;object-fit:cover;margin-bottom:10px;border:1px solid #eee;" onerror="this.style.display='none'">` : ''}
-                            <div class="article-content" style="max-height: 100px; overflow: hidden; text-overflow: ellipsis;">
+                            ${hasImage ? `<img src="${news.image_url}" style="width:100%;height:150px;object-fit:cover;margin-bottom:10px;border:1px solid #eee;" onerror="this.style.display='none'">` : ''}
+                            <div class="article-content" style="${hasImage ? 'max-height: 100px; overflow: hidden; text-overflow: ellipsis;' : 'flex: 1; overflow: visible;'}">
                                 <p style="font-size:0.9rem; line-height:1.6; color:#444;">${news.content}</p>
                             </div>
                             <small style="margin-top:auto;padding-top:10px;color:#999;display:block;border-top:1px solid #eee;">${date}</small>
