@@ -96,6 +96,7 @@
 
 <div class="admin-container">
     <h2>📰 极光计划内部发稿台 (Internal)</h2>
+    <div id="quota-display" style="text-align:center; color:#666; margin-bottom:20px; font-weight: bold; background: #eee; padding: 5px; border-radius: 5px;">正在加载本月额度...</div>
     
     <div class="form-group">
         <label>新闻标题 / Title</label>
@@ -136,6 +137,35 @@
 
 <script type="module">
     import { supabase } from './assets/js/supabase.js';
+
+    // 检查额度
+    async function checkQuota() {
+        const quotaDisplay = document.getElementById('quota-display');
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        
+        const { count, error } = await supabase
+            .from('news_articles')
+            .select('*', { count: 'exact', head: true })
+            .gte('created_at', startOfMonth);
+            
+        if (error) {
+            console.error('Error checking quota:', error);
+            quotaDisplay.textContent = '额度加载失败';
+            quotaDisplay.style.color = 'red';
+        } else {
+            quotaDisplay.innerHTML = `本月额度使用: <span style="font-size:1.2em">${count}</span> / 10`;
+            if (count >= 10) {
+                quotaDisplay.style.color = '#e60012'; // Red
+                quotaDisplay.innerHTML += ' (已满 / FULL)';
+            } else {
+                quotaDisplay.style.color = '#008000'; // Green
+            }
+        }
+    }
+    
+    // Init
+    checkQuota();
 
     // 图片预览与上传 (使用我们自己的后端代理)
     document.getElementById('imageFile').addEventListener('change', async function(e) {
