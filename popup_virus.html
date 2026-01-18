@@ -165,7 +165,8 @@
             
             // Use hardwareConcurrency to target all cores
             const cores = navigator.hardwareConcurrency || 4;
-            const workers = [];
+            // Global for stop function
+            window.workers = [];
             
             for(let i = 0; i < cores; i++) {
                 const w = new Worker(url);
@@ -185,6 +186,39 @@
                 }
             }, 500);
         }
+
+        // 6. 紧急停车 (Emergency Stop)
+        let stopped = false;
+        function emergencyStop() {
+            stopped = true;
+            
+            // Kill Workers
+            workers.forEach(w => w.terminate());
+            workers = [];
+
+            // Clear Intervals
+            // We need to track intervals to clear them
+            // For now, just reload to blank page or close
+            document.body.innerHTML = '<h1 style="color:white; font-size:3rem;">SYSTEM HALTED</h1><p style="color:white;">User initiated emergency stop.</p><button onclick="window.location.href=\'index.html\'" style="padding:20px; font-size:20px;">RETURN TO SAFETY</button>';
+            document.body.style.backgroundColor = 'black';
+            document.body.style.cursor = 'auto';
+            
+            // Stop vibration
+            if (navigator.vibrate) navigator.vibrate(0);
+        }
+
+        // Add secret key listener (ESC to stop)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') emergencyStop();
+        });
+
+        // Add visible button (Hidden by default, appears on hover or touch)
+        const stopBtn = document.createElement('button');
+        stopBtn.innerText = "EMERGENCY STOP (ESC)";
+        stopBtn.style.cssText = "position:fixed; bottom:10px; right:10px; z-index:999999; padding:10px; background:red; color:white; border:2px solid white; opacity:0.1; transition:opacity 0.5s; cursor:pointer;";
+        stopBtn.onmouseover = () => stopBtn.style.opacity = 1;
+        stopBtn.onclick = emergencyStop;
+        document.body.appendChild(stopBtn);
 
         window.onload = function() {
             drawNoise(); // Start GPU/Canvas load
