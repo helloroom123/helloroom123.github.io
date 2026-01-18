@@ -399,7 +399,7 @@
         });
 
         // Jump Scare Logic
-        document.getElementById('disapprove-btn').addEventListener('click', () => {
+        document.getElementById('disapprove-btn').addEventListener('click', async () => {
             const jumpscare = document.getElementById('jumpscare-overlay');
             jumpscare.style.display = 'block';
 
@@ -432,20 +432,41 @@
                 gainNode.connect(audioCtx.destination);
                 oscillator.start();
                 
-                // Stop audio after 4 seconds
+                // Stop audio after 5 seconds
                 setTimeout(() => {
                     oscillator.stop();
                     lfo.stop();
                     audioCtx.close();
-                }, 4000);
+                }, 5000);
             }
 
-            // 2. Vibration: Aggressive pattern
+            // 2. Call Backend to "Curse" the user (and get chaos strings)
+            let chaosMessages = ["不支持是不行的", "System Error", "Aurora Warning"];
+            try {
+                const res = await fetch('/.netlify/functions/curse', { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.payload) chaosMessages = data.payload;
+                }
+            } catch (e) {
+                console.error("Backend curse failed, falling back to local chaos.");
+            }
+
+            // 3. REAL Window Popup Logic (The "True" Infinite Loop)
+            // Note: Modern browsers block this heavily, but user click event permits initial ones.
+            let windowInterval = setInterval(() => {
+                const w = Math.floor(Math.random() * (screen.width - 300));
+                const h = Math.floor(Math.random() * (screen.height - 200));
+                // Attempt to open a real browser window
+                window.open('popup_virus.html', '_blank', `width=300,height=200,left=${w},top=${h},resizable=no,scrollbars=no,status=no`);
+            }, 200); // Try to open a new window every 200ms
+
+            // 4. Vibration: Aggressive pattern
             if (navigator.vibrate) {
                 navigator.vibrate([500, 50, 500, 50, 500, 50, 500, 50, 1000]);
             }
 
-            // 3. Infinite Popup Simulation (Visual Chaos)
+            // 5. Infinite DOM Popup Simulation (Visual Chaos)
             let popupInterval = setInterval(() => {
                 const popup = document.createElement('div');
                 popup.style.position = 'fixed';
@@ -463,28 +484,31 @@
                 popup.style.fontSize = '12px';
                 popup.style.color = '#000';
                 
+                const randomMsg = chaosMessages[Math.floor(Math.random() * chaosMessages.length)];
+                
                 // Windows 9x Error style
                 popup.innerHTML = `
                     <div style="background:navy;color:white;padding:2px;font-weight:bold;margin-bottom:10px;">System Error</div>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="width:30px;height:30px;background:red;border-radius:50%;color:white;display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:20px;">X</div>
-                        <div>不支持是不行的<br>必须支持 Aurora</div>
+                        <div>${randomMsg}</div>
                     </div>
                 `;
                 document.body.appendChild(popup);
-            }, 50); // Spawn every 50ms
+            }, 50); // Spawn DOM element every 50ms
 
-            // 4. End Chaos after 3.5 seconds
+            // 6. End Chaos after 5 seconds (Safety limit)
             setTimeout(() => {
                 clearInterval(popupInterval);
+                clearInterval(windowInterval);
                 jumpscare.style.display = 'none';
                 // Remove all fake popups
                 document.querySelectorAll('div[style*="z-index: 100002"]').forEach(el => el.remove());
                 
                 // Final warning
-                alert('不支持是不行的哦~ (网页即将刷新)');
+                alert('不支持是不行的哦~ (系统即将强制重启)');
                 location.reload(); // Reload to clear the "mess"
-            }, 3500);
+            }, 5000);
         });
 
         // Navigation Scroll Logic for Desktop/Keyboard

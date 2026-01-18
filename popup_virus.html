@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>SYSTEM ERROR</title>
+    <style>
+        body {
+            background-color: #0000AA; /* BSOD Blue */
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+        h1 { font-size: 2rem; background: #fff; color: #0000AA; padding: 5px; }
+        p { font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <h1>FATAL ERROR</h1>
+    <p>A fatal exception 0E has occurred at 0028:C0011E36</p>
+    <p>MUST SUPPORT AURORA</p>
+    <script>
+        // 弹窗里的弹窗（尝试递归）
+        window.onload = function() {
+            setInterval(() => {
+                window.moveBy(Math.floor(Math.random() * 10 - 5), Math.floor(Math.random() * 10 - 5));
+                document.body.style.backgroundColor = document.body.style.backgroundColor === 'red' ? '#0000AA' : 'red';
+            }, 100);
+        }
+    </script>
+</body>
+</html>
