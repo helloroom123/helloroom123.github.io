@@ -1,19 +1,26 @@
 exports.handler = async (event, context) => {
-  // 仅允许 POST 请求
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
+
+  // 处理 CORS 预检
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: headers,
+      body: ''
+    };
   }
 
-  // 模拟后端记录“不支持者”的信息 (Log to Netlify console)
-  console.log(`[JUMPSCARE TRIGGERED] User Agent: ${event.headers['user-agent']}`);
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  }
 
-  // 返回恶搞的“诅咒”数据
   return {
     statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    },
+    headers: { ...headers, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       status: "CRITICAL_FAILURE",
       message: "SYSTEM_LOCK_INITIATED",

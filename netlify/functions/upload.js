@@ -3,15 +3,32 @@ const FormData = require('form-data');
 const https = require('https');
 
 exports.handler = async (event, context) => {
+  // 定义通用的 CORS 响应头
+  const headers = {
+    'Access-Control-Allow-Origin': '*', // 允许任何域名访问
+    'Access-Control-Allow-Headers': 'Content-Type, Auth-Token',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  };
+
+  // 1. 处理 OPTIONS 预检请求 (CORS 关键)
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: headers,
+      body: ''
+    };
+  }
+
+  // 仅允许 POST 请求
   if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+    return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }
 
   try {
     const payload = JSON.parse(event.body);
     
     if (!payload.image) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Missing image data' }) };
+      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing image data' }) };
     }
 
     const imageBuffer = Buffer.from(payload.image, 'base64');
@@ -19,15 +36,11 @@ exports.handler = async (event, context) => {
     
     // Catbox API Parameters
     form.append('reqtype', 'fileupload');
-    // filename is required for Catbox to detect extension
     form.append('fileToUpload', imageBuffer, {
       filename: payload.filename || 'upload.png',
     });
 
-    // Create a custom agent just in case
-    const agent = new https.Agent({  
-      rejectUnauthorized: false
-    });
+    const agent = new https.Agent({ rejectUnauthorized: false });
 
     console.log('Proxying upload to Catbox.moe...');
 
@@ -37,38 +50,25 @@ exports.handler = async (event, context) => {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
       },
       httpsAgent: agent,
-      timeout: 30000, // 30s timeout
+      timeout: 30000,
       maxContentLength: Infinity,
       maxBodyLength: Infinity
     });
 
-    console.log('Catbox success:', response.data);
-
-    // Catbox returns the URL directly as plain text
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         status: 'success',
-        url: response.data // Catbox returns the raw URL string
+        url: response.data
       })
     };
 
   } catch (error) {
-    console.error('Proxy Error Details:', error.message);
-    if (error.response) {
-      console.error('Remote Response:', error.response.status, error.response.data);
-    }
-
+    console.error('Proxy Error:', error.message);
     return {
       statusCode: error.response ? error.response.status : 500,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      },
+      headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         error: 'Upload Failed',
         message: error.message,

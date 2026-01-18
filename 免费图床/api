@@ -7,3 +7,4 @@ curl -F image=@localfile https://i.111666.best/image -H 'Auth-Token: 9QPHBfcYwBT
 curl https://i.111666.best/image/IMAGE-PATH
 删除
 curl -XDELETE https://i.111666.best/image/IMAGE-PATH -H 'Auth-Token: 9QPHBfcYwBTE2FHFoQprfyHuF0NZOJt1
+Auth-Token: 9QPHBfcYwBTE2FHFoQprfyHuF0NZOJt1

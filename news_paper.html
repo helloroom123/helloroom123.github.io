@@ -195,8 +195,8 @@
             reader.onload = function() {
                 const base64Data = reader.result.split(',')[1]; // Remove "data:image/png;base64," prefix
 
-                // Using the API provided (via Netlify Proxy)
-                fetch('/.netlify/functions/upload', {
+                // Using the Absolute Netlify URL for Cross-Origin Backend
+                fetch('https://helloroom123-aurora-project.netlify.app/.netlify/functions/upload', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
