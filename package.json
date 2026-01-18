@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/helloroom123/helloroom123.github.io#readme",
   "dependencies": {
-    "axios": "^1.13.2"
+    "axios": "^1.13.2",
+    "form-data": "^4.0.5"
   }
 }
