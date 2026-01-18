@@ -546,26 +546,73 @@
 
         function handleFanartSubmit(e) {
             e.preventDefault();
-            // Simulation
+            
             const btn = e.target.querySelector('.submit-btn');
+            const fileInput = e.target.querySelector('input[type="file"]');
             const originalText = btn.innerText;
             
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('请选择一张图片 / Please select an image.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+            
+            // UI Loading State
             btn.innerText = 'UPLOADING...';
             btn.disabled = true;
 
-            setTimeout(() => {
+            // Using the API provided
+            fetch('https://i.111666.best/image', {
+                method: 'POST',
+                headers: {
+                    'Auth-Token': 'AuroraFanartUpload_' + Math.random().toString(36).substr(2, 9)
+                },
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text().then(text => {
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            return { src: text }; // Fallback if plain text URL
+                        }
+                    });
+                }
+                throw new Error('Upload failed: ' + response.status);
+            })
+            .then(data => {
+                console.log('Upload success:', data);
                 btn.innerText = 'SUCCESS!';
                 btn.style.background = '#000';
                 
+                // Try to get URL from common response formats
+                const imgUrl = data.src || data.url || data.data?.url || (typeof data === 'string' ? data : 'Unknown URL');
+
                 setTimeout(() => {
-                    alert('感谢投稿！您的作品已发送至审核队列。\nThank you for your submission!');
+                    alert('感谢投稿！图片已上传。\nThank you! Image uploaded.\nURL: ' + imgUrl);
                     toggleSidebar();
                     e.target.reset();
                     btn.innerText = originalText;
                     btn.disabled = false;
                     btn.style.background = '';
                 }, 500);
-            }, 1500);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.innerText = 'FAILED';
+                btn.style.background = 'red';
+                alert('上传失败，请稍后重试。\nUpload failed. Please try again later.');
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 1000);
+            });
         }
     </script>
 </body>
