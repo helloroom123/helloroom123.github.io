@@ -768,5 +768,52 @@
             document.head.appendChild(style);
         }
     </script>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase.js';
+
+        async function loadHomeNews() {
+            const { data, error } = await supabase
+                .from('news_articles')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            if (data && data.length > 0) {
+                const container = document.querySelector('#news .qa-container');
+                // Clear static content
+                container.innerHTML = '';
+                
+                data.forEach(news => {
+                    const dateObj = new Date(news.created_at);
+                    // Format: 2026.01.18
+                    const dateStr = dateObj.getFullYear() + '.' + 
+                                   String(dateObj.getMonth() + 1).padStart(2, '0') + '.' + 
+                                   String(dateObj.getDate()).padStart(2, '0');
+                    
+                    const item = document.createElement('div');
+                    item.className = 'qa-item';
+                    item.style.cssText = 'display: flex; justify-content: space-between; align-items: center;';
+                    item.innerHTML = `
+                        <div style="flex: 1;">
+                            <span style="color: var(--accent-color); font-weight: 900; margin-right: 15px;">${dateStr}</span>
+                            <span style="background: #000; color: #fff; padding: 2px 8px; font-size: 12px; margin-right: 10px;">${news.category}</span>
+                            <a href="news_paper.html" style="text-decoration: none; color: #000; font-weight: 700;">${news.title}</a>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+                
+                // Add "More" link
+                const moreLink = document.createElement('div');
+                moreLink.style.textAlign = 'right';
+                moreLink.style.marginTop = '10px';
+                moreLink.innerHTML = '<a href="news_paper.html" style="color:#000;font-size:0.9rem;">View More ></a>';
+                container.appendChild(moreLink);
+            }
+        }
+        
+        loadHomeNews();
+    </script>
 </body>
 </html>

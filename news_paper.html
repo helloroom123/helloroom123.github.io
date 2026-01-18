@@ -62,11 +62,49 @@
             console.log('News data received:', data);
 
             if (data && data.length > 0) {
+                // 1. Populate Ticker
+                const tickerContent = document.getElementById('ticker-content');
+                if (tickerContent) {
+                    const titles = data.slice(0, 5).map(n => `<span>[${n.category || 'NEWS'}] ${n.title}</span>`).join('<span class="ticker-sep">+++</span>');
+                    // Duplicate content to ensure smooth scrolling loop
+                    tickerContent.innerHTML = titles + '<span class="ticker-sep">+++</span>' + titles + '<span class="ticker-sep">+++</span>' + titles;
+                }
+
                 const container = document.querySelector('.paper-grid');
-                // Insert after the Hero article (first child)
-                const hero = container.firstElementChild;
+                // The static hero is the first child
+                const staticHero = container.querySelector('.hero-article');
                 
-                data.forEach(news => {
+                // 2. Check for HEADLINE
+                const headlineNews = data.find(n => n.category === 'HEADLINE');
+                
+                // 3. Filter out the headline from the regular list if it exists
+                // If no headline found, we show all news below static hero
+                const regularNews = headlineNews ? data.filter(n => n.id !== headlineNews.id) : data;
+
+                // 4. Update Hero if HEADLINE exists
+                if (headlineNews && staticHero) {
+                     const dateObj = new Date(headlineNews.created_at);
+                     const date = isNaN(dateObj.getTime()) ? '刚刚' : dateObj.toLocaleDateString('zh-CN');
+                     
+                     // Replace static content with dynamic headline
+                     staticHero.innerHTML = `
+                        <div class="article-inner">
+                            <span class="article-tag" style="background:#e60012; color:#fff;">头条 / HEADLINE</span>
+                            <h2>${headlineNews.title}</h2>
+                            <div class="article-img">
+                                ${headlineNews.image_url ? `<img src="${headlineNews.image_url}" class="hero-image" style="width:100%; object-fit:cover;">` : ''}
+                                <span class="caption">${date} · 编辑精选</span>
+                            </div>
+                            <div class="article-content">
+                                <p class="drop-cap" style="font-family:serif;">${headlineNews.content.charAt(0)}</p>
+                                <p>${headlineNews.content.slice(1)}</p>
+                            </div>
+                        </div>
+                     `;
+                }
+
+                // 5. Render remaining news
+                regularNews.forEach(news => {
                     const article = document.createElement('article');
                     article.className = 'paper-article';
                     
@@ -90,10 +128,14 @@
                     `;
                     
                     // Insert dynamic news after hero
-                    hero.after(article);
+                    // Note: If we replaced hero content, staticHero element is still there, just with new innerHTML
+                    // So we can still use it as reference point
+                    staticHero.after(article);
                 });
             } else {
                 console.log('No news found.');
+                const tickerContent = document.getElementById('ticker-content');
+                if(tickerContent) tickerContent.innerHTML = "暂无最新消息 / No News Available";
             }
         }
 
@@ -163,6 +205,13 @@
             <div class="paper-subtitle">极光计划每日新闻 · 记录共创点滴</div>
             <div class="header-line"></div>
         </header>
+
+        <!-- Breaking News Ticker -->
+        <div class="news-ticker">
+            <div class="ticker-content" id="ticker-content">
+                Loading latest news...
+            </div>
+        </div>
 
         <!-- Grid Content -->
         <div class="paper-grid">
