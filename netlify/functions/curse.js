@@ -4,6 +4,8 @@ const ALLOWED_ORIGINS = [
   'https://helloroom123-aurora-project.netlify.app'
 ];
 
+const { checkRateLimit } = require('./utils/ratelimit');
+
 const getCorsHeaders = (origin) => {
   let allowOrigin = 'null';
   if (origin) {
@@ -41,6 +43,18 @@ exports.handler = async (event, context) => {
 
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  }
+
+  // 速率限制
+  const clientIp = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'] || 'unknown';
+  const isAllowed = await checkRateLimit(clientIp, 'curse', 10, 60); // 10 requests per minute
+
+  if (!isAllowed) {
+    return { 
+        statusCode: 429, 
+        headers, 
+        body: JSON.stringify({ error: 'Too Many Requests', message: 'You are cursed for being too annoying.' }) 
+    };
   }
 
   // 静态内容直接返回，无需复杂计算

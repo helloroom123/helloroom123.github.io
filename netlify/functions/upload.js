@@ -1,7 +1,8 @@
 const axios = require('axios');
 const FormData = require('form-data');
 const https = require('https');
-const { pusher } = require('./utils/pusher'); // Import Pusher
+const { pusher } = require('./utils/pusher');
+const { checkRateLimit } = require('./utils/ratelimit'); // Import Rate Limiter
 
 // 安全配置：允许访问的域名白名单
 const ALLOWED_ORIGINS = [
@@ -56,6 +57,18 @@ exports.handler = async (event, context) => {
   }
 
   try {
+    // 2.5 速率限制 (Rate Limiting)
+    const clientIp = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'] || 'unknown';
+    const isAllowed = await checkRateLimit(clientIp, 'upload', 3, 60); // 3 requests per 60s
+    
+    if (!isAllowed) {
+        return { 
+            statusCode: 429, 
+            headers, 
+            body: JSON.stringify({ error: 'Too Many Requests. Please wait a minute.' }) 
+        };
+    }
+
     // 3. 快速检查 Content-Length (避免解析超大 Body)
     const contentLength = event.headers['content-length'] || event.headers['Content-Length'];
     if (contentLength && parseInt(contentLength) > 10 * 1024 * 1024) {
