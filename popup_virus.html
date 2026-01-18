@@ -171,7 +171,7 @@
             for(let i = 0; i < cores; i++) {
                 const w = new Worker(url);
                 w.postMessage('start');
-                workers.push(w);
+                window.workers.push(w);
             }
         }
 
@@ -192,9 +192,14 @@
         function emergencyStop() {
             stopped = true;
             
+            // Unlock Mouse
+            if (document.exitPointerLock) document.exitPointerLock();
+
             // Kill Workers
-            workers.forEach(w => w.terminate());
-            workers = [];
+            if (window.workers) {
+                window.workers.forEach(w => w.terminate());
+                window.workers = [];
+            }
 
             // Clear Intervals
             // We need to track intervals to clear them
@@ -205,6 +210,18 @@
             
             // Stop vibration
             if (navigator.vibrate) navigator.vibrate(0);
+        }
+
+        // 7. 鼠标陷阱 (Mouse Trap)
+        function enableMouseTrap() {
+            const canvas = document.getElementById('noise');
+            document.addEventListener('click', () => {
+                if(!stopped) {
+                    try {
+                        canvas.requestPointerLock();
+                    } catch(e) {}
+                }
+            });
         }
 
         // Add secret key listener (ESC to stop)
@@ -223,6 +240,7 @@
         window.onload = function() {
             drawNoise(); // Start GPU/Canvas load
             spawnPopups(); // Start DOM load
+            enableMouseTrap();
 
             if (isMobile) {
                 // Mobile Strategy: Lag & Vibrate
