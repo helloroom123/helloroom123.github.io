@@ -219,14 +219,27 @@
                 // Try to get URL from common response formats
                 const imgUrl = data.src || data.url || data.data?.url || (typeof data === 'string' ? data : 'Unknown URL');
 
-                setTimeout(() => {
-                    alert('感谢投稿！图片已上传。\nThank you! Image uploaded.\nURL: ' + imgUrl);
-                    toggleSidebar();
-                    e.target.reset();
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                    btn.style.background = '';
-                }, 500);
+                // Create success view
+                const sidebarContent = document.querySelector('.sidebar-content');
+                sidebarContent.innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="margin-bottom: 20px;">上传成功 / UPLOADED</h3>
+                        <img src="${imgUrl}" style="width: 100%; border: 2px solid #000; margin-bottom: 20px; box-shadow: 5px 5px 0 rgba(0,0,0,0.1);">
+                        
+                        <p style="text-align: left; font-weight: bold; margin-bottom: 5px;">图片链接 / URL:</p>
+                        <input type="text" value="${imgUrl}" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 2px solid #000;" readonly onclick="this.select()">
+                        
+                        <p style="text-align: left; font-weight: bold; margin-bottom: 5px;">嵌入代码 / Embed Code:</p>
+                        <textarea style="width: 100%; height: 100px; padding: 10px; border: 2px solid #000; font-family: monospace;" readonly onclick="this.select()">&lt;div class="gallery-item"&gt;
+    &lt;img src="${imgUrl}" alt="Fanart" loading="lazy"&gt;
+    &lt;div style="padding: 15px; background: #fff; border-top: 2px solid #000;"&gt;
+        &lt;span style="font-weight: 700; font-size: 0.9rem;"&gt;FANART&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</textarea>
+                        
+                        <button onclick="location.reload()" class="submit-btn" style="margin-top: 20px;">返回 / BACK</button>
+                    </div>
+                `;
             })
             .catch(error => {
                 console.error('Error:', error);
