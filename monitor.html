@@ -119,11 +119,57 @@
         </div>
     </div>
 
+    <!-- Chat Input Area -->
+    <div style="background:#161b22; padding:15px; border-top:1px solid #30363d; display:flex; gap:10px;">
+        <input type="text" id="chat-input" placeholder="输入消息发送至 QQ 群 (每月限3条)..." style="flex:1; background:#0d1117; border:1px solid #30363d; color:#c9d1d9; padding:10px; border-radius:4px; font-family:monospace;">
+        <button id="send-btn" style="background:#238636; color:#fff; border:none; padding:0 20px; border-radius:4px; cursor:pointer; font-weight:bold; font-family:monospace;">SEND</button>
+    </div>
+
     <script type="module">
         import { initPusher } from './assets/js/pusher.js';
 
         const terminal = document.getElementById('terminal');
         const statusDot = document.getElementById('status-dot');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // Send Logic
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            logSystem(`Sending: ${text}...`, '#8b949e');
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            try {
+                const res = await fetch('/.netlify/functions/send_msg', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    logSystem(`Message Sent! (Remaining Quota: ${data.remaining})`, 'var(--success)');
+                    chatInput.value = '';
+                } else {
+                    logSystem(`Failed: ${data.error}`, 'red');
+                }
+            } catch (err) {
+                logSystem(`Error: ${err.message}`, 'red');
+            } finally {
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
 
         // Init Pusher
         // Note: Using the same key as other pages
