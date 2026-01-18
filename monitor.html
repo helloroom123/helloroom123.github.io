@@ -148,7 +148,7 @@
             sendBtn.disabled = true;
 
             try {
-                const res = await fetch('https://helloroom123-aurora-project.netlify.app/.netlify/functions/sendmsg', {
+                const res = await fetch('/api/send_msg', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text })
