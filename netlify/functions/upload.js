@@ -2,7 +2,8 @@ const axios = require('axios');
 const FormData = require('form-data');
 const https = require('https');
 const { pusher } = require('./utils/pusher');
-const { checkRateLimit } = require('./utils/ratelimit'); // Import Rate Limiter
+const { checkRateLimit } = require('./utils/ratelimit');
+const { supabase } = require('./utils/db'); // Import Supabase Client
 
 // 安全配置：允许访问的域名白名单
 const ALLOWED_ORIGINS = [
@@ -113,11 +114,31 @@ exports.handler = async (event, context) => {
       maxBodyLength: Infinity
     });
 
-    // 7. 触发 Pusher 实时通知 (非阻塞)
+    const imageUrl = response.data;
+
+    // 7. 写入 Supabase (持久化存储)
+    try {
+        const { error: dbError } = await supabase.from('fanart_gallery').insert([{
+            image_url: imageUrl,
+            title: payload.title || 'Untitled Upload',
+            author: payload.author || 'Anonymous',
+            created_at: new Date().toISOString(),
+            is_approved: true
+        }]);
+        
+        if (dbError) {
+            console.error("DB Insert Failed:", dbError);
+            // 不阻断流程，仅记录错误
+        }
+    } catch (dbErr) {
+        console.error("DB Exception:", dbErr);
+    }
+
+    // 8. 触发 Pusher 实时通知 (非阻塞)
     try {
         await pusher.trigger("aurora-updates", "new-fanart", {
             message: "有人提交了新的 Fanart 作品！",
-            imageUrl: response.data,
+            imageUrl: imageUrl,
             timestamp: new Date().toISOString()
         });
     } catch (pusherErr) {
@@ -129,7 +150,7 @@ exports.handler = async (event, context) => {
       headers: { ...headers, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         status: 'success',
-        url: response.data
+        url: imageUrl
       })
     };
 
