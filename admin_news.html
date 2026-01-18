@@ -189,7 +189,8 @@
             const base64Data = reader.result.split(',')[1];
 
             try {
-                const res = await fetch('/.netlify/functions/upload', {
+                // Cloudflare Pages Function
+                const res = await fetch('/api/upload', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ image: base64Data, filename: file.name })
