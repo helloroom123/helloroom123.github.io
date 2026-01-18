@@ -1,4 +1,3 @@
-// 安全配置：允许访问的域名白名单
 const ALLOWED_ORIGINS = [
   'https://aurora-project.pages.dev',
   'https://helloroom123.github.io',
@@ -6,37 +5,36 @@ const ALLOWED_ORIGINS = [
 ];
 
 const getCorsHeaders = (origin) => {
-  if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1') || origin.endsWith('--helloroom123-aurora-project.netlify.app'))) {
-    return {
-      'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS'
-    };
-  }
-  if (ALLOWED_ORIGINS.includes(origin)) {
-    return {
-      'Access-Control-Allow-Origin': origin,
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS'
-    };
+  let allowOrigin = 'null';
+  if (origin) {
+    if (origin.includes('localhost') || origin.includes('127.0.0.1') || origin.endsWith('--helloroom123-aurora-project.netlify.app')) {
+      allowOrigin = origin;
+    } else if (ALLOWED_ORIGINS.includes(origin)) {
+      allowOrigin = origin;
+    }
   }
   return {
-    'Access-Control-Allow-Origin': 'null',
+    'Access-Control-Allow-Origin': allowOrigin,
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Max-Age': '86400' // 缓存 24h
   };
 };
 
 exports.handler = async (event, context) => {
+  // 极速处理预检
+  if (event.httpMethod === 'OPTIONS') {
+    const origin = event.headers.origin || event.headers.Origin;
+    return {
+      statusCode: 204,
+      headers: getCorsHeaders(origin),
+      body: ''
+    };
+  }
+
   const origin = event.headers.origin || event.headers.Origin;
   const headers = getCorsHeaders(origin);
 
-  // 1. 预检
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
-  }
-
-  // 2. 鉴权
   if (headers['Access-Control-Allow-Origin'] === 'null') {
     return { statusCode: 403, headers, body: JSON.stringify({ error: 'Forbidden' }) };
   }
@@ -45,6 +43,7 @@ exports.handler = async (event, context) => {
     return { statusCode: 405, headers, body: 'Method Not Allowed' };
   }
 
+  // 静态内容直接返回，无需复杂计算
   return {
     statusCode: 200,
     headers: { ...headers, 'Content-Type': 'application/json' },
