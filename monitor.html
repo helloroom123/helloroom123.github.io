@@ -104,7 +104,10 @@
 <body>
     <header>
         <h1><span class="live-indicator" id="status-dot"></span> Aurora Network Monitor</h1>
-        <div style="font-size: 0.8rem; color: #8b949e;">Target: QQ Group Relay</div>
+        <div style="display:flex; gap:20px; align-items:center;">
+            <div style="font-size: 0.8rem; color: #8b949e;">Target: QQ Group Relay</div>
+            <a href="index.html" style="color:var(--accent); text-decoration:none; font-size:0.9rem; border:1px solid var(--accent); padding:2px 8px; border-radius:4px;">EXIT</a>
+        </div>
     </header>
 
     <div id="terminal">
@@ -168,8 +171,12 @@
                 .replace(/>/g, '&gt;')
                 .replace(/\[CQ:image,file=[^,]+,url=([^\]]+)\]/g, '<br><img src="$1"><br>');
 
+            const avatarUrl = (data.avatar && data.avatar !== 'undefined' && data.avatar !== 'null') 
+                ? data.avatar 
+                : 'assets/img/avatar/penguin.png';
+
             div.innerHTML = `
-                <img src="${data.avatar}" class="avatar" loading="lazy">
+                <img src="${avatarUrl}" class="avatar" loading="lazy" onerror="this.src='assets/img/avatar/penguin.png'">
                 <div class="content">
                     <div class="meta">
                         <span class="user-name">${data.sender.nickname || data.sender.user_id}</span>
