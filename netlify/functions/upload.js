@@ -1,6 +1,7 @@
 const axios = require('axios');
 const FormData = require('form-data');
 const https = require('https');
+const { pusher } = require('./utils/pusher'); // Import Pusher
 
 // 安全配置：允许访问的域名白名单
 const ALLOWED_ORIGINS = [
@@ -98,6 +99,17 @@ exports.handler = async (event, context) => {
       maxContentLength: Infinity,
       maxBodyLength: Infinity
     });
+
+    // 7. 触发 Pusher 实时通知 (非阻塞)
+    try {
+        await pusher.trigger("aurora-updates", "new-fanart", {
+            message: "有人提交了新的 Fanart 作品！",
+            imageUrl: response.data,
+            timestamp: new Date().toISOString()
+        });
+    } catch (pusherErr) {
+        console.error("Pusher trigger failed:", pusherErr);
+    }
 
     return {
       statusCode: 200,
