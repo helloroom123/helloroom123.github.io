@@ -2,9 +2,12 @@
 <html lang="zh-CN">
 <head>
     <script>
-        // Redirect logic: GitHub Pages -> Cloudflare Pages
-        if (window.location.hostname === 'helloroom123.github.io') {
-            window.location.href = 'https://aurora-project.pages.dev' + window.location.pathname + window.location.search + window.location.hash;
+        // Redirect logic: Force everything to Cloudflare Pages (except localhost)
+        const targetHost = 'aurora-project.pages.dev';
+        if (window.location.hostname !== targetHost && 
+            window.location.hostname !== 'localhost' && 
+            window.location.hostname !== '127.0.0.1') {
+            window.location.href = 'https://' + targetHost + window.location.pathname + window.location.search + window.location.hash;
         }
     </script>
     <meta charset="UTF-8">
