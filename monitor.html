@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Live Monitor - 群组实时监控</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --term-color: #161b22;
+            --text-color: #c9d1d9;
+            --accent: #58a6ff;
+            --success: #238636;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        header {
+            background: var(--term-color);
+            padding: 15px 20px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        h1 { font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .live-indicator {
+            width: 10px; height: 10px; background: red; border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        .live-indicator.active { background: var(--success); }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        #terminal {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* Message Log Style */
+        .log-entry {
+            display: flex;
+            gap: 15px;
+            padding: 10px;
+            border-left: 3px solid #30363d;
+            background: rgba(255,255,255,0.02);
+            animation: slideIn 0.3s ease-out;
+        }
+        .log-entry:hover { background: rgba(255,255,255,0.05); border-left-color: var(--accent); }
+        
+        .avatar {
+            width: 40px; height: 40px; border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+        .content { flex: 1; }
+        .meta {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-bottom: 5px;
+            display: flex;
+            gap: 10px;
+        }
+        .user-name { color: var(--accent); font-weight: bold; }
+        .msg-text { 
+            font-size: 0.95rem; 
+            white-space: pre-wrap; 
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        .msg-text img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 4px;
+            margin-top: 5px;
+            border: 1px solid #30363d;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><span class="live-indicator" id="status-dot"></span> Aurora Network Monitor</h1>
+        <div style="font-size: 0.8rem; color: #8b949e;">Target: QQ Group Relay</div>
+    </header>
+
+    <div id="terminal">
+        <div class="log-entry" style="border-left-color: var(--success);">
+            <div class="content">
+                <div class="meta">SYSTEM</div>
+                <div class="msg-text">Connecting to secure frequency... Waiting for incoming signals.</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initPusher } from './assets/js/pusher.js';
+
+        const terminal = document.getElementById('terminal');
+        const statusDot = document.getElementById('status-dot');
+
+        // Init Pusher
+        // Note: Using the same key as other pages
+        const pusher = initPusher();
+        
+        // Subscribe to Monitor Channel
+        const channel = pusher.subscribe('aurora-monitor');
+
+        pusher.connection.bind('connected', () => {
+            statusDot.classList.add('active');
+            logSystem('Connection Established. Listening on [aurora-monitor]...');
+        });
+
+        pusher.connection.bind('disconnected', () => {
+            statusDot.classList.remove('active');
+            logSystem('Connection Lost. Reconnecting...', 'red');
+        });
+
+        // Listen for messages
+        channel.bind('group-message', (data) => {
+            addMessage(data);
+        });
+
+        function logSystem(text, color = 'var(--success)') {
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            div.style.borderLeftColor = color;
+            div.innerHTML = `
+                <div class="content">
+                    <div class="meta">SYSTEM [${new Date().toLocaleTimeString()}]</div>
+                    <div class="msg-text" style="color:${color}">${text}</div>
+                </div>
+            `;
+            append(div);
+        }
+
+        function addMessage(data) {
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            
+            // Clean up message (NapCat might send CQ codes)
+            // Simple replace for images to HTML img tags
+            let displayMsg = data.message
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\[CQ:image,file=[^,]+,url=([^\]]+)\]/g, '<br><img src="$1"><br>');
+
+            div.innerHTML = `
+                <img src="${data.avatar}" class="avatar" loading="lazy">
+                <div class="content">
+                    <div class="meta">
+                        <span class="user-name">${data.sender.nickname || data.sender.user_id}</span>
+                        <span>[UID: ${data.sender.user_id}]</span>
+                        <span>${data.time}</span>
+                    </div>
+                    <div class="msg-text">${displayMsg}</div>
+                </div>
+            `;
+            append(div);
+        }
+
+        function append(element) {
+            terminal.appendChild(element);
+            // Auto scroll to bottom
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Keep DOM size manageable (max 100 messages)
+            if (terminal.children.length > 100) {
+                terminal.removeChild(terminal.firstElementChild);
+            }
+        }
+    </script>
+</body>
+</html>
