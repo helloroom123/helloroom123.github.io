@@ -5,24 +5,44 @@
         (function() {
             const currentHost = window.location.hostname;
             const cfHost = 'aurora-project.pages.dev';
-            if (currentHost === cfHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
-            const testImg = new Image();
-            const timeout = 2000; 
-            let jumped = false;
-            testImg.onload = function() {
-                if (jumped) return;
-                window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
-            };
-            setTimeout(function() {
-                jumped = true;
-                document.addEventListener('DOMContentLoaded', function() {
-                    const notice = document.createElement('div');
-                    notice.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#ffcc00;color:#000;text-align:center;padding:5px;z-index:999999;font-size:12px;';
-                    notice.innerHTML = '您当前正在访问备用线路 (GitHub/Netlify)。<a href="https://' + cfHost + '" style="color:#000;font-weight:bold;">点击尝试主线路</a>';
-                    document.body.prepend(notice);
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
                 });
-            }, timeout);
-            testImg.src = 'https://' + cfHost + '/assets/img/avatar/penguin.png?t=' + Date.now();
+            }
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
         })();
     </script>
     <meta charset="UTF-8">
