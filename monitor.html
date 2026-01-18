@@ -6,6 +6,7 @@
     <title>Aurora Live Monitor - 群组实时监控</title>
     <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="assets/js/config.js"></script>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -148,7 +149,7 @@
             sendBtn.disabled = true;
 
             try {
-                const res = await fetch('/api/send_msg', {
+                const res = await fetch(CONFIG.getApiBaseUrl() + '/api/send_msg', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: text })

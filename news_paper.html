@@ -5,23 +5,29 @@
         (function() {
             const currentHost = window.location.hostname;
             const cfHost = 'aurora-project.pages.dev';
-            if (currentHost === cfHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
             const testImg = new Image();
             const timeout = 2000; 
-            let jumped = false;
+            let redirected = false;
+
             testImg.onload = function() {
-                if (jumped) return;
+                if (redirected) return;
+                redirected = true;
                 window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
             };
-            setTimeout(function() {
-                jumped = true;
-                document.addEventListener('DOMContentLoaded', function() {
-                    const notice = document.createElement('div');
-                    notice.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#ffcc00;color:#000;text-align:center;padding:5px;z-index:999999;font-size:12px;';
-                    notice.innerHTML = '您当前正在访问备用线路 (GitHub/Netlify)。<a href="https://' + cfHost + '" style="color:#000;font-weight:bold;">点击尝试主线路</a>';
-                    document.body.prepend(notice);
-                });
-            }, timeout);
+
+            function fallback() {
+                if (redirected) return;
+                redirected = true;
+                window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+            }
+
+            testImg.onerror = fallback;
+            setTimeout(fallback, timeout);
+
             testImg.src = 'https://' + cfHost + '/assets/img/avatar/penguin.png?t=' + Date.now();
         })();
     </script>
@@ -30,6 +36,7 @@
     <title>极光计划每日新闻 Aurora Daily - 记录共创点滴</title>
     <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
     <link rel="stylesheet" href="style.css?v=8">
+    <script src="assets/js/config.js"></script>
 </head>
 <body class="newspaper-body">
     
@@ -340,7 +347,7 @@
                 const base64Data = reader.result.split(',')[1]; // Remove "data:image/png;base64," prefix
 
                 // Using Cloudflare Pages Functions
-                fetch('/api/upload', {
+                fetch(CONFIG.getApiBaseUrl() + '/api/upload', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

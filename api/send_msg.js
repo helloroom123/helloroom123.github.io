@@ -12,31 +12,35 @@ const redis = new Redis({
   token: process.env.UPSTASH_REDIS_REST_TOKEN || "AZBXAAIncDFhMzQ2ZDAyOGY4N2Y0NzlhODhkYjI2NDFiNTdkMTNiZXAxMzY5NTE"
 });
 
-exports.handler = async (event, context) => {
+module.exports = async (req, res) => {
   // CORS
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
-  };
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
 
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers, body: '' };
-  if (event.httpMethod !== 'POST') return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
   try {
-    const payload = JSON.parse(event.body);
+    let payload = req.body;
+    if (typeof payload === 'string') {
+        try { payload = JSON.parse(payload); } catch(e) {}
+    }
+
     const message = payload.message;
     
     if (!message || message.trim().length === 0) {
-        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message cannot be empty' }) };
+        return res.status(400).json({ error: 'Message cannot be empty' });
     }
     
     if (message.length > 50) {
-        return { statusCode: 400, headers, body: JSON.stringify({ error: 'Message too long (max 50 chars)' }) };
+        return res.status(400).json({ error: 'Message too long (max 50 chars)' });
     }
 
     // IP Rate Limit
-    const ip = event.headers['x-nf-client-connection-ip'] || event.headers['client-ip'] || 'unknown';
+    const clientIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+    const ip = Array.isArray(clientIp) ? clientIp[0] : clientIp.split(',')[0].trim();
+
     const now = new Date();
     const key = `rate:msg:${now.getFullYear()}-${now.getMonth() + 1}:${ip}`;
     
@@ -49,11 +53,7 @@ exports.handler = async (event, context) => {
     }
 
     if (currentUsage > 3) {
-        return { 
-            statusCode: 429, 
-            headers, 
-            body: JSON.stringify({ error: `Monthly limit exceeded (${currentUsage - 1}/3)` }) 
-        };
+        return res.status(429).json({ error: `Monthly limit exceeded (${currentUsage - 1}/3)` });
     }
 
     // Insert into Supabase Outbox
@@ -65,14 +65,10 @@ exports.handler = async (event, context) => {
 
     if (dbError) throw dbError;
 
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({ success: true, remaining: 3 - currentUsage })
-    };
+    return res.status(200).json({ success: true, remaining: 3 - currentUsage });
 
   } catch (error) {
     console.error("Send Msg Error:", error);
-    return { statusCode: 500, headers, body: JSON.stringify({ error: error.message }) };
+    return res.status(500).json({ error: error.message });
   }
 };

@@ -6,48 +6,38 @@
         (function() {
             const currentHost = window.location.hostname;
             const cfHost = 'aurora-project.pages.dev';
-            const ghHost = 'helloroom123.github.io';
-            const netlifyHost = 'helloroom123-aurora-project.netlify.app';
+            const appHost = 'helloroom123-github-io.vercel.app';
 
-            // 如果当前已经在 Cloudflare，无需操作
-            if (currentHost === cfHost || currentHost === 'localhost' || currentHost === '127.0.0.1') {
+            // If already on target domains or localhost, stop.
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') {
                 return;
             }
 
-            // 定义检测图片 (使用 Cloudflare 上的 favicon，且加上时间戳防缓存)
             const testImg = new Image();
-            const start = Date.now();
-            const timeout = 2000; // 2秒超时
-            let jumped = false;
+            const timeout = 2000; // 2s threshold for "fast"
+            let redirected = false;
 
+            // Success handler: Cloudflare is fast and safe
             testImg.onload = function() {
-                if (jumped) return;
-                // 连接成功且速度尚可，执行跳转
-                console.log('Cloudflare is accessible, redirecting...');
+                if (redirected) return;
+                redirected = true;
+                console.log('Network to dev (CF) is good. Redirecting to dev...');
                 window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
             };
 
-            testImg.onerror = function() {
-                // 加载失败（可能跨域或404，但也说明域名解析通了），也可以尝试跳转，或者保守点不跳
-                // 这里保守点，不仅是error，只有onload才跳
-                console.log('Cloudflare connection might be unstable.');
-            };
+            // Failure handler: Fallback to App (Vercel)
+            function fallback() {
+                if (redirected) return;
+                redirected = true;
+                console.log('Network to dev (CF) is slow/blocked. Redirecting to app (Vercel)...');
+                window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+            }
 
-            // 设置超时
-            setTimeout(function() {
-                jumped = true;
-                console.log('Cloudflare connection timed out. Staying on backup mirror.');
-                // 可以在这里显示一个“当前处于备用线路”的提示
-                document.addEventListener('DOMContentLoaded', function() {
-                    const notice = document.createElement('div');
-                    notice.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#ffcc00;color:#000;text-align:center;padding:5px;z-index:999999;font-size:12px;';
-                    notice.innerHTML = '您当前正在访问备用线路 (GitHub/Netlify)，部分功能可能受限。<a href="https://' + cfHost + '" style="color:#000;font-weight:bold;">点击尝试主线路</a>';
-                    document.body.prepend(notice);
-                });
-            }, timeout);
+            testImg.onerror = fallback;
+            setTimeout(fallback, timeout);
 
-            // 开始检测
-            testImg.src = 'https://' + cfHost + '/assets/img/avatar/penguin.png?t=' + start;
+            // Start test
+            testImg.src = 'https://' + cfHost + '/assets/img/avatar/penguin.png?t=' + Date.now();
         })();
     </script>
     <meta charset="UTF-8">
@@ -55,6 +45,7 @@
     <title>SINGABLE CHARACTER 舒苒 Aurora OFFICIAL SITE</title>
     <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
     <link rel="stylesheet" href="style.css?v=6">
+    <script src="assets/js/config.js"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
     <style>
         /* 内联Overlay样式以防CSS加载延迟 */
@@ -489,7 +480,7 @@
             // 2. Call Backend to "Curse" the user (and get chaos strings)
             let chaosMessages = ["不支持是不行的", "System Error", "Aurora Warning"];
             try {
-                const res = await fetch('https://helloroom123-aurora-project.netlify.app/.netlify/functions/curse', { method: 'POST' });
+                const res = await fetch(CONFIG.getApiBaseUrl() + '/api/curse', { method: 'POST' });
                 if (res.ok) {
                     const data = await res.json();
                     if (data.payload) chaosMessages = data.payload;
@@ -639,7 +630,7 @@
                 const base64Data = reader.result.split(',')[1]; // Remove "data:image/png;base64," prefix
 
                 // Using Cloudflare Pages Functions
-                fetch('/api/upload', {
+                fetch(CONFIG.getApiBaseUrl() + '/api/upload', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
