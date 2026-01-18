@@ -2,13 +2,28 @@
 <html lang="zh-CN">
 <head>
     <script>
-        // Redirect logic: Force everything to Cloudflare Pages (except localhost)
-        const targetHost = 'aurora-project.pages.dev';
-        if (window.location.hostname !== targetHost && 
-            window.location.hostname !== 'localhost' && 
-            window.location.hostname !== '127.0.0.1') {
-            window.location.href = 'https://' + targetHost + window.location.pathname + window.location.search + window.location.hash;
-        }
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            if (currentHost === cfHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+            const testImg = new Image();
+            const timeout = 2000; 
+            let jumped = false;
+            testImg.onload = function() {
+                if (jumped) return;
+                window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+            };
+            setTimeout(function() {
+                jumped = true;
+                document.addEventListener('DOMContentLoaded', function() {
+                    const notice = document.createElement('div');
+                    notice.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:#ffcc00;color:#000;text-align:center;padding:5px;z-index:999999;font-size:12px;';
+                    notice.innerHTML = '您当前正在访问备用线路 (GitHub/Netlify)。<a href="https://' + cfHost + '" style="color:#000;font-weight:bold;">点击尝试主线路</a>';
+                    document.body.prepend(notice);
+                });
+            }, timeout);
+            testImg.src = 'https://' + cfHost + '/assets/img/avatar/penguin.png?t=' + Date.now();
+        })();
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
