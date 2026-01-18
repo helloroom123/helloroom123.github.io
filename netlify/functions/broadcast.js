@@ -1,7 +1,18 @@
-const { pusher } = require('./utils/pusher');
+const Pusher = require('pusher');
+
+// 复用硬编码的 Key 以防环境变量未生效 (仅用于调试，实际应走环境变量)
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID || "2103443",
+  key: process.env.PUSHER_KEY || "2c6a6d2d91a43714d013",
+  secret: process.env.PUSHER_SECRET || "701702118a29427eff49",
+  cluster: process.env.PUSHER_CLUSTER || "mt1",
+  useTLS: true
+});
+
+const SECRET_KEY = 'Aurora2026ProjectGroupKey';
 
 exports.handler = async (event, context) => {
-  // CORS Headers
+  // CORS 处理
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, X-Bot-Secret',
@@ -17,29 +28,32 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Auth Check
+    // 鉴权
     const secret = event.headers['x-bot-secret'] || event.headers['X-Bot-Secret'];
-    // Hardcoded key for simplicity, matches admin key
-    if (secret !== 'Aurora2026ProjectGroupKey') {
+    if (secret !== SECRET_KEY) {
+        console.warn("Unauthorized access attempt");
         return { statusCode: 403, headers, body: JSON.stringify({ error: 'Forbidden' }) };
     }
 
-    const payload = JSON.parse(event.body);
-    
-    // Validate payload
-    if (!payload.message || !payload.sender) {
-        return { statusCode: 400, headers, body: 'Missing fields' };
+    let payload;
+    try {
+        payload = JSON.parse(event.body);
+    } catch (e) {
+        return { statusCode: 400, headers, body: 'Invalid JSON' };
     }
 
-    // Trigger Pusher
+    console.log("Broadcasting message from:", payload.sender ? payload.sender.nickname : 'Unknown');
+
+    // 触发 Pusher
     // Channel: aurora-monitor
     // Event: group-message
     await pusher.trigger("aurora-monitor", "group-message", {
         group_id: payload.group_id,
-        sender: payload.sender, // Expecting { nickname, user_id, card }
-        message: payload.message,
-        avatar: `https://q1.qlogo.cn/g?b=qq&nk=${payload.sender.user_id}&s=100`,
-        time: new Date().toLocaleTimeString('zh-CN')
+        sender: payload.sender || { nickname: 'Unknown', user_id: 0 },
+        message: payload.message || '',
+        avatar: payload.sender ? `https://q1.qlogo.cn/g?b=qq&nk=${payload.sender.user_id}&s=100` : '',
+        time: new Date().toLocaleTimeString('zh-CN'),
+        raw: payload // 方便调试
     });
 
     return {
