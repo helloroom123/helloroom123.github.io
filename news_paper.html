@@ -33,6 +33,56 @@
 </head>
 <body class="newspaper-body">
     
+    <script type="module">
+        import { supabase } from './assets/js/supabase.js';
+
+        // Load News from Supabase
+        async function loadDynamicNews() {
+            const { data, error } = await supabase
+                .from('news_articles')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(5);
+
+            if (error) {
+                console.error('Error loading news:', error);
+                return;
+            }
+
+            if (data && data.length > 0) {
+                const container = document.querySelector('.paper-grid');
+                // Insert after the Hero article (first child)
+                const hero = container.firstElementChild;
+                
+                data.forEach(news => {
+                    const article = document.createElement('article');
+                    article.className = 'paper-article';
+                    // Randomly assign grid style for variety
+                    // Simple logic: default box
+                    
+                    const date = new Date(news.created_at).toLocaleDateString('zh-CN');
+                    
+                    article.innerHTML = `
+                        <div class="article-inner">
+                            <span class="article-tag">${news.category}</span>
+                            <h3>${news.title}</h3>
+                            ${news.image_url ? `<img src="${news.image_url}" style="width:100%;height:150px;object-fit:cover;margin-bottom:10px;">` : ''}
+                            <div class="article-content">
+                                <p style="font-size:0.9rem; line-height:1.6;">${news.content}</p>
+                            </div>
+                            <small style="margin-top:auto;padding-top:10px;color:#999;">${date}</small>
+                        </div>
+                    `;
+                    
+                    // Insert dynamic news after hero
+                    hero.after(article);
+                });
+            }
+        }
+
+        loadDynamicNews();
+    </script>
+
     <!-- Sidebar Overlay -->
     <div id="sidebar-overlay">
         <div class="sidebar-header">
@@ -104,17 +154,26 @@
             <article class="paper-article hero-article">
                 <div class="article-inner">
                     <span class="article-tag">头条 / HEADLINE</span>
-                    <h2>Aurora 官方网站正式上线！</h2>
+                    <h2>Aurora 网站架构全面升级！</h2>
                     <div class="article-img">
                         <img src="assets/img/character_full.png" alt="Aurora" class="hero-image">
-                        <span class="caption">舒苒 (Aurora) 官方立绘公开</span>
+                        <span class="caption">更稳、更快、更强的极光体验</span>
                     </div>
                     <div class="article-content">
-                        <p class="drop-cap">A</p>
-                        <p>urora Project 企划组今日正式宣布，舒苒 (Aurora) 的官方宣传网站现已全面上线。该网站集成了角色介绍、世界观设定、制作人员名单以及同人作品展示等多个模块。</p>
-                        <p>“这是一个属于大家的共创角色。”企划发起人 kawako 在接受采访时表示，“我们希望通过这个平台，让更多人了解舒苒，并参与到她的故事创作中来。”</p>
-                        <p>网站采用了独特的翡翠绿配色，完美契合角色的代表色。同时，网站还埋藏了许多有趣的彩蛋（例如某些不为人知的 Jump Scare），等待着访客去发掘。</p>
+                        <p class="drop-cap">W</p>
+                        <p>e have evolved. 企划组今日宣布，Aurora 官方网站已完成史诗级架构迁移。现在，我们的前端运行在 Cloudflare 全球边缘网络，后端由 Serverless 无服务器技术驱动，并接入了 Catbox 高速图床。</p>
+                        <p>这意味着什么？意味着无论你在世界的哪个角落，访问速度都将大幅提升。同时，我们引入了智能限流与反爬虫机制，确保服务的稳定性。</p>
+                        <p>此外，全新的“动态新闻系统”已上线，未来制作组将通过手机直接推送最新情报！</p>
                     </div>
+                </div>
+            </article>
+
+            <!-- Old Hero as Secondary -->
+            <article class="paper-article" style="grid-column: span 2;">
+                <div class="article-inner">
+                    <span class="article-tag">回顾 / ARCHIVE</span>
+                    <h3>Aurora 官方网站正式上线</h3>
+                    <p>Aurora Project 企划组此前宣布舒苒 (Aurora) 的官方宣传网站全面上线。网站采用了独特的翡翠绿配色，完美契合角色的代表色。</p>
                 </div>
             </article>
 
