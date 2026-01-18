@@ -623,8 +623,8 @@
                 btn.innerText = 'SUCCESS!';
                 btn.style.background = '#000';
                 
-                // Try to get URL from common response formats
-                const imgUrl = data.src || data.url || data.data?.url || (typeof data === 'string' ? data : 'Unknown URL');
+                // Get URL from Catbox response structure
+                const imgUrl = data.url || data.src || (typeof data === 'string' ? data : 'Unknown URL');
 
                 // Create success view
                 const sidebarContent = document.querySelector('.sidebar-content');
