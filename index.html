@@ -557,21 +557,24 @@
             }
 
             const file = fileInput.files[0];
-            const formData = new FormData();
-            formData.append('image', file);
-            
-            // UI Loading State
-            btn.innerText = 'UPLOADING...';
-            btn.disabled = true;
+            // 1. Convert file to Base64 to send via JSON (more reliable for Netlify Functions)
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function() {
+                const base64Data = reader.result.split(',')[1]; // Remove "data:image/png;base64," prefix
 
-            // Using the API provided (via Netlify Proxy)
-            fetch('/.netlify/functions/upload', {
-                method: 'POST',
-                // When sending FormData, DO NOT set Content-Type header manually.
-                // The browser will automatically set it with the correct boundary.
-                body: formData
-            })
-            .then(response => {
+                // Using the API provided (via Netlify Proxy)
+                fetch('/.netlify/functions/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: base64Data,
+                        filename: file.name
+                    })
+                })
+                .then(response => {
                 if (response.ok) {
                     return response.text().then(text => {
                         try {
@@ -625,6 +628,11 @@
                     btn.style.background = '';
                 }, 1000);
             });
+            }; // End reader.onload
+            reader.onerror = function(error) {
+                console.error('Error reading file:', error);
+                alert('读取文件失败 / File read error');
+            };
         }
     </script>
 </body>
