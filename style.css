@@ -164,6 +164,14 @@ body.newspaper-body {
     border: 2px solid #000;
 }
 
+.hero-image {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+}
+
 .vertical-col {
     grid-column: 4;
     grid-row: 1 / span 2;
@@ -234,6 +242,14 @@ body.newspaper-body {
     .hero-article, .vertical-col, .small-box, .img-box, .wide-bottom, .ad-box {
         grid-column: 1;
         grid-row: auto;
+    }
+
+    .hero-image {
+        height: auto;
+        max-height: 400px; /* 防止图片过长 */
+        object-fit: contain; /* 确保内容完整显示 */
+        object-position: top;
+        margin-bottom: 10px;
     }
 
     .paper-title {
