@@ -38,16 +38,20 @@
 
         // Load News from Supabase
         async function loadDynamicNews() {
+            console.log('Fetching news from Supabase...');
             const { data, error } = await supabase
                 .from('news_articles')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(5);
+                .limit(10); // 增加数量
 
             if (error) {
                 console.error('Error loading news:', error);
+                // 可以在页面上显示一个小的错误提示
                 return;
             }
+
+            console.log('News data received:', data);
 
             if (data && data.length > 0) {
                 const container = document.querySelector('.paper-grid');
@@ -57,26 +61,28 @@
                 data.forEach(news => {
                     const article = document.createElement('article');
                     article.className = 'paper-article';
-                    // Randomly assign grid style for variety
-                    // Simple logic: default box
                     
-                    const date = new Date(news.created_at).toLocaleDateString('zh-CN');
+                    // 格式化日期
+                    const dateObj = new Date(news.created_at);
+                    const date = isNaN(dateObj.getTime()) ? '刚刚' : dateObj.toLocaleDateString('zh-CN');
                     
                     article.innerHTML = `
                         <div class="article-inner">
-                            <span class="article-tag">${news.category}</span>
-                            <h3>${news.title}</h3>
-                            ${news.image_url ? `<img src="${news.image_url}" style="width:100%;height:150px;object-fit:cover;margin-bottom:10px;">` : ''}
-                            <div class="article-content">
-                                <p style="font-size:0.9rem; line-height:1.6;">${news.content}</p>
+                            <span class="article-tag" style="background:#333;color:#fff;">${news.category || 'NEWS'}</span>
+                            <h3 style="margin:10px 0;">${news.title}</h3>
+                            ${news.image_url ? `<img src="${news.image_url}" style="width:100%;height:150px;object-fit:cover;margin-bottom:10px;border:1px solid #eee;" onerror="this.style.display='none'">` : ''}
+                            <div class="article-content" style="max-height: 100px; overflow: hidden; text-overflow: ellipsis;">
+                                <p style="font-size:0.9rem; line-height:1.6; color:#444;">${news.content}</p>
                             </div>
-                            <small style="margin-top:auto;padding-top:10px;color:#999;">${date}</small>
+                            <small style="margin-top:auto;padding-top:10px;color:#999;display:block;border-top:1px solid #eee;">${date}</small>
                         </div>
                     `;
                     
                     // Insert dynamic news after hero
                     hero.after(article);
                 });
+            } else {
+                console.log('No news found.');
             }
         }
 
