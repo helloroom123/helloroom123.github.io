@@ -170,16 +170,24 @@
     </div>
 
     <div class="form-group">
-        <label>发布密钥 / Access Code</label>
-        <input type="password" id="accessCode" placeholder="内部人员密钥">
+        <label>发布密钥 / Access Code (Legacy)</label>
+        <input type="password" id="accessCode" placeholder="已通过邮箱登录验证" disabled style="background:#eef; color:#999; cursor:not-allowed;" value="AuroraAuthVerified">
     </div>
 
     <button class="btn-submit" onclick="submitNews()">发布新闻 / PUBLISH</button>
+    <div style="text-align:center; margin-top:20px;">
+        <a href="#" onclick="logout()" style="color:#666; font-size:0.8rem;">退出登录 / Logout</a>
+    </div>
     <div class="status-msg" id="status"></div>
 </div>
 
 <script type="module">
     import { supabase } from './assets/js/supabase.js';
+
+    window.logout = function() {
+        localStorage.removeItem('aurora_admin_token');
+        window.location.href = 'admin_login.html';
+    };
 
     // 检查额度
     async function checkQuota() {
@@ -263,15 +271,9 @@
         const category = document.getElementById('category').value;
         const content = document.getElementById('content').value;
         const imageUrl = document.getElementById('imageUrl').value;
-        const accessCode = document.getElementById('accessCode').value.trim(); // 去除空格
+        // Auto-fill legacy key for backend compatibility
+        const accessCode = 'Aurora2026ProjectGroupKey'; 
         const status = document.getElementById('status');
-
-        // 简单的密钥检查
-        if (accessCode !== 'Aurora2026ProjectGroupKey') {
-            console.log('Input:', accessCode);
-            alert('密钥错误！禁止发布。');
-            return;
-        }
 
         if (!title || !content) {
             alert('请填写标题和内容');
