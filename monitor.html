@@ -154,9 +154,16 @@
                     body: JSON.stringify({ message: text })
                 });
                 
+                // Debug response
+                if (!res.ok) {
+                    const textBody = await res.text();
+                    logSystem(`Failed (${res.status}): ${textBody.substring(0, 50)}...`, 'red');
+                    return;
+                }
+
                 const data = await res.json();
                 
-                if (res.ok) {
+                if (data.success) {
                     logSystem(`Message Sent! (Remaining Quota: ${data.remaining})`, 'var(--success)');
                     chatInput.value = '';
                 } else {
