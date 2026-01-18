@@ -2,42 +2,47 @@
 <html lang="zh-CN">
 <head>
     <script>
-        // 线路检测与自动切换逻辑
         (function() {
             const currentHost = window.location.hostname;
             const cfHost = 'aurora-project.pages.dev';
             const appHost = 'helloroom123-github-io.vercel.app';
 
-            // If already on target domains or localhost, stop.
-            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') {
-                return;
-            }
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
 
-            const testImg = new Image();
-            const timeout = 2000; // 2s threshold for "fast"
             let redirected = false;
 
-            // Success handler: Cloudflare is fast and safe
-            testImg.onload = function() {
-                if (redirected) return;
-                redirected = true;
-                console.log('Network to dev (CF) is good. Redirecting to dev...');
-                window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
-            };
-
-            // Failure handler: Fallback to App (Vercel)
-            function fallback() {
-                if (redirected) return;
-                redirected = true;
-                console.log('Network to dev (CF) is slow/blocked. Redirecting to app (Vercel)...');
-                window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
             }
 
-            testImg.onerror = fallback;
-            setTimeout(fallback, timeout);
-
-            // Start test
-            testImg.src = 'https://' + cfHost + '/assets/img/avatar/penguin.png?t=' + Date.now();
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
         })();
     </script>
     <meta charset="UTF-8">
