@@ -21,6 +21,18 @@
                 });
             }
 
+            // Country Check
+            fetch('https://api.country.is')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.country === 'CN' && !redirected) {
+                        console.log('CN detected, forcing CF');
+                        redirected = true;
+                        window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                    }
+                })
+                .catch(e => console.warn('Geo check failed', e));
+
             check(cfHost).then(isCfOk => {
                 if (redirected) return;
                 if (isCfOk) {
