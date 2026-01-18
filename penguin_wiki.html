@@ -2,8 +2,9 @@
 <html lang="zh-CN">
 <head>
     <script>
+        // Redirect logic: GitHub Pages -> Cloudflare Pages
         if (window.location.hostname === 'helloroom123.github.io') {
-            window.location.href = 'https://helloroom123-aurora-project.netlify.app' + window.location.pathname + window.location.search + window.location.hash;
+            window.location.href = 'https://aurora-project.pages.dev' + window.location.pathname + window.location.search + window.location.hash;
         }
     </script>
     <meta charset="UTF-8">
