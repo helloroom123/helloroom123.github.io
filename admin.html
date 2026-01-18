@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <script>
+        // Redirect logic: Force everything to Cloudflare Pages (except localhost)
+        const targetHost = 'aurora-project.pages.dev';
+        if (window.location.hostname !== targetHost && 
+            window.location.hostname !== 'localhost' && 
+            window.location.hostname !== '127.0.0.1') {
+            window.location.href = 'https://' + targetHost + window.location.pathname + window.location.search + window.location.hash;
+        }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aurora News Center</title>
