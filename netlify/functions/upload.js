@@ -1,46 +1,51 @@
 const axios = require('axios');
 const FormData = require('form-data');
+const https = require('https');
 
 exports.handler = async (event, context) => {
-  // 仅允许 POST 请求
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   try {
-    // 1. 解析前端传来的 JSON 数据
     const payload = JSON.parse(event.body);
     
     if (!payload.image) {
-      return { statusCode: 400, body: 'Missing image data' };
+      return { statusCode: 400, body: JSON.stringify({ error: 'Missing image data' }) };
     }
 
-    // 2. 将 Base64 转回 Buffer
     const imageBuffer = Buffer.from(payload.image, 'base64');
-
-    // 3. 构建 FormData
     const form = new FormData();
-    // 注意：必须提供 filename，否则某些图床无法识别文件类型
     form.append('image', imageBuffer, {
-      filename: payload.filename || 'upload.png'
+      filename: payload.filename || 'upload.png',
+      contentType: 'image/png' // Explicit content type helps
     });
 
-    // 4. 生成随机 Token
     const authToken = 'AuroraProxy_' + Math.random().toString(36).substr(2, 9);
+    
+    // Create a custom agent to ignore SSL errors if that's the issue
+    const agent = new https.Agent({  
+      rejectUnauthorized: false
+    });
 
-    // 5. 发送请求给图床
-    // form.getHeaders() 会自动生成正确的 Content-Type (包含 boundary)
+    console.log('Proxying upload to i.111666.best...');
+
     const response = await axios.post('https://i.111666.best/image', form, {
       headers: {
         ...form.getHeaders(),
-        'Auth-Token': authToken
+        'Auth-Token': authToken,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        'Accept': '*/*',
+        'Connection': 'keep-alive'
       },
-      responseType: 'text', 
-      maxContentLength: 10 * 1024 * 1024,
-      maxBodyLength: 10 * 1024 * 1024
+      httpsAgent: agent,
+      timeout: 25000, // 25 seconds timeout (Netlify function limit is 10s default, but we can try)
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
     });
 
-    // 6. 返回结果
+    console.log('Upload success:', response.data);
+
     return {
       statusCode: 200,
       headers: {
@@ -51,17 +56,22 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('Proxy Error:', error.message);
+    console.error('Proxy Error Details:', error.message);
+    if (error.response) {
+      console.error('Remote Response:', error.response.status, error.response.data);
+    }
+
+    // Return the actual error to the frontend for display
     return {
-      statusCode: 500,
+      statusCode: error.response ? error.response.status : 500,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
       body: JSON.stringify({
-        error: 'Upload failed',
-        details: error.message,
-        remote_data: error.response ? error.response.data : null
+        error: 'Proxy Upload Failed',
+        message: error.message,
+        details: error.response ? error.response.data : 'No remote response'
       })
     };
   }
