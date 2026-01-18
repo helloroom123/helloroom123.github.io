@@ -97,12 +97,47 @@
 
     <div id="flashlight-overlay"></div>
 
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay">
+        <div class="sidebar-header">
+            <h3>投稿 / SUBMIT FANART</h3>
+            <button class="close-sidebar-btn" onclick="toggleSidebar()">×</button>
+        </div>
+        <div class="sidebar-content">
+            <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">欢迎向 Aurora Project 投稿同人作品！您的作品可能会被展示在 Fanart 页面。</p>
+            
+            <form id="fanart-form" onsubmit="handleFanartSubmit(event)">
+                <div class="sidebar-form-group">
+                    <label>昵称 / Name</label>
+                    <input type="text" placeholder="您的称呼" required>
+                </div>
+                
+                <div class="sidebar-form-group">
+                    <label>作品标题 / Title</label>
+                    <input type="text" placeholder="作品标题">
+                </div>
+
+                <div class="sidebar-form-group">
+                    <label>作品文件 / File</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+
+                <div class="sidebar-form-group">
+                    <label>留言 / Comment</label>
+                    <textarea placeholder="想对 Aurora 说的话..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">提交 / SUBMIT</button>
+            </form>
+        </div>
+    </div>
+
     <div class="loading-screen" id="loadingScreen">
         <div class="loader"></div>
     </div>
 
     <nav class="navbar">
-        <div class="logo">舒苒 AURORA</div>
+        <div class="logo" onclick="toggleSidebar()">舒苒 AURORA</div>
         <div class="nav-links" tabindex="0" aria-label="Navigation Menu">
             <a href="index.html#home">TOP</a>
             <a href="news_paper.html">NEWS</a>
@@ -502,6 +537,36 @@
              if(isFlashlightOn) e.preventDefault(); 
         }, { passive: false });
         */
+
+        // Sidebar Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('active');
+        }
+
+        function handleFanartSubmit(e) {
+            e.preventDefault();
+            // Simulation
+            const btn = e.target.querySelector('.submit-btn');
+            const originalText = btn.innerText;
+            
+            btn.innerText = 'UPLOADING...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerText = 'SUCCESS!';
+                btn.style.background = '#000';
+                
+                setTimeout(() => {
+                    alert('感谢投稿！您的作品已发送至审核队列。\nThank you for your submission!');
+                    toggleSidebar();
+                    e.target.reset();
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 500);
+            }, 1500);
+        }
     </script>
 </body>
 </html>
