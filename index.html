@@ -271,7 +271,8 @@
                     <img id="profile-avatar" src="assets/img/avatar/penguin.png">
                 </div>
                 <h3 id="profile-username" style="margin-bottom:5px;">User</h3>
-                <p id="profile-email" style="font-size:0.8rem;color:#999;margin-bottom:20px;">email@example.com</p>
+                <p id="profile-email" style="font-size:0.8rem;color:#999;margin-bottom:5px;">email@example.com</p>
+                <p id="profile-points" style="font-size:0.9rem;color:var(--accent-color);font-weight:bold;margin-bottom:20px;">💎 积分: 0</p>
                 
                 <div style="text-align:left; margin-bottom: 20px;">
                     <label style="font-size:0.8rem;font-weight:bold;">Bio / 简介</label>
@@ -1344,6 +1345,7 @@
                 const user = JSON.parse(userStr);
                 document.getElementById('profile-username').innerText = user.username || 'User';
                 document.getElementById('profile-email').innerText = user.email;
+                document.getElementById('profile-points').innerText = '💎 积分: ' + (user.points || 0);
                 document.getElementById('profile-username-input').value = user.username || '';
                 document.getElementById('profile-bio').value = user.bio || '';
                 document.getElementById('profile-avatar').src = user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png';
