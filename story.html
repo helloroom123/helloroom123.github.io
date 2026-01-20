@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Story - 序章</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <style>
+        body { margin: 0; padding: 0; background: #111; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #game-container { width: 100%; max-width: 800px; height: 600px; box-shadow: 0 0 20px rgba(0,255,0,0.2); }
+        .back-btn { position: absolute; top: 20px; left: 20px; color: #fff; text-decoration: none; z-index: 100; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← RETURN</a>
+    <div id="game-container"></div>
+
+    <script type="module">
+        import { VisualNovel } from './assets/js/avg_engine.js';
+
+        const vn = new VisualNovel('game-container');
+
+        // Define Script
+        const script = [
+            { bg: 'assets/img/bg_garden.jpg', text: '（清晨的阳光洒在庄园的温室里，空气中弥漫着茉莉花的香气。）' },
+            { charImg: 'assets/img/character_full.png', name: '舒苒', text: '你终于来了。我等你好久了。' },
+            { name: '我', text: '抱歉，刚才在处理一些琐事。' },
+            { charImg: 'assets/img/character_full.png', name: '舒苒', text: '没关系。只要你能来，我就很开心。尝尝这杯新泡的茶吗？' },
+            { 
+                choices: [
+                    { text: '欣然接受', jump: 5 },
+                    { text: '礼貌拒绝', jump: 7 }
+                ]
+            },
+            // Branch A
+            { name: '我', text: '（接过茶杯）闻起来真不错。' },
+            { charImg: 'assets/img/character_full.png', name: '舒苒', text: '这是我亲手种的茉莉花，配上一点点蜂蜜。喜欢吗？' },
+            { jump: 9 }, // End of branch
+            
+            // Branch B
+            { name: '我', text: '不了，我不渴。' },
+            { charImg: 'assets/img/character_full.png', name: '舒苒', text: '（眼神稍微暗淡了一下）是吗... 那好吧。' },
+            
+            // Merge
+            { name: '舒苒', text: '对了，最近家族那边又有些麻烦事... 你愿意听听吗？' },
+            { text: '（未完待续...）' }
+        ];
+
+        // Start Game
+        vn.loadScript(script);
+    </script>
+</body>
+</html>

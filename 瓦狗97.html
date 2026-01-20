@@ -400,6 +400,43 @@
             playSound('die');
             scoreEl.innerText = "你的得分: " + score;
             gameOverScreen.classList.remove('hidden');
+            
+            // Upload Score -> Points
+            uploadScore(score);
+        }
+
+        async function uploadScore(score) {
+            const token = localStorage.getItem('aurora_user_token');
+            if (!token) return; // Not logged in
+
+            try {
+                // Determine API URL
+                const apiUrl = window.location.hostname.includes('pages.dev') ? '/api/auth_proxy' : '/api/auth_proxy'; // Adjust if needed
+                
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        action: 'add-points', 
+                        token: token,
+                        amount: Math.floor(score / 10), // 10 score = 1 point
+                        reason: '瓦狗97'
+                    })
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    if(data.success) {
+                        const notif = document.createElement('div');
+                        notif.innerText = `获得 ${Math.floor(score/10)} 积分! (当前: ${data.points})`;
+                        notif.style.cssText = "position:absolute;top:10px;left:50%;transform:translateX(-50%);background:green;color:white;padding:10px;z-index:100;";
+                        document.body.appendChild(notif);
+                        setTimeout(() => notif.remove(), 3000);
+                    }
+                }
+            } catch (e) {
+                console.error("Score upload failed", e);
+            }
         }
 
         function spawnEnemy() {

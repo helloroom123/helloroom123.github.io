@@ -228,6 +228,43 @@ class AuthHandler(BaseHTTPRequestHandler):
                 else:
                     self._respond(500, {"error": "Database not connected"})
 
+            # 7. Add Points (Internal/Game Use)
+            elif action == 'add-points':
+                token = data.get('token')
+                amount = data.get('amount', 0)
+                reason = data.get('reason', 'game')
+
+                try:
+                    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+                    email = decoded['email']
+                except:
+                    self._respond(401, {"error": "Invalid token"})
+                    return
+
+                if amount == 0:
+                    self._respond(400, {"error": "Amount required"})
+                    return
+
+                if supabase:
+                    try:
+                        # 1. Get current points
+                        res = supabase.table('profiles').select('points').eq('email', email).execute()
+                        current_points = res.data[0]['points'] if res.data else 0
+                        
+                        # 2. Update points
+                        new_points = current_points + amount
+                        supabase.table('profiles').update({'points': new_points}).eq('email', email).execute()
+                        
+                        # 3. Log transaction (Optional, create a 'point_logs' table if needed)
+                        print(f"[Points] {email} +{amount} ({reason})")
+
+                        self._respond(200, {"success": True, "points": new_points})
+                    except Exception as e:
+                        print(f"[Supabase Points Error] {e}")
+                        self._respond(500, {"error": "Database error"})
+                else:
+                    self._respond(500, {"error": "DB not connected"})
+
             else:
                 self._respond(400, {"error": "Invalid action"})
 
