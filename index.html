@@ -59,7 +59,6 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="referrer" content="no-referrer">
     <title>SINGABLE CHARACTER 舒苒 Aurora OFFICIAL SITE</title>
     <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
     <link rel="stylesheet" href="style.css?v=6">
@@ -260,14 +259,6 @@
         .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
     </style>
-
-    <!-- Video Overlay -->
-    <div id="video-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100005;justify-content:center;align-items:center;" onclick="closeVideo()">
-        <div style="position:relative;width:80%;max-width:800px;aspect-ratio:16/9;background:#000;" onclick="event.stopPropagation()">
-            <button onclick="closeVideo()" style="position:absolute;top:-40px;right:0;color:#fff;background:none;border:none;font-size:2rem;cursor:pointer;z-index:100006;">&times;</button>
-            <iframe id="bili-player" src="" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;height:100%;"></iframe>
-        </div>
-    </div>
 
     <!-- Search Results Overlay -->
     <div id="search-results-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100004;justify-content:center;align-items:center;backdrop-filter:blur(5px);">
@@ -1271,14 +1262,9 @@
 
         // Video Logic
         function openVideo(bvid) {
-            const player = document.getElementById('bili-player');
-            player.src = `//player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1&danmaku=0`;
-            document.getElementById('video-overlay').style.display = 'flex';
-        }
-
-        function closeVideo() {
-            document.getElementById('video-overlay').style.display = 'none';
-            document.getElementById('bili-player').src = ''; // Stop audio
+            // Fallback to direct link due to embed restrictions
+            const url = `https://www.bilibili.com/video/${bvid}`;
+            window.open(url, '_blank');
         }
 
         // User Search Logic
