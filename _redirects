@@ -1,0 +1,22 @@
+# Netlify / Vercel / Cloudflare Redirect Rules
+# Documentation: https://docs.netlify.com/routing/redirects/
+
+# 1. 强制 HTTPS (通常平台默认开启)
+# http://*  https://:splat  301!
+
+# 2. 路径别名 (SPA Support & Clean URLs)
+# 注意：现代平台通常自动处理 .html 后缀，手动写 rewrite 可能会导致冲突。
+# 如果你想让 /news 显示 news_paper.html，最好的办法是直接把文件命名为 news.html，或者依赖平台的 Clean URL 功能。
+# 这里暂时注释掉，防止死循环。
+
+# /news          /news_paper.html        200
+# /fanart        /fanart.html            200
+# /qa            /qa.html                200
+# /staff         /staff_oc.html          200
+# /game          /瓦狗97.html             200
+
+# 3. 历史遗留链接重定向
+# /old-page.html  /new-page.html  301
+
+# 4. SPA 单页应用支持 (如果是 React/Vue 路由模式，开启下面这行)
+# /*    /index.html   200

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
+            }
+
+            fetch('https://api.country.is').then(res=>res.json()).then(d=>{
+                if(d.country==='CN' && !redirected){
+                    redirected=true;
+                    window.location.href='https://'+cfHost+window.location.pathname+window.location.search+window.location.hash;
+                }
+            }).catch(e=>{});
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Q&A - 舒苒 Aurora OFFICIAL SITE</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <link rel="stylesheet" href="style.css?v=6">
+</head>
+<body class="subpage">
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">舒苒 AURORA</div>
+        <div class="nav-links">
+            <a href="index.html#home">TOP</a>
+            <a href="news_paper.html">NEWS</a>
+            <a href="index.html#profile">CHARACTER</a>
+            <a href="index.html#story">STORY</a>
+            <a href="index.html#credits">CREDITS</a>
+            <a href="index.html#join">JOIN</a>
+            <a href="fanart.html">FANART</a>
+            <!-- Hidden for Security -->
+            <!-- <a href="http://43.225.157.187:9090/dashboard" target="_blank" style="color: #ffcc00;">STATUS</a> -->
+            <a href="#" style="color: #ffcc00; cursor: not-allowed;" title="Restricted Area">STATUS</a>
+        </div>
+    </nav>
+
+    <section class="content-section" style="padding-top: 150px; padding-bottom: 50px;">
+        <h2 class="section-title">Q&A / ABOUT</h2>
+        <p style="font-weight: 700; font-size: 1.2rem; color: #000; letter-spacing: 1px;">关于企划</p>
+        <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+            常见问题解答与企划说明
+        </p>
+    </section>
+
+    <section class="content-section" style="padding-top: 0;">
+        <div class="qa-container">
+            
+            <div class="qa-item">
+                <div class="question">
+                    这是一个什么样的企划？
+                </div>
+                <div class="answer">
+                    <p style="margin-bottom: 15px;">这是一个 <strong>OC（Original Character）共创企划</strong>。</p>
+                    <p style="margin-bottom: 15px;">企划的核心内容是大家共同创立并完善一个名为 <strong style="color: var(--accent-color);">“舒苒”</strong> 的角色。目前我们正在不断完善她的设定中……</p>
+                    <p style="margin-bottom: 15px;">舒苒不仅仅是一个角色，她属于所有创造她的人！同时她也是我们企划的看板娘。</p>
+                    <p style="font-weight: 700;">我们非常欢迎大家加入企划群，提出你的宝贵意见，一起完善舒苒！</p>
+                </div>
+            </div>
+
+            <div class="qa-item">
+                <div class="question">
+                    除了完善舒苒，我还能做什么？<br>可以加入自己的OC吗？
+                </div>
+                <div class="answer">
+                    <p style="margin-bottom: 15px; font-weight: 700;">当然可以！该企划不单单是创建舒苒。</p>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px;">
+                            <span style="background: #000; color: #fff; padding: 2px 6px; font-size: 0.8rem; margin-right: 8px;">世界观互动</span>
+                            你可以加入自己的OC进入这个世界观进行互动。大家可以在企划内设计平行世界中属于自己的OC。
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <span style="background: #000; color: #fff; padding: 2px 6px; font-size: 0.8rem; margin-right: 8px;">身份选择</span>
+                            企划内提供了丰富的身份选择，你可以自由续写角色设定。
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <span style="background: var(--accent-color); color: #fff; padding: 2px 6px; font-size: 0.8rem; margin-right: 8px;">未来展望</span>
+                            后期会有各位支持该企划的宝宝们的互动图。如果发展顺利，该企划甚至有游戏化、动画化的可能！
+                        </li>
+                    </ul>
+                    <p style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px; font-size: 0.9rem; color: #666;">
+                        感谢每一位支持企划的你！
+                    </p>
+                </div>
+            </div>
+
+            <div class="qa-item" style="text-align: center; border-color: var(--accent-color);">
+                <div class="question" style="justify-content: center;">
+                    如何加入？
+                </div>
+                <div class="answer" style="border-top: none;">
+                    <p style="margin-bottom: 20px;">请点击下方按钮查看加入方式。</p>
+                    <a href="index.html#join" class="hero-btn" style="padding: 10px 30px; font-size: 0.9rem;">查看企划群信息</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Aurora Project 企划项目组. 保留所有权利.</p>
+    </footer>
+
+    <script>
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loadingScreen');
+            // 简单的淡出逻辑
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 800);
+        });
+    </script>
+    <!-- Security Layer -->
+    <script src="assets/js/security.js"></script>
+    <!-- <script src="http://43.225.157.187:9090/static/tracker.js" data-site="aurora-qa"></script> -->
+</body>
+</html>

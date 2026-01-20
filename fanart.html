@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            // 调试日志
+            console.log('Redirect Check:', currentHost);
+
+            // 1. 白名单检查：如果是以下域名，直接停止脚本，不进行任何跳转检查
+            if (currentHost === cfHost || 
+                currentHost === appHost || 
+                currentHost === 'localhost' || 
+                currentHost === '127.0.0.1' ||
+                currentHost.includes('vercel.app') || 
+                currentHost.includes('pages.dev')) {
+                console.log('Host is allowed, no redirect.');
+                return;
+            }
+
+            // 2. 仅对 GitHub Pages 进行处理
+            // 如果在 GitHub Pages，直接跳转到 Cloudflare (因为它是我们的主站)
+            // 移除复杂的测速逻辑，防止死循环
+            if (currentHost.includes('github.io')) {
+                console.log('GitHub Pages detected, redirecting to Cloudflare...');
+                window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+            }
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FANART - 舒苒 Aurora OFFICIAL SITE</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <link rel="stylesheet" href="style.css?v=6">
+</head>
+<body class="subpage">
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">舒苒 AURORA</div>
+        <div class="nav-links">
+            <a href="index.html#home">TOP</a>
+            <a href="news_paper.html">NEWS</a>
+            <a href="index.html#profile">CHARACTER</a>
+            <a href="index.html#story">STORY</a>
+            <a href="index.html#credits">CREDITS</a>
+            <a href="index.html#join">JOIN</a>
+            <a href="fanart.html" style="color: var(--accent-color);">FANART</a>
+            <!-- Hidden for Security -->
+            <!-- <a href="http://43.225.157.187:9090/dashboard" target="_blank" style="color: #ffcc00;">STATUS</a> -->
+            <a href="#" style="color: #ffcc00; cursor: not-allowed;" title="Restricted Area">STATUS</a>
+        </div>
+    </nav>
+
+    <section class="content-section" style="padding-top: 150px; padding-bottom: 50px;">
+        <h2 class="section-title">FANART</h2>
+        <p style="font-weight: 700; font-size: 1.2rem; color: #000; letter-spacing: 1px;">同人作品展示 / GALLERY</p>
+        <p style="margin-top: 10px; color: #666; font-size: 0.9rem;">
+            使用标签 <strong>#AuroraArt</strong> 在社交媒体发布您的作品，我们将定期收录。
+        </p>
+    </section>
+
+    <section class="content-section" style="padding-top: 0;">
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="assets/img/fanart/1.jpeg" alt="Fanart 1" loading="lazy" onerror="this.src='assets/img/placeholder.png'">
+                <div style="padding: 15px; background: #fff; border-top: 2px solid #000;">
+                    <span style="font-weight: 700; font-size: 0.9rem;">ILLUSTRATION</span>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="assets/img/fanart/2.jpeg" alt="Fanart 2" loading="lazy" onerror="this.src='assets/img/placeholder.png'">
+                <div style="padding: 15px; background: #fff; border-top: 2px solid #000;">
+                    <span style="font-weight: 700; font-size: 0.9rem;">ILLUSTRATION</span>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="assets/img/fanart/3.png" alt="Fanart Draft" loading="lazy" onerror="this.src='assets/img/placeholder.png'">
+                <div style="padding: 15px; background: #fff; border-top: 2px solid #000;">
+                    <span style="font-weight: 700; font-size: 0.9rem;">DRAFT / SKETCH</span>
+                    <span style="display: block; font-size: 0.8rem; color: #999; margin-top: 5px;">草稿设定</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="qa-container" style="margin-top: 80px; max-width: 100%;">
+            <div class="qa-item" style="text-align: center; border-color: var(--accent-color); box-shadow: 8px 8px 0px var(--accent-color);">
+                <h3 style="font-size: 1.5rem; margin-bottom: 15px;">期待您的创作！</h3>
+                <p style="margin-bottom: 20px;">无论是插画、文章还是音乐，我们都期待看到您眼中的舒苒。</p>
+                <a href="index.html#join" class="hero-btn" style="display: inline-block; padding: 10px 30px; font-size: 0.9rem;">前往企划群投稿</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Aurora Project 企划项目组. 保留所有权利.</p>
+    </footer>
+
+    <script>
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loadingScreen');
+            // 简单的淡出逻辑
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 800);
+        });
+    </script>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase.js';
+
+        async function loadFanart() {
+            const { data, error } = await supabase
+                .from('fanart_gallery')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error loading fanart:', error);
+                return;
+            }
+
+            const grid = document.querySelector('.gallery-grid');
+            
+            // Reverse loop to keep prepended order correct (or just append if we clear grid)
+            // But here we want to keep static ones at bottom? Or mix?
+            // Let's prepend them so new ones are at top.
+            // Data is already desc by date, so last one in array is oldest of new ones.
+            // We should iterate backwards if prepending, or just forEach and prepend (which reverses order)
+            // Wait, data[0] is NEWEST. If we prepend data[0], it becomes first. 
+            // Then prepend data[1], it becomes first... resulting in oldest at top.
+            // So we should iterate in reverse order (oldest -> newest) to prepend, 
+            // OR just iterate normal and insertBefore the static items?
+            
+            // Let's create a new container for dynamic items to keep it clean
+            // Or just append them if we want static ones to be "Featured" at top?
+            // Usually "Newest" is at top.
+            
+            // Strategy: Insert dynamic items BEFORE the first static item.
+            const firstStatic = grid.firstElementChild;
+            
+            data.forEach(art => {
+                if (art.is_approved === false) return;
+
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                item.innerHTML = `
+                    <img src="${art.image_url}" alt="${art.title}" loading="lazy" 
+                         onclick="window.open(this.src, '_blank')" style="cursor:zoom-in"
+                         onerror="this.parentElement.style.display='none'">
+                    <div style="padding: 15px; background: #fff; border-top: 2px solid #000;">
+                        <span style="font-weight: 700; font-size: 0.9rem;">${art.title || 'FANART'}</span>
+                        <span style="display: block; font-size: 0.8rem; color: #666; margin-top: 5px;">
+                            BY ${art.author || 'Anonymous'}
+                        </span>
+                    </div>
+                `;
+                // Insert before static items
+                grid.insertBefore(item, firstStatic);
+            });
+        }
+
+        loadFanart();
+    </script>
+    <!-- Security Layer -->
+    <script src="assets/js/security.js"></script>
+    <!-- <script src="http://43.225.157.187:9090/static/tracker.js" data-site="aurora-fanart"></script> -->
+</body>
+</html>

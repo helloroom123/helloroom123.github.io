@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
+            }
+
+            fetch('https://api.country.is').then(res=>res.json()).then(d=>{
+                if(d.country==='CN' && !redirected){
+                    redirected=true;
+                    window.location.href='https://'+cfHost+window.location.pathname+window.location.search+window.location.hash;
+                }
+            }).catch(e=>{});
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>极光计划内部发稿台 Aurora Project Internal Press Release</title>
+    <link rel="stylesheet" href="style.css?v=6">
+    <script src="assets/js/config.js"></script>
+    <style>
+        body {
+            background: #f0f2f5;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .admin-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px; /* 防止iOS缩放 */
+            box-sizing: border-box;
+            background: #fafafa;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--accent-color, #00A86B);
+            background: #fff;
+            outline: none;
+        }
+        textarea {
+            height: 150px;
+            resize: none;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-color, #00A86B);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-submit:active {
+            opacity: 0.8;
+        }
+        .status-msg {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .preview-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            background: #eee;
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <h2>📰 极光计划内部发稿台 (Internal)</h2>
+    <div id="quota-display" style="text-align:center; color:#666; margin-bottom:20px; font-weight: bold; background: #eee; padding: 5px; border-radius: 5px;">正在加载本月额度...</div>
+    
+    <div class="form-group">
+        <label>新闻标题 / Title</label>
+        <input type="text" id="title" placeholder="输入大标题">
+    </div>
+
+    <div class="form-group">
+        <label>分类 / Category</label>
+        <select id="category">
+            <option value="HEADLINE">🔴 头条 (HEADLINE)</option>
+            <option value="INFO">公告 (INFO)</option>
+            <option value="UPDATE">更新 (UPDATE)</option>
+            <option value="EVENT">活动 (EVENT)</option>
+            <option value="GOSSIP">花边 (GOSSIP)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>配图 / Image (可选)</label>
+        <input type="file" id="imageFile" accept="image/*">
+        <input type="hidden" id="imageUrl"> <!-- 存储上传后的URL -->
+        <img id="preview" class="preview-img">
+    </div>
+
+    <div class="form-group">
+        <label>正文内容 / Content</label>
+        <textarea id="content" placeholder="输入新闻正文..."></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>发布密钥 / Access Code (Legacy)</label>
+        <input type="password" id="accessCode" placeholder="已通过邮箱登录验证" disabled style="background:#eef; color:#999; cursor:not-allowed;" value="AuroraAuthVerified">
+    </div>
+
+    <button class="btn-submit" onclick="submitNews()">发布新闻 / PUBLISH</button>
+    <div style="text-align:center; margin-top:20px;">
+        <a href="#" onclick="logout()" style="color:#666; font-size:0.8rem;">退出登录 / Logout</a>
+    </div>
+    <div class="status-msg" id="status"></div>
+</div>
+
+<script type="module">
+    import { supabase } from './assets/js/supabase.js';
+
+    window.logout = function() {
+        localStorage.removeItem('aurora_admin_token');
+        window.location.href = 'admin_login.html';
+    };
+
+    // 检查额度
+    async function checkQuota() {
+        const quotaDisplay = document.getElementById('quota-display');
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        
+        const { count, error } = await supabase
+            .from('news_articles')
+            .select('*', { count: 'exact', head: true })
+            .gte('created_at', startOfMonth);
+            
+        if (error) {
+            console.error('Error checking quota:', error);
+            quotaDisplay.textContent = '额度加载失败';
+            quotaDisplay.style.color = 'red';
+        } else {
+            quotaDisplay.innerHTML = `本月额度使用: <span style="font-size:1.2em">${count}</span> / 10`;
+            if (count >= 10) {
+                quotaDisplay.style.color = '#e60012'; // Red
+                quotaDisplay.innerHTML += ' (已满 / FULL)';
+            } else {
+                quotaDisplay.style.color = '#008000'; // Green
+            }
+        }
+    }
+    
+    // Init
+    checkQuota();
+
+    // 图片预览与上传 (使用我们自己的后端代理)
+    document.getElementById('imageFile').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // 本地预览
+        const preview = document.getElementById('preview');
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+
+        // 自动上传
+        const status = document.getElementById('status');
+        status.textContent = '正在上传图片... / Uploading image...';
+        status.style.color = 'blue';
+
+        // Read file as Base64 for our Netlify function
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async function() {
+            const base64Data = reader.result.split(',')[1];
+
+            try {
+                // Cloudflare Pages Function
+                const res = await fetch(CONFIG.getApiBaseUrl() + '/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64Data, filename: file.name })
+                });
+                
+                const data = await res.json();
+                
+                if (data.status === 'success' || data.url) {
+                    const url = data.url || data.src;
+                    document.getElementById('imageUrl').value = url;
+                    status.textContent = '图片上传成功！';
+                    status.style.color = 'green';
+                } else {
+                    throw new Error(data.error || 'Unknown error');
+                }
+            } catch (err) {
+                console.error(err);
+                status.textContent = '图片上传失败: ' + err.message;
+                status.style.color = 'red';
+            }
+        };
+    });
+
+    // 发布新闻
+    window.submitNews = async function() {
+        const title = document.getElementById('title').value;
+        const category = document.getElementById('category').value;
+        const content = document.getElementById('content').value;
+        const imageUrl = document.getElementById('imageUrl').value;
+        const status = document.getElementById('status');
+
+        if (!title || !content) {
+            alert('请填写标题和内容');
+            return;
+        }
+
+        status.textContent = '正在发布... / Publishing...';
+        
+        try {
+            // Call our Serverless API
+            const res = await fetch(CONFIG.getApiBaseUrl() + '/api/news_post', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    title: title,
+                    content: content,
+                    category: category,
+                    imageUrl: imageUrl
+                })
+            });
+
+            const data = await res.json();
+
+            if (data.success || res.ok) {
+                status.textContent = '发布成功！正在刷新...';
+                status.style.color = 'green';
+                alert('新闻已发布！');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                throw new Error(data.error || 'Server rejected');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            status.textContent = '发布失败: ' + error.message;
+            status.style.color = 'red';
+        }
+    };
+</script>
+
+</body>
+</html>

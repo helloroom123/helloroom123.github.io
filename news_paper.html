@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
+            }
+
+            // Country Check
+            fetch('https://api.country.is')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.country === 'CN' && !redirected) {
+                        redirected = true;
+                        window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                    }
+                })
+                .catch(e => {});
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极光计划每日新闻 Aurora Daily - 记录共创点滴</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <link rel="stylesheet" href="style.css?v=8">
+    <script src="assets/js/config.js"></script>
+</head>
+<body class="newspaper-body">
+    
+    <script type="module">
+        import { supabase } from './assets/js/supabase.js';
+
+        // Load News from Supabase
+        async function loadDynamicNews() {
+            // Update Date
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+            const metaDiv = document.querySelector('.paper-meta');
+            if (metaDiv) {
+                 metaDiv.innerHTML = `<span>VOL. 01</span><span>${dateStr}</span><span>定价：免费</span>`;
+            }
+
+            console.log('Fetching news from Supabase...');
+            const { data, error } = await supabase
+                .from('news_articles')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(10); // 增加数量
+
+            if (error) {
+                console.error('Error loading news:', error);
+                // 可以在页面上显示一个小的错误提示
+                return;
+            }
+
+            console.log('News data received:', data);
+
+            if (data && data.length > 0) {
+                // 1. Populate Ticker
+                const tickerContent = document.getElementById('ticker-content');
+                if (tickerContent) {
+                    const titles = data.slice(0, 5).map(n => `<span>[${n.category || 'NEWS'}] ${n.title}</span>`).join('<span class="ticker-sep">+++</span>');
+                    // Duplicate content to ensure smooth scrolling loop
+                    tickerContent.innerHTML = titles + '<span class="ticker-sep">+++</span>' + titles + '<span class="ticker-sep">+++</span>' + titles;
+                }
+
+                const container = document.querySelector('.paper-grid');
+                // The static hero is the first child
+                const staticHero = container.querySelector('.hero-article');
+                
+                // 2. Check for HEADLINE
+                const headlineNews = data.find(n => n.category === 'HEADLINE');
+                
+                // 3. Filter out the headline from the regular list if it exists
+                // If no headline found, we show all news below static hero
+                const regularNews = headlineNews ? data.filter(n => n.id !== headlineNews.id) : data;
+
+                // 4. Update Hero if HEADLINE exists
+                if (headlineNews && staticHero) {
+                     const dateObj = new Date(headlineNews.created_at);
+                     const date = isNaN(dateObj.getTime()) ? '刚刚' : dateObj.toLocaleDateString('zh-CN');
+                     
+                     // Replace static content with dynamic headline
+                     staticHero.innerHTML = `
+                        <div class="article-inner">
+                            <span class="article-tag" style="background:#e60012; color:#fff;">头条 / HEADLINE</span>
+                            <h2>${headlineNews.title}</h2>
+                            <div class="article-img">
+                                ${headlineNews.image_url ? `<img src="${headlineNews.image_url}" class="hero-image" style="width:100%; object-fit:cover;">` : ''}
+                                <span class="caption">${date} · 编辑精选</span>
+                            </div>
+                            <div class="article-content">
+                                <p class="drop-cap" style="font-family:serif;">${headlineNews.content.charAt(0)}</p>
+                                <p>${headlineNews.content.slice(1)}</p>
+                            </div>
+                        </div>
+                     `;
+                }
+
+                // 5. Render remaining news
+                regularNews.forEach(news => {
+                    const article = document.createElement('article');
+                    article.className = 'paper-article';
+                    
+                    // 格式化日期
+                    const dateObj = new Date(news.created_at);
+                    const date = isNaN(dateObj.getTime()) ? '刚刚' : dateObj.toLocaleDateString('zh-CN');
+                    
+                    // 判断是否有图片
+                    const hasImage = !!news.image_url;
+
+                    article.innerHTML = `
+                        <div class="article-inner" style="display:flex; flex-direction:column; height:100%;">
+                            <span class="article-tag" style="background:#333;color:#fff;">${news.category || 'NEWS'}</span>
+                            <h3 style="margin:10px 0;">${news.title}</h3>
+                            ${hasImage ? `<img src="${news.image_url}" style="width:100%;height:150px;object-fit:cover;margin-bottom:10px;border:1px solid #eee;" onerror="this.style.display='none'">` : ''}
+                            <div class="article-content" style="${hasImage ? 'max-height: 100px; overflow: hidden; text-overflow: ellipsis;' : 'flex: 1; overflow: visible;'}">
+                                <p style="font-size:0.9rem; line-height:1.6; color:#444;">${news.content}</p>
+                            </div>
+                            <small style="margin-top:auto;padding-top:10px;color:#999;display:block;border-top:1px solid #eee;">${date}</small>
+                        </div>
+                    `;
+                    
+                    // Insert dynamic news after hero
+                    // Note: If we replaced hero content, staticHero element is still there, just with new innerHTML
+                    // So we can still use it as reference point
+                    staticHero.after(article);
+                });
+            } else {
+                console.log('No news found.');
+                const tickerContent = document.getElementById('ticker-content');
+                if(tickerContent) tickerContent.innerHTML = "暂无最新消息 / No News Available";
+            }
+        }
+
+        loadDynamicNews();
+    </script>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay">
+        <div class="sidebar-header">
+            <h3>投稿 / SUBMIT FANART</h3>
+            <button class="close-sidebar-btn" onclick="toggleSidebar()">×</button>
+        </div>
+        <div class="sidebar-content">
+            <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">欢迎向 Aurora Project 投稿同人作品！您的作品可能会被展示在 Fanart 页面。</p>
+            
+            <form id="fanart-form" onsubmit="handleFanartSubmit(event)">
+                <div class="sidebar-form-group">
+                    <label>昵称 / Name</label>
+                    <input type="text" placeholder="您的称呼" required>
+                </div>
+                
+                <div class="sidebar-form-group">
+                    <label>作品标题 / Title</label>
+                    <input type="text" placeholder="作品标题">
+                </div>
+
+                <div class="sidebar-form-group">
+                    <label>作品文件 / File</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+
+                <div class="sidebar-form-group">
+                    <label>留言 / Comment</label>
+                    <textarea placeholder="想对 Aurora 说的话..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">提交 / SUBMIT</button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo" onclick="toggleSidebar()">舒苒 AURORA</div>
+        <div class="nav-links">
+            <a href="index.html#home">TOP</a>
+            <a href="news_paper.html" class="active">NEWS</a>
+            <a href="index.html#profile">CHARACTER</a>
+            <a href="index.html#story">STORY</a>
+            <a href="index.html#credits">CREDITS</a>
+            <a href="qa.html">Q&A</a>
+            <a href="staff_oc.html">STAFF OC</a>
+            <a href="index.html#join">JOIN</a>
+            <a href="fanart.html">FANART</a>
+            <a href="瓦狗97.html" style="color: #e60012;">GAME</a>
+        </div>
+    </nav>
+
+    <div class="paper-container">
+        <!-- Newspaper Header -->
+        <header class="paper-header">
+            <div class="paper-meta">
+                <span>VOL. 01</span>
+                <span>2026年1月17日 星期六</span>
+                <span>定价：免费</span>
+            </div>
+            <h1 class="paper-title">Aurora Daily</h1>
+            <div class="paper-subtitle">极光计划每日新闻 · 记录共创点滴</div>
+            <div class="header-line"></div>
+        </header>
+
+        <!-- Breaking News Ticker -->
+        <div class="news-ticker">
+            <div class="ticker-content" id="ticker-content">
+                Loading latest news...
+            </div>
+        </div>
+
+        <!-- Grid Content -->
+        <div class="paper-grid">
+            
+            <!-- Hero Article (Large) -->
+            <article class="paper-article hero-article">
+                <div class="article-inner">
+                    <span class="article-tag">头条 / HEADLINE</span>
+                    <h2>Aurora 网站架构全面升级！</h2>
+                    <div class="article-img">
+                        <img src="assets/img/character_full.png" alt="Aurora" class="hero-image">
+                        <span class="caption">更稳、更快、更强的极光体验</span>
+                    </div>
+                    <div class="article-content">
+                        <p class="drop-cap">W</p>
+                        <p>e have evolved. 企划组今日宣布，Aurora 官方网站已完成史诗级架构迁移。现在，我们的前端运行在 Cloudflare 全球边缘网络，后端由 Serverless 无服务器技术驱动，并接入了 Catbox 高速图床。</p>
+                        <p>这意味着什么？意味着无论你在世界的哪个角落，访问速度都将大幅提升。同时，我们引入了智能限流与反爬虫机制，确保服务的稳定性。</p>
+                        <p>此外，全新的“动态新闻系统”已上线，未来制作组将通过手机直接推送最新情报！</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Old Hero as Secondary -->
+            <article class="paper-article" style="grid-column: span 2;">
+                <div class="article-inner">
+                    <span class="article-tag">回顾 / ARCHIVE</span>
+                    <h3>Aurora 官方网站正式上线</h3>
+                    <p>Aurora Project 企划组此前宣布舒苒 (Aurora) 的官方宣传网站全面上线。网站采用了独特的翡翠绿配色，完美契合角色的代表色。</p>
+                </div>
+            </article>
+
+            <!-- Vertical Sidebar Article -->
+            <article class="paper-article vertical-col">
+                <div class="article-inner">
+                    <h3>网站更新日志</h3>
+                    <div class="log-list">
+                        <div class="log-item">
+                            <span class="date">1.17</span>
+                            <p>新增“Aurora Daily”新闻报纸页面。</p>
+                        </div>
+                        <div class="log-item">
+                            <span class="date">1.17</span>
+                            <p>实装了移动端适配与手电筒交互功能。</p>
+                        </div>
+                        <div class="log-item">
+                            <span class="date">1.17</span>
+                            <p>修复了宣传图加载问题，并增加了“不支持”按钮的惊喜效果。</p>
+                        </div>
+                        <div class="log-item">
+                            <span class="date">1.17</span>
+                            <p>Staff 页面新增企鹅 Wiki 恶搞词条。</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Small Box -->
+            <article class="paper-article small-box">
+                <div class="article-inner">
+                    <h3>今日天气</h3>
+                    <p style="font-size: 2rem; text-align: center; margin: 10px 0;">🌤️</p>
+                    <p style="text-align: center;">企划群内气氛活跃<br>适合摸鱼</p>
+                </div>
+            </article>
+
+            <!-- Image Article -->
+            <article class="paper-article img-box">
+                <div class="article-inner">
+                    <h3>粉丝创作精选</h3>
+                    <img src="assets/img/fanart/1.jpeg" alt="Fanart" style="width: 100%; margin-top: 10px; filter: sepia(0.3);">
+                    <p class="caption">画师：未知</p>
+                </div>
+            </article>
+
+            <!-- Bottom Wide Article -->
+            <article class="paper-article wide-bottom">
+                <div class="article-inner">
+                    <h3>关于招募</h3>
+                    <div class="cols-2">
+                        <p>Aurora Project 持续招募有才华的创作者加入！无论你是画师、写手、还是像企鹅一样的 Bug 制造机（划掉）程序员，我们都欢迎你的加入。</p>
+                        <p>加入方式请点击网站右上角的“JOIN”按钮，或直接扫描宣传二维码。让我们一起为舒苒创造更多美好的回忆吧！</p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Advertisement Parody -->
+            <article class="paper-article ad-box">
+                <div class="article-inner" style="border: 2px dashed #000; padding: 10px; text-align: center;">
+                    <h4>广告位招租</h4>
+                    <p>这里可以放你的 OC 广告！</p>
+                    <small>联系企鹅 (QQ: 2815918449)</small>
+                </div>
+            </article>
+
+        </div>
+
+        <footer class="paper-footer">
+            Aurora Daily &copy; 2026 Aurora Project | 编辑：企划组 | 印刷：网页渲染引擎
+        </footer>
+    </div>
+
+    <script>
+        // Sidebar Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('active');
+        }
+
+        function handleFanartSubmit(e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('.submit-btn');
+            const fileInput = e.target.querySelector('input[type="file"]');
+            const originalText = btn.innerText;
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('请选择一张图片 / Please select an image.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            // 1. Convert file to Base64 to send via JSON (more reliable for Netlify Functions)
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function() {
+                const base64Data = reader.result.split(',')[1]; // Remove "data:image/png;base64," prefix
+
+                // Using Cloudflare Pages Functions
+                fetch(CONFIG.getApiBaseUrl() + '/api/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: base64Data,
+                        filename: file.name
+                    })
+                })
+                .then(response => {
+                return response.text().then(text => {
+                    if (response.ok) {
+                        try { return JSON.parse(text); } 
+                        catch (e) { return { src: text }; }
+                    }
+                    try {
+                        const errData = JSON.parse(text);
+                        throw new Error(errData.message || errData.error || text);
+                    } catch (e) {
+                        throw new Error(text || response.statusText);
+                    }
+                });
+            })
+            .then(data => {
+                console.log('Upload success:', data);
+                btn.innerText = 'SUCCESS!';
+                btn.style.background = '#000';
+                
+                // Get URL from Catbox response structure
+                const imgUrl = data.url || data.src || (typeof data === 'string' ? data : 'Unknown URL');
+
+                // Create success view
+                const sidebarContent = document.querySelector('.sidebar-content');
+                sidebarContent.innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="margin-bottom: 20px;">上传成功 / UPLOADED</h3>
+                        <img src="${imgUrl}" style="width: 100%; border: 2px solid #000; margin-bottom: 20px; box-shadow: 5px 5px 0 rgba(0,0,0,0.1);">
+                        
+                        <p style="text-align: left; font-weight: bold; margin-bottom: 5px;">图片链接 / URL:</p>
+                        <input type="text" value="${imgUrl}" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 2px solid #000;" readonly onclick="this.select()">
+                        
+                        <p style="text-align: left; font-weight: bold; margin-bottom: 5px;">嵌入代码 / Embed Code:</p>
+                        <textarea style="width: 100%; height: 100px; padding: 10px; border: 2px solid #000; font-family: monospace;" readonly onclick="this.select()">&lt;div class="gallery-item"&gt;
+    &lt;img src="${imgUrl}" alt="Fanart" loading="lazy"&gt;
+    &lt;div style="padding: 15px; background: #fff; border-top: 2px solid #000;"&gt;
+        &lt;span style="font-weight: 700; font-size: 0.9rem;"&gt;FANART&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</textarea>
+                        
+                        <button onclick="location.reload()" class="submit-btn" style="margin-top: 20px;">返回 / BACK</button>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.innerText = 'FAILED';
+                btn.style.background = 'red';
+                alert('上传失败 / Upload Failed:\n' + error.message);
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 1000);
+            });
+            }; // End reader.onload
+            reader.onerror = function(error) {
+                console.error('Error reading file:', error);
+                alert('读取文件失败 / File read error');
+            };
+        }
+    </script>
+
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+            
+            // ... routing logic ...
+        })();
+    </script>
+    <!-- Security Layer -->
+    <script src="assets/js/security.js"></script>
+    <!-- <script src="http://43.225.157.187:5000/static/tracker.js" data-site="aurora-news"></script> -->
+</body>
+</html>
