@@ -1339,19 +1339,48 @@
                 return;
             }
             
-            // Load User Info
+            // 1. Show Cached Info First
             const userStr = localStorage.getItem('aurora_user_info');
             if (userStr) {
-                const user = JSON.parse(userStr);
-                document.getElementById('profile-username').innerText = user.username || 'User';
-                document.getElementById('profile-email').innerText = user.email;
-                document.getElementById('profile-points').innerText = '💎 积分: ' + (user.points || 0);
-                document.getElementById('profile-username-input').value = user.username || '';
-                document.getElementById('profile-bio').value = user.bio || '';
-                document.getElementById('profile-avatar').src = user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png';
+                renderProfile(JSON.parse(userStr));
             }
             
             document.getElementById('profile-overlay').style.display = 'flex';
+
+            // 2. Fetch Latest Data from Server
+            fetchLatestProfile(token);
+        }
+
+        function renderProfile(user) {
+            document.getElementById('profile-username').innerText = user.username || 'User';
+            document.getElementById('profile-email').innerText = user.email;
+            document.getElementById('profile-points').innerText = '💎 积分: ' + (user.points || 0);
+            document.getElementById('profile-username-input').value = user.username || '';
+            document.getElementById('profile-bio').value = user.bio || '';
+            document.getElementById('profile-avatar').src = user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png';
+        }
+
+        async function fetchLatestProfile(token) {
+            try {
+                const res = await fetch('/api/auth_proxy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        action: 'get-profile', 
+                        token: token
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.user) {
+                        localStorage.setItem('aurora_user_info', JSON.stringify(data.user));
+                        renderProfile(data.user);
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to refresh profile', e);
+            }
         }
 
         async function updateProfile() {

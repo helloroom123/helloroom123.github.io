@@ -265,6 +265,29 @@ class AuthHandler(BaseHTTPRequestHandler):
                 else:
                     self._respond(500, {"error": "DB not connected"})
 
+            # 8. Get Profile (Refresh)
+            elif action == 'get-profile':
+                token = data.get('token')
+                try:
+                    decoded = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+                    email = decoded['email']
+                except:
+                    self._respond(401, {"error": "Invalid token"})
+                    return
+
+                if supabase:
+                    try:
+                        res = supabase.table('profiles').select("*").eq('email', email).execute()
+                        if res.data:
+                            self._respond(200, {"success": True, "user": res.data[0]})
+                        else:
+                            self._respond(404, {"error": "User not found"})
+                    except Exception as e:
+                        print(f"[Supabase Get Error] {e}")
+                        self._respond(500, {"error": "Database error"})
+                else:
+                    self._respond(500, {"error": "DB not connected"})
+
             else:
                 self._respond(400, {"error": "Invalid action"})
 
