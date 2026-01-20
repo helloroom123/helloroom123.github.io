@@ -82,6 +82,44 @@
             backdrop-filter: blur(5px);
         }
         
+        /* Search Box Styles */
+        .logo-container { position: relative; }
+        .search-box {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+            overflow: hidden;
+            width: 30px; /* Initial width (icon only) */
+            transition: width 0.4s ease;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 5px;
+        }
+        .logo-container:hover .search-box, .search-box:focus-within {
+            width: 200px; /* Expanded width */
+            background: rgba(255,255,255,0.9);
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 0 5px;
+            font-size: 0.8rem;
+            color: #000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .logo-container:hover .search-box input, .search-box:focus-within input {
+            opacity: 1;
+        }
+        .search-icon {
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 20px;
+            text-align: center;
+        }
+
         /* Dropdown Styles */
         .dropdown {
             position: relative;
@@ -214,6 +252,15 @@
         @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
     </style>
 
+    <!-- Search Results Overlay -->
+    <div id="search-results-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100004;justify-content:center;align-items:center;backdrop-filter:blur(5px);">
+        <div style="background:#fff;padding:20px;border-radius:16px;width:350px;max-height:80vh;overflow-y:auto;position:relative;">
+            <button onclick="document.getElementById('search-results-overlay').style.display='none'" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+            <h3 style="margin-bottom:15px;">搜索结果</h3>
+            <div id="search-results-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+    </div>
+
     <!-- Profile Overlay -->
     <div id="profile-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100003;justify-content:center;align-items:center;backdrop-filter:blur(5px);">
         <div style="background:#fff;padding:30px;border-radius:16px;width:350px;box-shadow:0 10px 40px rgba(0,0,0,0.3);position:relative;">
@@ -326,7 +373,13 @@
     </div>
 
     <nav class="navbar">
-        <div class="logo" onclick="toggleSidebar()">舒苒 AURORA</div>
+        <div class="logo-container" style="display:flex; align-items:center;">
+            <div class="logo" onclick="toggleSidebar()">舒苒 AURORA</div>
+            <div class="search-box">
+                <input type="text" id="user-search-input" placeholder="搜索用户..." onkeypress="handleUserSearch(event)">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
         <div class="nav-links" tabindex="0" aria-label="Navigation Menu">
             <a href="index.html#home">TOP</a>
             <a href="news_paper.html">NEWS</a>
@@ -1192,6 +1245,85 @@
                     input.focus();
                 }
             }
+        }
+
+        // User Search Logic
+        async function handleUserSearch(e) {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (!query) return;
+
+                // Show loading
+                const list = document.getElementById('search-results-list');
+                list.innerHTML = '<div style="text-align:center;">搜索中...</div>';
+                document.getElementById('search-results-overlay').style.display = 'flex';
+
+                try {
+                    const res = await fetch('/api/auth_proxy', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ action: 'search-users', query: query })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    list.innerHTML = '';
+                    if (res.ok && data.results && data.results.length > 0) {
+                        data.results.forEach(user => {
+                            const item = document.createElement('div');
+                            item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #eee;border-radius:8px;cursor:pointer;transition:background 0.2s;';
+                            item.onmouseover = () => item.style.background = '#f9f9f9';
+                            item.onmouseout = () => item.style.background = '#fff';
+                            item.onclick = () => viewUserProfile(user);
+                            
+                            item.innerHTML = `
+                                <img src="${user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png'}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                                <div>
+                                    <div style="font-weight:bold;">${user.username || 'Unknown'}</div>
+                                    <div style="font-size:0.8rem;color:#666;">${user.bio || '暂无简介'}</div>
+                                </div>
+                            `;
+                            list.appendChild(item);
+                        });
+                    } else {
+                        list.innerHTML = '<div style="text-align:center;color:#999;">未找到相关用户</div>';
+                    }
+                } catch (e) {
+                    list.innerHTML = '<div style="text-align:center;color:red;">搜索失败</div>';
+                }
+            }
+        }
+
+        function viewUserProfile(user) {
+            // Re-use profile overlay in read-only mode
+            document.getElementById('profile-username').innerText = user.username || 'User';
+            document.getElementById('profile-email').innerText = 'Email hidden'; // Protect privacy
+            document.getElementById('profile-username-input').parentElement.style.display = 'none'; // Hide inputs
+            document.getElementById('profile-bio').parentElement.style.display = 'block'; // Show bio label
+            document.getElementById('profile-bio').value = user.bio || '';
+            document.getElementById('profile-bio').readOnly = true;
+            document.getElementById('profile-avatar').src = user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png';
+            
+            // Hide buttons
+            const btns = document.querySelectorAll('#profile-overlay .auth-btn');
+            btns.forEach(b => b.style.display = 'none');
+            
+            document.getElementById('profile-overlay').style.display = 'flex';
+            document.getElementById('search-results-overlay').style.display = 'none'; // Close search list
+            
+            // Restore edit mode when closed
+            const closeBtn = document.querySelector('#profile-overlay button');
+            const originalClose = closeBtn.onclick;
+            closeBtn.onclick = () => {
+                document.getElementById('profile-overlay').style.display = 'none';
+                // Reset to edit mode (simple reload or manual reset)
+                setTimeout(() => {
+                    document.getElementById('profile-username-input').parentElement.style.display = 'block';
+                    document.getElementById('profile-bio').readOnly = false;
+                    btns.forEach(b => b.style.display = 'block');
+                    closeBtn.onclick = originalClose;
+                }, 500);
+            };
         }
 
         // Profile Logic

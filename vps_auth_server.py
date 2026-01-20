@@ -207,6 +207,27 @@ class AuthHandler(BaseHTTPRequestHandler):
                 else:
                      self._respond(400, {"error": "No data to update"})
 
+            # 6. Search Users
+            elif action == 'search-users':
+                query = data.get('query')
+                if not query:
+                    self._respond(400, {"error": "Query required"})
+                    return
+
+                if supabase:
+                    try:
+                        # Search by username or email (limit 5)
+                        # Note: Supabase Python SDK syntax might vary slightly based on version
+                        # using 'ilike' for case-insensitive search
+                        res = supabase.table('profiles').select("*").or_(f"username.ilike.%{query}%,email.ilike.%{query}%").limit(5).execute()
+                        
+                        self._respond(200, {"success": True, "results": res.data})
+                    except Exception as e:
+                        print(f"[Supabase Search Error] {e}")
+                        self._respond(500, {"error": "Search failed"})
+                else:
+                    self._respond(500, {"error": "Database not connected"})
+
             else:
                 self._respond(400, {"error": "Invalid action"})
 
