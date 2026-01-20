@@ -1240,10 +1240,12 @@
                     alert('资料已更新！');
                     openProfile(); // Refresh UI
                 } else {
-                    alert('更新失败: ' + (data.error || 'Unknown'));
+                    console.error('Update Profile Error:', data);
+                    alert('更新失败: ' + (data.error || data.message || JSON.stringify(data)));
                 }
             } catch (e) {
-                alert('网络错误');
+                console.error(e);
+                alert('网络错误: ' + e.message);
             }
         }
 
