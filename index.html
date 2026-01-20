@@ -167,6 +167,14 @@
     </style>
 </head>
 <body>
+            <!-- Video Overlay -->
+    <div id="video-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100005;justify-content:center;align-items:center;">
+        <div style="position:relative;width:80%;max-width:800px;aspect-ratio:16/9;">
+            <button onclick="closeVideo()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;">&times;</button>
+            <iframe id="yt-player" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+
     <!-- Agreement Overlay -->
     <div id="agreement-overlay">
         <div class="agreement-container">
@@ -251,6 +259,14 @@
         .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
         @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
     </style>
+
+    <!-- Video Overlay -->
+    <div id="video-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100005;justify-content:center;align-items:center;">
+        <div style="position:relative;width:80%;max-width:800px;aspect-ratio:16/9;background:#000;">
+            <button onclick="document.getElementById('video-overlay').style.display='none'; document.getElementById('bili-player').src='';" style="position:absolute;top:-40px;right:0;color:#fff;background:none;border:none;font-size:2rem;cursor:pointer;">&times;</button>
+            <iframe id="bili-player" src="" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="width:100%;height:100%;"></iframe>
+        </div>
+    </div>
 
     <!-- Search Results Overlay -->
     <div id="search-results-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100004;justify-content:center;align-items:center;backdrop-filter:blur(5px);">
@@ -563,8 +579,8 @@
                 <div class="staff-img-container">
                     <img src="assets/img/avatar/penguin.png" alt="企鹅" onerror="this.src='assets/img/placeholder.png'">
                         </div>
-                <!-- Link to Penguin Wiki Parody -->
-                <div class="staff-info" style="cursor: pointer;" onclick="window.location.href='wiki_penguin.html'" title="点击查看详情 (Wiki)">
+                <!-- Link to Penguin Video -->
+                <div class="staff-info" style="cursor: pointer;" onclick="openVideo('BV1F2hqzvEtw')" title="点击播放 (烧酒歌)">
                     <h3>企鹅</h3>
                     <p>SUPPORTER & WEB</p>
                     <small style="display:block; margin-top:5px; color:#666;">QQ: 2815918449</small>
@@ -1250,6 +1266,14 @@
                     input.focus();
                 }
             }
+        }
+
+        // Video Logic
+        function openVideo(bvid) {
+            const player = document.getElementById('bili-player');
+            // High quality, autoplay, no danmaku
+            player.src = `//player.bilibili.com/player.html?bvid=${bvid}&page=1&high_quality=1&danmaku=0`;
+            document.getElementById('video-overlay').style.display = 'flex';
         }
 
         // User Search Logic
