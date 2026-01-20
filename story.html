@@ -9,10 +9,29 @@
         body { margin: 0; padding: 0; background: #111; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
         #game-container { width: 100%; max-width: 800px; height: 600px; box-shadow: 0 0 20px rgba(0,255,0,0.2); }
         .back-btn { position: absolute; top: 20px; left: 20px; color: #fff; text-decoration: none; z-index: 100; font-weight: bold; }
+        .watermark {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 999;
+            text-align: right;
+        }
+        .watermark span {
+            display: block;
+            font-size: 10px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
     <a href="index.html" class="back-btn">← RETURN</a>
+    <div class="watermark">
+        WORK IN PROGRESS / 半成品演示
+        <span>仅做技术参考，不代表最终品质</span>
+    </div>
     <div id="game-container"></div>
 
     <script type="module">
