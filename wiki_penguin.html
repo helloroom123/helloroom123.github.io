@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企鹅 (首席战犯) - 维基百科，自由的百科全书</title>
+    <link rel="icon" href="https://zh.wikipedia.org/static/favicon/wikipedia.ico">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('assets/img/bg_aurora.png') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            color: #202122;
+        }
+        .wiki-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid #a7a7a7;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            height: 50px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .wiki-logo {
+            height: 40px;
+            margin-right: 20px;
+        }
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            min-height: 100vh;
+            border: none;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+            border-radius: 8px;
+            position: relative;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 5px;
+            background: linear-gradient(90deg, #00A86B, #58a6ff);
+            border-radius: 8px 8px 0 0;
+        }
+        .sidebar {
+            width: 176px;
+            padding-right: 20px;
+            font-size: 0.85em;
+            color: #54595d;
+        }
+        .main-content {
+            flex: 1;
+        }
+        h1 {
+            font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 5px;
+            margin-top: 0;
+            font-weight: normal;
+            font-size: 1.8em;
+        }
+        .site-sub {
+            font-size: 0.8em;
+            color: #54595d;
+            margin-bottom: 15px;
+        }
+        .infobox {
+            float: right;
+            clear: right;
+            width: 22em;
+            border: 1px solid #a2a9b1;
+            border-spacing: 3px;
+            background-color: #f8f9fa;
+            color: black;
+            margin: 0.5em 0 0.5em 1em;
+            padding: 0.2em;
+            font-size: 88%;
+            line-height: 1.5em;
+        }
+        .infobox th {
+            vertical-align: top;
+            text-align: left;
+            padding: 0.2em 0.4em;
+        }
+        .infobox td {
+            vertical-align: top;
+            padding: 0.2em 0.4em;
+        }
+        .infobox-title {
+            text-align: center;
+            font-size: 125%;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00A86B, #238636);
+            color: white;
+            padding: 0.5em;
+            border-radius: 2px 2px 0 0;
+        }
+        .infobox-image {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .infobox-image img {
+            max-width: 200px;
+            border: 1px solid #a2a9b1;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .mw-warning {
+            border: 1px solid #f28500;
+            background: #ffe;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+        }
+        .mw-warning img {
+            margin-right: 10px;
+            width: 40px;
+        }
+        a {
+            color: #3366cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        h2 {
+            font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+            border-bottom: 1px solid #a2a9b1;
+            margin-top: 1em;
+            padding-bottom: 5px;
+            font-size: 1.5em;
+            font-weight: normal;
+        }
+        .toc {
+            border: 1px solid #a2a9b1;
+            background-color: #f8f9fa;
+            padding: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .toc h3 {
+            margin: 0;
+            text-align: center;
+            font-size: 1em;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+        .red-link {
+            color: #ba0000;
+        }
+        code {
+            background-color: #f8f9fa;
+            border: 1px solid #eaecf0;
+            padding: 1px 4px;
+            font-family: monospace;
+        }
+        .log-entry {
+            border-left: 3px solid #3366cc;
+            padding-left: 10px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+        .log-date {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wiki-header">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Wikipedia-logo-v2.svg/200px-Wikipedia-logo-v2.svg.png" alt="Wiki Logo" class="wiki-logo">
+    <input type="text" placeholder="搜索维基百科" style="padding: 5px; width: 300px;">
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <p>首页</p>
+        <p>分类索引</p>
+        <p>特色内容</p>
+        <p>新闻动态</p>
+        <p>最近更改</p>
+        <p>随机条目</p>
+        <br>
+        <p>资助维基百科</p>
+    </div>
+
+    <div class="main-content">
+        <h1>企鹅 (首席战犯)</h1>
+        <div class="site-sub">维基百科，自由的百科全书</div>
+
+        <!-- Warning Box -->
+        <div class="mw-warning">
+            <div style="font-size: 30px; margin-right: 15px;">⚖️</div>
+            <div>
+                <b>本条目涉及的人物因“制作网页太慢”及“构建过度复杂的混合云架构”被 Aurora Project 国际法庭列为甲级战犯。</b><br>
+                请注意：该人物的代码库可能包含大量硬编码、魔法数字及危险的 <code>eval()</code> 调用。
+            </div>
+        </div>
+
+        <table class="infobox">
+            <tr>
+                <td colspan="2" class="infobox-title">企鹅 (Penguin)</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="infobox-image">
+                    <img src="assets/img/avatar/penguin.png" alt="企鹅照片">
+                    <div style="font-size: 0.9em; line-height: 1.2em; padding-top: 5px;">正在调试 "四层混合云架构" 的企鹅（2026年摄）</div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">原名</th>
+                <td>Spheniscidae Gezi (鸽子企鹅)</td>
+            </tr>
+            <tr>
+                <th scope="row">职业</th>
+                <td>全栈 Bug 工程师<br>首席运维 (自封)<br>甲级战犯</td>
+            </tr>
+            <tr>
+                <th scope="row">主要成就</th>
+                <td>搭建 Aurora 官网<br>实现 GitHub+Vercel+CF+VPS 四层套娃架构<br>成功在生产环境触发 500 错误</td>
+            </tr>
+            <tr>
+                <th scope="row">技术栈</th>
+                <td>Ctrl+C / Ctrl+V<br>HTML (写得像 C++)<br>Python (写得像 Java)</td>
+            </tr>
+            <tr>
+                <th scope="row">弱点</th>
+                <td>催更<br>DDOS 攻击<br>断网<br>Redeploy 按钮</td>
+            </tr>
+            <tr>
+                <th scope="row">活跃时期</th>
+                <td>2026年 - 至今</td>
+            </tr>
+        </table>
+
+        <p><b>企鹅</b>（英语：Penguin），是 <a href="index.html">Aurora Project</a> 的网站架构师、首席后端工程师及首席背锅侠。他以构建极其复杂、甚至有些多余的“四层混合云架构”而闻名于技术圈（笑话圈）。</p>
+
+        <p>企鹅在项目中主要负责网站的 <a href="index.html">前端页面</a>、<a href="monitor.html">群聊监控系统</a> 以及那个经常崩溃的 VPS 后端。</p>
+
+        <div class="toc">
+            <h3>目录</h3>
+            <ul>
+                <li><a href="#生平">1 生平</a></li>
+                <li><a href="#技术架构">2 技术架构 (四层套娃)</a></li>
+                <li><a href="#战犯行为">3 战犯行为</a></li>
+                <li><a href="#AI惨案">4 AI 防火墙惨案</a></li>
+                <li><a href="#DevLog">5 架构更新日志</a></li>
+                <li><a href="#评价">6 评价</a></li>
+            </ul>
+        </div>
+
+        <h2 id="生平">生平</h2>
+        <p>关于企鹅的早期生平知之甚少。据信他最早作为一个吉祥物混入了 Aurora 制作组。在一次酒后失言中，他承诺：“给我三天，我给舒苒整一个官网。”</p>
+        <p>这句承诺最终演变成了一场长达数周的拉锯战，史称“第一次企鹅防线战役”。在此期间，企鹅学会了如何在 Vercel 和 Cloudflare 之间反复横跳，以规避各种网络问题。</p>
+
+        <h2 id="技术架构">技术架构 (四层套娃)</h2>
+        <p>企鹅为 Aurora 官网设计了一套被称为“四层混合云”的奇观架构，据称是为了“安全性”和“高可用性”，实际上可能是为了炫技。</p>
+        <ul>
+            <li><b>第一层 (UI)</b>: 使用 GitHub Pages 托管静态资源，利用全球 CDN 加速。</li>
+            <li><b>第二层 (API)</b>: 使用 Vercel Serverless Functions 作为 API 网关，隐藏真实后端 IP。</li>
+            <li><b>第三层 (Channel)</b>: 使用 Pusher WebSocket 协议进行实时数据广播，实现群消息秒级同步。</li>
+            <li><b>第四层 (Core)</b>: 一台位于深海（指家里床底）的 4H4G VPS，运行着 QQ 机器人和 M 参数级本地 AI 模型。</li>
+        </ul>
+        <p>这套架构虽然复杂，但确实实现了“即使 VPS 爆炸，官网依然能打开（虽然全是 404）”的壮举。</p>
+
+        <h2 id="战犯行为">战犯行为</h2>
+        <h3>代码堆砌</h3>
+        <p>据不愿透露姓名的内部人员（HTML代码审查员）透露，企鹅编写的代码中含有大量不明意义的 <code>&lt;div&gt;</code> 嵌套，其层数之深足以让最新的浏览器引擎感到窒息。</p>
+        
+        <h3>跳脸惊吓事件</h3>
+        <p>2026年1月，企鹅在官网的宣传弹窗中恶意添加了名为“我不支持”的诱导性按钮，点击后会触发极高分贝的尖叫音效和全屏鬼图。此举被国际互联网公约认定为“反人类设计罪”。</p>
+
+        <h2 id="AI惨案">AI 防火墙惨案</h2>
+        <p>2026年1月19日，企鹅在部署 AI 防火墙时，错误地将“复读机检测”逻辑设置为“拦截所有输出”。这导致在长达 1 小时的时间里，所有群员的正常发言都被 AI 判定为垃圾广告并拦截，只有企鹅自己的测试消息偶尔能通过。</p>
+        <p>事后，企鹅辩称这是“为了防止人类本质（复读机）污染互联网”，随后被愤怒的群友拖出去打了一顿。</p>
+
+        <h2 id="DevLog">架构更新日志</h2>
+        
+        <div class="log-entry">
+            <div class="log-date">2026.01.20 - 全面防御与邮件服务部署 (Operation Iron Dome)</div>
+            <p>为应对日益复杂的网络环境及业务需求，企鹅对服务器进行了军事级别的加固，并成功部署了企业级邮件服务：</p>
+            <ul>
+                <li><b>📧 自建邮局上线</b>: 成功部署 Postfix + Dovecot 全套邮件服务，域名 <code>auroraproject.dpdns.org</code>。配置了 SPF/DKIM/DMARC 三重认证，邮件信誉度满分。Webmail 界面已上线。</li>
+                <li><b>🛡️ 服务器加固</b>: 部署了 UFW 严格防火墙策略（封锁所有 AI 端口），配置 Fail2Ban 自动封禁 SSH/SMTP 爆破 IP，并开启了内核级防 Ping (ICMP Drop)，让服务器在网络上“隐身”。</li>
+                <li><b>🚇 隧道隐身</b>: 验证服务 (9091) 与 AI 服务 (9092) 全部移入 Cloudflare Tunnel，实现后端“零端口暴露”。</li>
+                <li><b>⚔️ 前端防御</b>: 实装 <code>security.js</code> v3.0，包含防调试时间差检测、防油猴蜜罐陷阱、DOM 注入监控。</li>
+            </ul>
+        </div>
+
+        <div class="log-entry">
+            <div class="log-date">2026.01.19 - 工业革命与智能化 (Industrial AI)</div>
+            <p>这一天被认为是 Aurora Project 技术栈的“工业革命”，AI 能力与自动化水平大幅提升：</p>
+            <ul>
+                <li><b>🧠 AI 进化 (v5.0)</b>: 废弃本地小模型，全面集成 <b>DeepSeek API</b>。实装“上下文感知系统”，AI 现在能读取最近 15 条群聊记录、感知群氛围，并学会了根据网站 Wiki 进行角色扮演。</li>
+                <li><b>🧹 自动化运维</b>: 部署了 <code>db_cache_cleaner.py</code> 数据库吸尘器，配合 Cron 定时任务，每天凌晨 3 点自动清理日志、压缩 SQLite 数据库、释放磁盘空间。</li>
+                <li><b>🧪 MiniMind 实验</b>: 尝试在 VPS 上运行 1.21M 参数的超微型模型（虽然智商感人，但验证了端侧推理的可能性）。</li>
+                <li><b>⚡ 性能优化</b>: 重构 <code>bot_relay.js</code>，引入消息内存缓存机制，降低了数据库读取压力。</li>
+            </ul>
+        </div>
+
+        <h2 id="评价">评价</h2>
+        <ul>
+            <li><b>舒苒</b>：“只要官网能打开，我就不杀他。”</li>
+            <li><b>Cloudflare</b>：“这是我见过最奇怪的流量走向。”</li>
+            <li><b>GitHub Copilot</b>：“我不想补全他的代码，太乱了。”</li>
+        </ul>
+
+    </div>
+</div>
+
+<!-- Security Script Injection -->
+<script src="assets/js/security.js"></script>
+
+</body>
+</html>

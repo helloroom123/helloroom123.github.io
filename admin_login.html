@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM ACCESS // AURORA</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --border-color: #30363d;
+            --accent-color: #58a6ff;
+            --success-color: #238636;
+            --error-color: #da3633;
+        }
+        body {
+            background: url('assets/img/bg_aurora.png') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .login-box {
+            width: 350px;
+            padding: 30px;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(22, 27, 34, 0.7);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            animation: scan 2s infinite linear;
+        }
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        h2 {
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #8b949e;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            background: #0d1117;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: var(--accent-color);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--success-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: opacity 0.3s;
+        }
+        button:disabled {
+            background: #30363d;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .status-msg {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            text-align: center;
+            min-height: 1.2em;
+        }
+        .spam-warning {
+            font-size: 0.75rem;
+            color: #d29922;
+            margin-top: 10px;
+            border: 1px dashed #d29922;
+            padding: 8px;
+            display: none;
+        }
+        
+        /* Code Input Area (Hidden initially) */
+        #step-2 {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>Admin Access</h2>
+        
+        <!-- Step 1: Email -->
+        <div id="step-1">
+            <div class="input-group">
+                <label>IDENTIFIER (EMAIL)</label>
+                <input type="email" id="email" placeholder="admin@aurora.project" autofocus>
+            </div>
+            <button onclick="sendCode()" id="btn-send">SEND VERIFICATION</button>
+            <div class="spam-warning" id="spam-hint">
+                ⚠️ 注意：由于服务器无域名，验证邮件极大概率在您的【垃圾箱】中。发件人将显示为 root@43.225...
+            </div>
+        </div>
+
+        <!-- Step 2: Code -->
+        <div id="step-2">
+            <div class="input-group">
+                <label>ACCESS CODE (6-DIGIT)</label>
+                <input type="text" id="code" placeholder="XXXXXX" maxlength="6" style="letter-spacing: 5px; text-align: center; font-size: 1.2rem;">
+            </div>
+            <button onclick="verifyCode()" id="btn-verify">AUTHENTICATE</button>
+            <div style="text-align: center; margin-top: 10px;">
+                <a href="#" onclick="location.reload()" style="color: #8b949e; font-size: 0.8rem; text-decoration: none;">Retry / Resend</a>
+            </div>
+        </div>
+
+        <div class="status-msg" id="status">Ready.</div>
+    </div>
+
+    <script src="assets/js/security.js"></script>
+    <script>
+        // Use Vercel Proxy instead of direct IP
+        const PROXY_API = '/api/auth_proxy';
+        let userEmail = '';
+
+        async function sendCode() {
+            const email = document.getElementById('email').value;
+            const status = document.getElementById('status');
+            const btn = document.getElementById('btn-send');
+
+            if (!email.includes('@')) {
+                status.style.color = 'var(--error-color)';
+                status.textContent = 'Invalid Email Format.';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'TRANSMITTING...';
+            status.style.color = 'var(--text-color)';
+            status.textContent = 'Connecting to SMTP Relay (Secure Proxy)...';
+
+            try {
+                // Request to Proxy
+                const res = await fetch(PROXY_API, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'send-code', email: email })
+                });
+
+                if (res.ok) {
+                    userEmail = email;
+                    document.getElementById('step-1').style.display = 'none';
+                    document.getElementById('step-2').style.display = 'block';
+                    document.getElementById('code').focus();
+                    status.style.color = 'var(--success-color)';
+                    status.textContent = 'Code Sent. CHECK SPAM FOLDER.';
+                } else {
+                    throw new Error('Server rejected request');
+                }
+            } catch (e) {
+                console.error(e);
+                status.textContent = 'Connection Failed. (Auth Service Unavailable)';
+                status.style.color = 'var(--error-color)';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'SEND VERIFICATION';
+                document.getElementById('spam-hint').style.display = 'block';
+            }
+        }
+
+        async function verifyCode() {
+            const code = document.getElementById('code').value;
+            const status = document.getElementById('status');
+            
+            if (code.length < 6) return;
+
+            try {
+                // Request to Proxy
+                const res = await fetch(PROXY_API, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'verify-code', email: userEmail, code: code })
+                });
+                
+                const data = await res.json();
+
+                if (data.status === 'ok' || data.success) {
+                    status.style.color = 'var(--success-color)';
+                    status.textContent = 'ACCESS GRANTED.';
+                    // Set Login Flag
+                    localStorage.setItem('aurora_admin_token', 'logged_in_' + Date.now());
+                    setTimeout(() => {
+                        window.location.href = 'admin_news.html';
+                    }, 1000);
+                } else {
+                    status.style.color = 'var(--error-color)';
+                    status.textContent = 'ACCESS DENIED. Invalid Code.';
+                }
+            } catch (e) {
+                status.textContent = 'Error verifying code.';
+            }
+        }
+        
+        // Enter key support
+        document.getElementById('email').addEventListener('keypress', e => { if(e.key==='Enter') sendCode() });
+        document.getElementById('code').addEventListener('keypress', e => { if(e.key==='Enter') verifyCode() });
+    </script>
+</body>
+</html>

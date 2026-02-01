@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>瓦狗 - 维基百科，自由的百科全书</title>
+    <link rel="icon" href="https://zh.wikipedia.org/static/favicon/wikipedia.ico" type="image/x-icon">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/security.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f6f6f6; /* Wiki 背景灰 */
+            color: #202122;
+            margin: 0;
+            padding: 0;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #3366cc;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        a:visited {
+            color: #5a3696;
+        }
+
+        /* Wiki Layout */
+        .mw-page-container {
+            background: #fff;
+            max-width: 100%;
+            display: flex;
+        }
+
+        .mw-sidebar {
+            width: 176px;
+            padding: 20px 0 20px 20px;
+            flex-shrink: 0;
+            display: none; /* Mobile hide */
+        }
+
+        @media (min-width: 1000px) {
+            .mw-sidebar { display: block; }
+            .mw-content { padding-left: 20px; }
+        }
+
+        .mw-content {
+            flex: 1;
+            padding: 20px;
+            background: #fff;
+            border: 1px solid #a7d7f9;
+            border-top: none;
+            min-height: 100vh;
+        }
+        
+        /* Wiki Header */
+        h1#firstHeading {
+            font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            margin-bottom: 0.25em;
+            border-bottom: 1px solid #a2a9b1;
+            padding-bottom: 5px;
+        }
+
+        #siteSub {
+            font-size: 0.8rem;
+            color: #54595d;
+            margin-bottom: 0.5em;
+        }
+
+        /* Infobox */
+        .infobox {
+            border: 1px solid #a2a9b1;
+            border-spacing: 3px;
+            background-color: #f8f9fa;
+            color: black;
+            margin: 0.5em 0 0.5em 1em;
+            padding: 0.2em;
+            float: right;
+            clear: right;
+            font-size: 88%;
+            line-height: 1.5em;
+            width: 22em;
+        }
+
+        .infobox caption {
+            font-size: 125%;
+            font-weight: bold;
+            padding: 0.2em;
+        }
+
+        .infobox th {
+            vertical-align: top;
+            text-align: left;
+            background-color: #f2f2f4; /* 浅灰表头 */
+            padding: 0.2em 0.4em;
+            font-weight: bold;
+        }
+
+        .infobox td {
+            vertical-align: top;
+            padding: 0.2em 0.4em;
+        }
+
+        .infobox-image {
+            text-align: center;
+            padding-bottom: 0.5em;
+        }
+
+        .infobox-image img {
+            max-width: 200px;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+
+        /* TOC */
+        #toc {
+            background-color: #f8f9fa;
+            border: 1px solid #a2a9b1;
+            display: inline-block;
+            padding: 7px;
+            margin-top: 1em;
+            font-size: 95%;
+        }
+
+        #toc h2 {
+            display: inline;
+            border: none;
+            padding: 0;
+            font-size: 100%;
+            font-weight: bold;
+            font-family: sans-serif;
+        }
+
+        #toc ul {
+            list-style-type: none;
+            list-style-image: none;
+            margin-left: 0;
+            padding-left: 0;
+            margin-top: 5px;
+        }
+
+        #toc li {
+            margin-bottom: 0.3em;
+        }
+
+        #toc .tocnumber {
+            color: #202122;
+            padding-right: 0.3em;
+        }
+
+        /* Headings */
+        h2 {
+            font-family: 'Linux Libertine', 'Georgia', 'Times', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            border-bottom: 1px solid #a2a9b1;
+            margin-top: 1em;
+            margin-bottom: 0.6em;
+            padding-bottom: 0.3em;
+        }
+
+        h3 {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-top: 0.8em;
+            margin-bottom: 0.3em;
+        }
+
+        /* Content Text */
+        p {
+            margin: 0.5em 0 1em 0;
+        }
+
+        ul {
+            list-style-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='13'%3E%3Ccircle cx='2.5' cy='9' r='2.5' fill='%23202122'/%3E%3C/svg%3E");
+            margin-left: 1.5em;
+        }
+
+        /* References */
+        .references {
+            font-size: 90%;
+        }
+        
+        sup.reference {
+            font-size: 80%;
+            vertical-align: super;
+            line-height: 0;
+        }
+
+        /* Warning Box */
+        .ambox {
+            border: 1px solid #a2a9b1;
+            border-left: 10px solid #f28500; /* Orange for content warning */
+            background: #fbfbfb;
+            margin: 0 10% 1em;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .ambox-image {
+            padding-right: 10px;
+        }
+
+        .ambox-text {
+            font-size: 90%;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="mw-page-container">
+    <div class="mw-sidebar">
+        <!-- Wiki Logo Placeholder -->
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/Wikipedia-logo-v2.svg" style="width: 135px; margin-bottom: 20px; opacity: 0.7;">
+        
+        <div style="font-size: 0.85rem; color: #54595d;">
+            <div style="padding: 0.5em 0; border-bottom: 1px solid #eaecf0;">首页</div>
+            <div style="padding: 0.5em 0; border-bottom: 1px solid #eaecf0;">分类索引</div>
+            <div style="padding: 0.5em 0; border-bottom: 1px solid #eaecf0;">特色内容</div>
+            <div style="padding: 0.5em 0; border-bottom: 1px solid #eaecf0;">新闻动态</div>
+            <div style="padding: 0.5em 0; border-bottom: 1px solid #eaecf0; margin-top: 20px;">最近更改</div>
+            <div style="padding: 0.5em 0; border-bottom: 1px solid #eaecf0;"><a href="index.html">返回 Aurora 官网</a></div>
+        </div>
+    </div>
+
+    <div class="mw-content">
+        <!-- Site Notice -->
+        <div id="siteSub">维基百科，自由的百科全书</div>
+        
+        <!-- Warning Banner -->
+        <div class="ambox">
+            <div class="ambox-image">
+                <div style="width: 40px; text-align: center; font-size: 24px;">⚠️</div>
+            </div>
+            <div class="ambox-text">
+                <b>此条目可能包含不适合所有观众的内容。</b><br>
+                部分内容涉及网络欺凌、骚扰及非伦理行为，请读者自行斟酌阅读。
+            </div>
+        </div>
+
+        <h1 id="firstHeading">瓦狗</h1>
+        
+        <!-- Infobox -->
+        <table class="infobox">
+            <caption>瓦狗</caption>
+            <tbody>
+                <tr>
+                    <td colspan="2" class="infobox-image">
+                        <img src="神人大头/63d665cda338a0fda195398ea6cb6cdf.jpg" alt="瓦狗头像1">
+                        <div style="font-size: 90%; line-height: 1.2; padding-top: 3px;">瓦狗的社交账号头像之一</div>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="2" class="infobox-image">
+                        <img src="神人大头/ed380906e313f8b3e5cb33349cf82b12.jpg" alt="瓦狗头像2">
+                         <div style="font-size: 90%; line-height: 1.2; padding-top: 3px;">瓦狗的另一常用头像</div>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">本名</th>
+                    <td>未知</td>
+                </tr>
+                <tr>
+                    <th scope="row">别名</th>
+                    <td>CDZ.Waleyuan、Yechen、瓦狗</td>
+                </tr>
+                <tr>
+                    <th scope="row">出生</th>
+                    <td>2003年（21岁）</td>
+                </tr>
+                <tr>
+                    <th scope="row">活跃圈子</th>
+                    <td>Pretty Blood (PB) 圈</td>
+                </tr>
+                 <tr>
+                    <th scope="row">职业</th>
+                    <td>大专在读学生</td>
+                </tr>
+                <tr>
+                    <th scope="row">知名原因</th>
+                    <td>
+                        <ul>
+                            <li>Pretty Blood 圈最恶性瓜人</li>
+                            <li>性骚扰争议</li>
+                            <li>网络诈骗指控</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p><b>瓦狗</b>（英语：Wagou），曾用名<b>CDZ.Waleyuan</b>、<b>Yechen</b>，是中国大陆互联网Pretty Blood（简称PB）圈的一名网络用户。因其涉及多起性骚扰、网络欺凌、诈骗及非伦理创作事件，被社群视为“PB圈最恶性的瓜人”<sup id="cite_ref-1" class="reference"><a href="#cite_note-1">[1]</a></sup>。也有人将其戏称为“PB圈的狮忆”。</p>
+
+        <div id="toc">
+            <h2>目录</h2>
+            <ul>
+                <li><a href="#争议事件"><span class="tocnumber">1</span> <span class="toctext">争议事件</span></a>
+                    <ul>
+                        <li><a href="#性骚扰指控"><span class="tocnumber">1.1</span> <span class="toctext">性骚扰指控</span></a></li>
+                        <li><a href="#非伦理创作"><span class="tocnumber">1.2</span> <span class="toctext">非伦理创作</span></a></li>
+                        <li><a href="#网络欺凌与双重标准"><span class="tocnumber">1.3</span> <span class="toctext">网络欺凌与双重标准</span></a></li>
+                        <li><a href="#虚假人设与诈骗"><span class="tocnumber">1.4</span> <span class="toctext">虚假人设与诈骗</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="#个人生活"><span class="tocnumber">2</span> <span class="toctext">个人生活</span></a></li>
+                <li><a href="#社群评价"><span class="tocnumber">3</span> <span class="toctext">社群评价</span></a></li>
+                <li><a href="#参考资料"><span class="tocnumber">4</span> <span class="toctext">参考资料</span></a></li>
+            </ul>
+        </div>
+
+        <h2 id="争议事件">争议事件</h2>
+        
+        <h3 id="性骚扰指控">性骚扰指控</h3>
+        <p>据多名受害者指控，瓦狗在明知对方为未成年人的情况下，仍发送色情图片进行骚扰。其行为包括但不限于发送裸照、不雅部位特写等<sup id="cite_ref-2" class="reference"><a href="#cite_note-2">[2]</a></sup>。此外，他还被指控有严重的“露出癖”和特殊性癖（如闻特定液体等），并在公共网络空间散布相关言论。</p>
+
+        <h3 id="非伦理创作">非伦理创作</h3>
+        <p>瓦狗的创作内容大多涉及重度色情（NSFW）及猎奇元素。他被指控对自己及他人的原创角色（OC）进行恶搞和侮辱性创作：</p>
+        <ul>
+            <li><b>魔改OC</b>：将自己或他人的OC进行性转，并绘制涉及性暴力、排泄物等元素的图像。</li>
+            <li><b>AI滥用</b>：将自己的OC喂给AI生成低俗内容。</li>
+            <li><b>侮辱角色</b>：曾扬言让动漫角色对其OC进行不当行为，表现出极度扭曲的占有欲和性幻想。</li>
+        </ul>
+
+        <h3 id="网络欺凌与双重标准">网络欺凌与双重标准</h3>
+        <p>瓦狗在社群管理中表现出强烈的双重标准。据称，他在担任某资源群群主期间：</p>
+        <ul>
+            <li><b>欺软怕硬</b>：对于年龄较小或性格温和的用户，采取辱骂、发色图等方式进行霸凌；对于强硬的用户，则采取“卖惨”、“装委屈”的策略。</li>
+            <li><b>独裁管理</b>：发生争执时，往往不分青红皂白对全体成员禁言，随后扮演受害者角色。</li>
+            <li><b>纵容违规</b>：打着“资源共享”的旗号建立群组，实则纵容群内传播低俗内容，甚至组织所谓的“银帕”（淫乱派对）。</li>
+        </ul>
+
+        <h3 id="虚假人设与诈骗">虚假人设与诈骗</h3>
+        <p>瓦狗曾多次虚构个人背景以博取关注或进行恐吓。例如，他曾声称自己的祖父是福建省省长、母亲是公安厅官员，但这些说法均被证实为虚假<sup id="cite_ref-3" class="reference"><a href="#cite_note-3">[3]</a></sup>。此外，他还曾自导自演“被敲诈”的戏码，实则是自愿赠予他人财物后反悔，并试图通过家长介入索回，期间辱骂受害者。</p>
+
+        <h2 id="个人生活">个人生活</h2>
+        <p>据知情人士透露，现实生活中的瓦狗与其网络形象存在巨大反差。尽管已年满21岁并在大专就读，他仍表现出缺乏独立生活能力的特征（被称为“巨婴”）。例如，他在学校仍需上交手机，遇到冲突时倾向于寻求家长出面解决。在校期间，他曾因不当行为（如上课期间进行猥亵动作）受到校方处分。</p>
+
+        <h2 id="社群评价">社群评价</h2>
+        <p>Pretty Blood 圈内普遍对瓦狗持负面评价。大部分用户认为他是圈内的“毒瘤”，其行为严重破坏了社群的交流氛围。有评论指出：“PB圈至今我都没有看到过一个像瓦狗一样低智商且瓜很多的。”</p>
+        <p>尽管瓦狗曾多次声称要“退圈”，但随后又以不同身份或账号回归，继续其争议行为。</p>
+
+        <h2 id="参考资料">参考资料</h2>
+        <div class="references">
+            <ol>
+                <li id="cite_note-1"><a href="#cite_ref-1">^</a> 《关于瓦狗(资源五群前群主CDZ.Waleyuan现Yechen)的瓜条》，2026年收录。</li>
+                <li id="cite_note-2"><a href="#cite_ref-2">^</a> 聊天记录存档 [RECORD 01-10]。</li>
+                <li id="cite_note-3"><a href="#cite_ref-3">^</a> 社群成员证词及背景调查。</li>
+            </ol>
+        </div>
+
+        <div style="border-top: 1px solid #a2a9b1; margin-top: 40px; padding-top: 10px; font-size: 0.8rem; color: #54595d;">
+            <p>本页面最后修订于 2026年1月19日 (星期一) 22:45。</p>
+            <p>本站的全部文字在<a href="#">知识共享 署名-相同方式共享 4.0 协议</a>之条款下提供，附加条款亦可能应用。（请注意：本页面内容基于用户提供的“瓜条”整理，仅供娱乐与警示，不代表维基百科或Aurora Project官方立场。）</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

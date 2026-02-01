@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
+            }
+
+            fetch('https://api.country.is').then(res=>res.json()).then(d=>{
+                if(d.country==='CN' && !redirected){
+                    redirected=true;
+                    window.location.href='https://'+cfHost+window.location.pathname+window.location.search+window.location.hash;
+                }
+            }).catch(e=>{});
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>恶俗消除计划</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Noto Serif SC', serif;
+            color: #fff;
+            touch-action: none; /* Prevent scroll on mobile */
+        }
+
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100vh;
+            image-rendering: pixelated;
+        }
+
+        /* UI Overlays */
+        #introScreen, #gameOverScreen, #titleScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            z-index: 10;
+            text-align: center;
+        }
+
+        /* HK97 Style Intro Text */
+        .scrolling-text {
+            width: 80%;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #fff;
+            text-shadow: 2px 2px #f00;
+            white-space: pre-wrap;
+            position: absolute;
+            bottom: -100%; /* Start below screen */
+            animation: scrollUp 15s linear forwards;
+            font-weight: bold;
+        }
+
+        @keyframes scrollUp {
+            0% { bottom: -50%; }
+            100% { bottom: 120%; }
+        }
+
+        /* Title Screen Style */
+        .game-title {
+            font-size: 3rem;
+            color: #ff0;
+            text-shadow: 4px 4px #f00;
+            margin-bottom: 20px;
+            border: 5px solid #fff;
+            padding: 10px;
+            background: blue;
+            transform: rotate(-2deg);
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #0f0;
+            margin-bottom: 40px;
+        }
+
+        .start-btn {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            background: #f00;
+            color: #ff0;
+            border: 4px solid #fff;
+            cursor: pointer;
+            font-family: 'Noto Serif SC', serif;
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Portrait styling box */
+        .portrait-box {
+            width: 100px;
+            height: 120px;
+            background: #555;
+            border: 2px solid white;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .portrait-img {
+            font-size: 60px;
+            line-height: 100px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* CRT Scanline Effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <!-- Intro Text Sequence -->
+    <div id="introScreen">
+        <div class="portrait-box" style="position:absolute; top: 10%; right: 10%;">
+            <div class="portrait-img">👮‍♂️</div>
+        </div>
+        <div class="portrait-box" style="position:absolute; top: 20%; left: 10%; border-color: red;">
+            <div class="portrait-img">👺</div>
+        </div>
+        
+        <div class="scrolling-text" id="introText">
+二五年来了
+来自pb圈对瓦狗的迫害一遇到来
+有很多二创发生！因此暴力呼叫了瓦狗的亲戚特种兵(TeZhongBing)
+委托地进行恶俗消除计划。特种兵是消除恶俗迫害的专家将恶俗迫害一个不留的消灭巴
+但是在资源五方面，死了的瓦狗被他们改造成巨大武器！
+        </div>
+    </div>
+
+    <!-- Title Screen -->
+    <div id="titleScreen" class="hidden">
+        <h1 class="game-title">恶俗消除计划</h1>
+        <div class="subtitle">VULGAR ELIMINATION PLAN</div>
+        <div style="font-size: 80px; margin: 20px;">👮‍♂️🔫</div>
+        <button class="start-btn" onclick="startGame()">开始游戏 (START)</button>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="hidden">
+        <h1 style="color:red; font-size: 4rem; text-shadow: 2px 2px white;">特 死 亡</h1>
+        <p id="finalScore" style="color: yellow; font-size: 2rem;"></p>
+        <button class="start-btn" onclick="resetGame()">再来一次</button>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        // Game Constants
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Screens
+        const introScreen = document.getElementById('introScreen');
+        const titleScreen = document.getElementById('titleScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const scoreEl = document.getElementById('finalScore');
+
+        // State
+        let gameState = 'INTRO'; // INTRO, TITLE, PLAYING, GAMEOVER
+        let animationFrameId;
+        let lastTime = 0;
+        let score = 0;
+        let gameTime = 0;
+
+        // Assets (Using Emojis/Shapes as assets to keep single file)
+        const PLAYER_EMOJI = '👮‍♂️';
+        const ENEMY_EMOJI = '👺';
+        const BOSS_EMOJI = '🤖'; // Mecha Wagou
+        const PROJECTILE_COLOR = '#ffff00';
+
+        // Entities
+        let player = { x: 0, y: 0, size: 40, speed: 5, cooldown: 0 };
+        let bullets = [];
+        let enemies = [];
+        let boss = null;
+        let explosions = [];
+
+        // Audio Context (Synthesizer for retro sounds)
+        let audioCtx;
+        
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'shoot') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'hit') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'die') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 1.0);
+                gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 1.0);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.0);
+            }
+        }
+
+        // Resize handling
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if(gameState === 'TITLE' || gameState === 'INTRO') return;
+            // Keep player in bounds on resize
+            player.x = Math.min(player.x, canvas.width - player.size);
+            player.y = Math.min(player.y, canvas.height - player.size);
+        }
+        window.addEventListener('resize', resize);
+
+        // Input handling
+        let keys = {};
+        let mouseX = 0;
+        let mouseY = 0;
+        let isMouseDown = false;
+
+        window.addEventListener('keydown', e => keys[e.key] = true);
+        window.addEventListener('keyup', e => keys[e.key] = false);
+        
+        // Touch/Mouse logic for simple gameplay
+        const handleInputMove = (x, y) => {
+            mouseX = x;
+            mouseY = y;
+            // In HK97, movement is slippery, but we'll make it follow cursor for better playability
+            player.x = x - player.size / 2;
+            player.y = y - player.size / 2;
+        };
+
+        canvas.addEventListener('mousemove', e => handleInputMove(e.clientX, e.clientY));
+        canvas.addEventListener('mousedown', () => { isMouseDown = true; });
+        canvas.addEventListener('mouseup', () => { isMouseDown = false; });
+        
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            handleInputMove(e.touches[0].clientX, e.touches[0].clientY);
+            isMouseDown = true; // Auto shoot on touch move
+        }, {passive: false});
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            handleInputMove(e.touches[0].clientX, e.touches[0].clientY);
+            isMouseDown = true;
+        }, {passive: false});
+        canvas.addEventListener('touchend', () => { isMouseDown = false; });
+
+        // --- Core Logic ---
+
+        function showTitle() {
+            gameState = 'TITLE';
+            introScreen.classList.add('hidden');
+            titleScreen.classList.remove('hidden');
+            gameOverScreen.classList.add('hidden');
+            resize();
+        }
+
+        // Handle Intro Sequence
+        setTimeout(() => {
+            if (gameState === 'INTRO') {
+                showTitle();
+            }
+        }, 14000); // Wait for text to scroll mostly
+
+        // Skip intro on click
+        introScreen.addEventListener('click', () => {
+            if (gameState === 'INTRO') showTitle();
+        });
+
+        function startGame() {
+            initAudio();
+            gameState = 'PLAYING';
+            titleScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            
+            // Reset game objects
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 100;
+            bullets = [];
+            enemies = [];
+            explosions = [];
+            boss = null;
+            score = 0;
+            gameTime = 0;
+
+            resize();
+            lastTime = performance.now();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resetGame() {
+            showTitle();
+        }
+
+        function gameOver() {
+            gameState = 'GAMEOVER';
+            playSound('die');
+            scoreEl.innerText = "你的得分: " + score;
+            gameOverScreen.classList.remove('hidden');
+            
+            // Upload Score -> Points
+            uploadScore(score);
+        }
+
+        async function uploadScore(score) {
+            const token = localStorage.getItem('aurora_user_token');
+            if (!token) return; // Not logged in
+
+            try {
+                // Determine API URL
+                const apiUrl = window.location.hostname.includes('pages.dev') ? '/api/auth_proxy' : '/api/auth_proxy'; // Adjust if needed
+                
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        action: 'add-points', 
+                        token: token,
+                        amount: Math.floor(score / 10), // 10 score = 1 point
+                        reason: '瓦狗97'
+                    })
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    if(data.success) {
+                        const notif = document.createElement('div');
+                        notif.innerText = `获得 ${Math.floor(score/10)} 积分! (当前: ${data.points})`;
+                        notif.style.cssText = "position:absolute;top:10px;left:50%;transform:translateX(-50%);background:green;color:white;padding:10px;z-index:100;";
+                        document.body.appendChild(notif);
+                        setTimeout(() => notif.remove(), 3000);
+                    }
+                }
+            } catch (e) {
+                console.error("Score upload failed", e);
+            }
+        }
+
+        function spawnEnemy() {
+            // Regular enemies
+            if (!boss && Math.random() < 0.05 + (score * 0.001)) { 
+                enemies.push({
+                    x: Math.random() * (canvas.width - 40),
+                    y: -50,
+                    size: 40,
+                    speed: 2 + Math.random() * 3,
+                    type: 'normal',
+                    vx: (Math.random() - 0.5) * 2
+                });
+            }
+
+            // Spawn Boss after score 50
+            if (score >= 50 && !boss) {
+                boss = {
+                    x: canvas.width / 2 - 60,
+                    y: -120,
+                    w: 120,
+                    h: 120,
+                    hp: 50,
+                    maxHp: 50,
+                    vx: 3,
+                    vy: 1,
+                    state: 'entering'
+                };
+            }
+        }
+
+        function update(dt) {
+            gameTime += dt;
+
+            // Player Cooldown
+            if (player.cooldown > 0) player.cooldown -= dt;
+
+            // Auto-fire if mouse down or on mobile
+            if (isMouseDown && player.cooldown <= 0) {
+                bullets.push({
+                    x: player.x + player.size / 2,
+                    y: player.y,
+                    r: 6,
+                    vy: -15,
+                    type: 'player'
+                });
+                player.cooldown = 100; // ms
+                playSound('shoot');
+            }
+
+            // Update Bullets
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i];
+                b.x += (b.vx || 0);
+                b.y += b.vy;
+
+                // Remove offscreen
+                if (b.y < -20 || b.y > canvas.height + 20) {
+                    bullets.splice(i, 1);
+                    continue;
+                }
+
+                // Check collisions
+                // Bullet hit Enemy
+                if (b.type === 'player') {
+                    // Check against enemies
+                    for (let j = enemies.length - 1; j >= 0; j--) {
+                        let e = enemies[j];
+                        if (checkRectCircle(e.x, e.y, e.size, e.size, b.x, b.y, b.r)) {
+                            // Hit enemy
+                            createExplosion(e.x + e.size/2, e.y + e.size/2);
+                            enemies.splice(j, 1);
+                            bullets.splice(i, 1);
+                            score++;
+                            playSound('hit');
+                            break;
+                        }
+                    }
+                    
+                    // Check against Boss
+                    if (boss && b) { // Check b exists (might have hit enemy)
+                        if (checkRectCircle(boss.x, boss.y, boss.w, boss.h, b.x, b.y, b.r)) {
+                            createExplosion(b.x, b.y, 'small');
+                            boss.hp--;
+                            bullets.splice(i, 1);
+                            playSound('hit');
+                            if (boss.hp <= 0) {
+                                createExplosion(boss.x + boss.w/2, boss.y + boss.h/2, 'huge');
+                                score += 100; // Boss kill bonus
+                                boss = null;
+                                // In HK97, the game just continues endlessly usually, or resets. 
+                                // Let's keep it endless loop but reset difficulty slightly
+                            }
+                        }
+                    }
+                } else if (b.type === 'enemy') {
+                     if (checkRectCircle(player.x + 10, player.y + 10, player.size - 20, player.size - 20, b.x, b.y, b.r)) {
+                         gameOver();
+                     }
+                }
+            }
+
+            // Update Enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i];
+                e.y += e.speed;
+                e.x += e.vx;
+
+                // Bounce off walls
+                if (e.x <= 0 || e.x + e.size >= canvas.width) e.vx *= -1;
+
+                // Collision with Player (Instant Death)
+                if (checkRectCollision(player.x + 10, player.y + 10, player.size - 20, player.size - 20, e.x, e.y, e.size, e.size)) {
+                    gameOver();
+                }
+
+                if (e.y > canvas.height) {
+                    enemies.splice(i, 1);
+                }
+            }
+
+            // Update Boss
+            if (boss) {
+                if (boss.state === 'entering') {
+                    boss.y += 2;
+                    if (boss.y > 50) boss.state = 'fight';
+                } else {
+                    boss.x += boss.vx;
+                    if (boss.x <= 0 || boss.x + boss.w >= canvas.width) boss.vx *= -1;
+                    
+                    // Boss attack
+                    if (Math.random() < 0.05) {
+                        bullets.push({
+                            x: boss.x + boss.w/2,
+                            y: boss.y + boss.h,
+                            r: 10,
+                            vy: 6,
+                            vx: (Math.random() - 0.5) * 4,
+                            type: 'enemy'
+                        });
+                    }
+                }
+                
+                // Boss Collision Body
+                if (checkRectCollision(player.x, player.y, player.size, player.size, boss.x, boss.y, boss.w, boss.h)) {
+                    gameOver();
+                }
+            }
+
+            spawnEnemy();
+
+            // Explosions
+            for(let i=explosions.length-1; i>=0; i--){
+                explosions[i].life -= dt;
+                if(explosions[i].life <= 0) explosions.splice(i,1);
+            }
+        }
+
+        function draw() {
+            // Draw Background (Retro scrolling pattern)
+            // Use canvas pattern or simple clear
+            ctx.fillStyle = '#220000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw weird retro background pattern
+            ctx.fillStyle = '#440000';
+            const stripOffset = (gameTime / 10) % 100;
+            for(let i=0; i<canvas.height; i+=50) {
+                ctx.fillRect(0, i + stripOffset - 50, canvas.width, 2);
+            }
+
+            // Draw Score
+            ctx.fillStyle = '#ffff00';
+            ctx.font = '24px "Noto Serif SC"';
+            ctx.textAlign = 'right';
+            ctx.fillText("SCORE: " + score, canvas.width - 20, 40);
+
+            // Draw Player
+            ctx.font = `${player.size}px sans-serif`;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(PLAYER_EMOJI, player.x, player.y);
+
+            // Draw Enemies
+            for (let e of enemies) {
+                ctx.font = `${e.size}px sans-serif`;
+                ctx.fillText(ENEMY_EMOJI, e.x, e.y);
+            }
+
+            // Draw Boss
+            if (boss) {
+                ctx.font = `${boss.w}px sans-serif`;
+                // Flip boss horizontally if moving left? Nah, just draw
+                ctx.fillText(BOSS_EMOJI, boss.x, boss.y);
+                
+                // Boss HP bar
+                ctx.fillStyle = 'red';
+                ctx.fillRect(boss.x, boss.y - 10, boss.w, 5);
+                ctx.fillStyle = 'green';
+                ctx.fillRect(boss.x, boss.y - 10, boss.w * (boss.hp / boss.maxHp), 5);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '16px sans-serif';
+                ctx.fillText("巨大武器瓦狗", boss.x, boss.y - 20);
+            }
+
+            // Draw Bullets
+            for (let b of bullets) {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                ctx.fillStyle = b.type === 'player' ? '#fff' : '#f0f';
+                ctx.fill();
+            }
+
+            // Draw Explosions
+            for(let ex of explosions){
+                ctx.fillStyle = `rgba(255, 165, 0, ${ex.life/300})`;
+                ctx.beginPath();
+                ctx.arc(ex.x, ex.y, ex.r, 0, Math.PI*2);
+                ctx.fill();
+                ctx.fillStyle = `rgba(255, 255, 255, ${ex.life/300})`;
+                ctx.beginPath();
+                ctx.arc(ex.x, ex.y, ex.r*0.7, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        function gameLoop(timestamp) {
+            if (gameState !== 'PLAYING') return;
+
+            let dt = timestamp - lastTime;
+            lastTime = timestamp;
+
+            update(dt);
+            draw();
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // Utilities
+        function checkRectCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+            return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
+        }
+        
+        function checkRectCircle(rx, ry, rw, rh, cx, cy, cr) {
+            let distX = Math.abs(cx - rx - rw / 2);
+            let distY = Math.abs(cy - ry - rh / 2);
+
+            if (distX > (rw / 2 + cr)) { return false; }
+            if (distY > (rh / 2 + cr)) { return false; }
+
+            if (distX <= (rw / 2)) { return true; }
+            if (distY <= (rh / 2)) { return true; }
+
+            let dx = distX - rw / 2;
+            let dy = distY - rh / 2;
+            return (dx * dx + dy * dy <= (cr * cr));
+        }
+
+        function createExplosion(x, y, type) {
+            let r = type === 'huge' ? 100 : 30;
+            explosions.push({x, y, r, life: 300});
+        }
+    </script>
+</body>
+</html>
+

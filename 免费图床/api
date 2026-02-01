@@ -1,0 +1,10 @@
+API
+上传
+curl -F image=@localfile https://i.111666.best/image -H 'Auth-Token: 9QPHBfcYwBTE2FHFoQprfyHuF0NZOJt1'
+其中Auth-Token为自己填写的随机字符串，仅作为删除图片的凭据
+
+下载
+curl https://i.111666.best/image/IMAGE-PATH
+删除
+curl -XDELETE https://i.111666.best/image/IMAGE-PATH -H 'Auth-Token: 9QPHBfcYwBTE2FHFoQprfyHuF0NZOJt1
+Auth-Token: 9QPHBfcYwBTE2FHFoQprfyHuF0NZOJt1

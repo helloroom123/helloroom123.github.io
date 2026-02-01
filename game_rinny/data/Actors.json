@@ -1,0 +1,13 @@
+[
+null,
+{"id":1,"battlerName":"","characterIndex":1,"characterName":"2025-09-19 145013","classId":2,"equips":[],"faceIndex":0,"faceName":"Actor2","traits":[],"initialLevel":1,"maxLevel":2,"name":"Rinny","nickname":"Rinny","note":"","profile":"只是那个带着巨大蝴蝶结的小北极熊，她什么都没有做过。"},
+{"id":2,"battlerName":"","characterIndex":0,"characterName":"2025-12-09 133810","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"jiangqi","nickname":"","note":"","profile":""},
+{"id":3,"battlerName":"","characterIndex":0,"characterName":"2025-10-07 121112","classId":3,"equips":[0,0,0,0,0],"faceIndex":6,"faceName":"Monster","traits":[],"initialLevel":1,"maxLevel":99,"name":"Zinnia","nickname":"Zinnia","note":"","profile":"街道花园的可爱园丁！"},
+{"id":4,"battlerName":"","characterIndex":2,"characterName":"People4","classId":4,"equips":[0,0,0,0,0],"faceIndex":2,"faceName":"People1","traits":[],"initialLevel":1,"maxLevel":99,"name":"🎩贵族朋友","nickname":"Noble Friend","note":"<emoji:👑🎩🍷> 待替换角色图像","profile":"🎩👑🍷 高贵优雅的神秘朋友，来自遥远的贵族世家。总是身着华丽服饰，举止文雅大方。喜欢品鉴红酒和古典音乐。"},
+{"id":5,"battlerName":"","characterIndex":0,"characterName":"Actor1","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"像素rinny","nickname":"","note":"","profile":""},
+{"id":6,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":7,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":8,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":9,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""},
+{"id":10,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"","nickname":"","note":"","profile":""}
+]

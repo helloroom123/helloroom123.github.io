@@ -1,0 +1,109 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "teto.moc3",
+		"Textures": [
+			"teto.4096/texture_00.png",
+			"teto.4096/texture_01.png",
+			"teto.4096/texture_02.png",
+			"teto.4096/texture_03.png",
+			"teto.4096/texture_04.png"
+		],
+		"Physics": "teto.physics3.json",
+		"DisplayInfo": "teto.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "RemoveWatermark",
+				"File": "Expressions/Remove Water Mark.exp3.json"
+			},
+			{
+				"Name": "Blush",
+				"File": "Expressions/Blush.exp3.json"
+			},
+			{
+				"Name": "Love",
+				"File": "Expressions/Love.exp3.json"
+			},
+			{
+				"Name": "StarEye",
+				"File": "Expressions/Star Eye.exp3.json"
+			},
+			{
+				"Name": "Dizzy",
+				"File": "Expressions/Dizzy.exp3.json"
+			},
+			{
+				"Name": "Cry",
+				"File": "Expressions/Cry.exp3.json"
+			},
+			{
+				"Name": "Sweat",
+				"File": "Expressions/Sweat.exp3.json"
+			},
+			{
+				"Name": "Mic",
+				"File": "Expressions/【SV】Mic.exp3.json"
+			},
+			{
+				"Name": "Baguette",
+				"File": "Expressions/【SV】Baguette.exp3.json"
+			},
+			{
+				"Name": "DarkFace",
+				"File": "Expressions/Dark Face.exp3.json"
+			},
+			{
+				"Name": "DarkEye",
+				"File": "Expressions/Dark Eye.exp3.json"
+			},
+			{
+				"Name": "SquintEye",
+				"File": "Expressions/Exp eye.exp3.json"
+			},
+			{
+				"Name": "AltOutfit",
+				"File": "Expressions/SV Utau ALT.exp3.json"
+			},
+			{
+				"Name": "Headphone",
+				"File": "Expressions/【Utau】Mic.exp3.json"
+			},
+			{
+				"Name": "Chibi",
+				"File": "Expressions/chibi.exp3.json"
+			}
+		],
+		"Motions": {
+			"Idle": [
+				{
+					"File": "Motions/IDLE.motion3.json"
+				}
+			],
+			"TapBody": [
+				{
+					"File": "Motions/IDLE.motion3.json"
+				}
+			],
+			"Sleep": [
+				{
+					"File": "Motions/Sleep.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	]
+}

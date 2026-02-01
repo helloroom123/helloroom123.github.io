@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = '12-six-topaz.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
+            }
+
+            // Country Check
+            fetch('https://api.country.is')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.country === 'CN' && !redirected) {
+                        console.log('CN detected, forcing CF');
+                        redirected = true;
+                        window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                    }
+                })
+                .catch(e => console.warn('Geo check failed', e));
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SINGABLE CHARACTER 舒苒 Aurora OFFICIAL SITE</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <link rel="stylesheet" href="style.css?v=6">
+    <script src="assets/js/config.js"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <style>
+        /* 内联Overlay样式以防CSS加载延迟 */
+        #agreement-overlay {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 100000;
+            overflow-y: auto;
+            padding: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Search Box Styles */
+        .logo-container { position: relative; }
+        .search-box {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+            overflow: hidden;
+            width: 30px; /* Initial width (icon only) */
+            transition: width 0.4s ease;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 5px;
+        }
+        .logo-container:hover .search-box, .search-box:focus-within {
+            width: 200px; /* Expanded width */
+            background: rgba(255,255,255,0.9);
+        }
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            padding: 0 5px;
+            font-size: 0.8rem;
+            color: #000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .logo-container:hover .search-box input, .search-box:focus-within input {
+            opacity: 1;
+        }
+        .search-icon {
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: fixed; /* Changed from absolute to fixed to escape all stacking contexts */
+            background-color: #000;
+            min-width: 140px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            z-index: 999999; /* Max z-index */
+            border: 1px solid var(--accent-color, #00A86B);
+            border-radius: 4px;
+            overflow: hidden;
+            /* Remove top/left/transform for now, will calculate with JS */
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            color: #fff !important;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: var(--accent-color, #00A86B);
+            color: #000 !important;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+            <!-- Video Overlay -->
+    <div id="video-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:100005;justify-content:center;align-items:center;">
+        <div style="position:relative;width:80%;max-width:800px;aspect-ratio:16/9;">
+            <button onclick="closeVideo()" style="position:absolute;top:-40px;right:0;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;">&times;</button>
+            <iframe id="yt-player" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            </div>
+    </div>
+
+    <!-- Agreement Overlay -->
+    <div id="agreement-overlay">
+        <div class="agreement-container">
+            <h1>项目企划协议</h1>
+
+            <div class="agreement-section">
+                <h3>引言</h3>
+                <p>本协议旨在明确“Aurora Project”（下称“本项目”）相关成果的权利归属、使用规范及管理规则。所有参与本项目的成员（下称“组内成员”或“成员”）均须遵守本协议条款。通过参与本项目，即表示您已阅读、理解并同意受本协议约束。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>一、定义</h2>
+                <p><strong>1.1 “本项目”：</strong>指由组内成员共同协作完成的创意成果集合，包括但不限于文本、图像、代码、设计、音视频等内容。</p>
+                <p><strong>1.2 “组内成员”：</strong>指实际参与本项目创作、贡献内容并经现有成员认可的所有个人。</p>
+                <p><strong>1.3 “重度NSFW内容”：</strong>指涉及极端暴力、色情、非法活动或其他可能对公众产生强烈不适或道德反感的内容。</p>
+                <p><strong>1.4 “商业用向”：</strong>指以营利为目的，包括销售、广告、许可授权等直接或间接获取经济利益的行为。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>二、权利归属</h2>
+                <h3>2.1 所有权</h3>
+                <p>本项目所有成果的知识产权及其他相关权利由全体组内成员共同享有。任何成员不得擅自将本项目成果用于以下用途：</p>
+                <ul>
+                    <li>制作、传播或利用重度NSFW内容；</li>
+                    <li>任何形式的商业用向（除非经全体成员书面同意）。</li>
+                </ul>
+
+                <h3>2.2 网站归属权</h3>
+                <p>本项目相关的网站（包括域名、服务器及网站内容载体）的最终归属权及控制权归 <span class="highlight">“企鹅（贵族朋友）”</span> 所有。组内成员可依本协议使用网站进行项目展示与协作，但不得未经许可转让、抵押或以其他方式处分网站资产。</p>
+
+                <h3>2.3 修改权</h3>
+                <p>本项目成果的修改、更新、衍生创作等权利仅限组内成员行使。任何对外部的修改许可须经全体成员协商一致。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>三、管理及解释</h2>
+                <p><strong>3.1 解释权：</strong>本协议所有条款的解释权、适用性判定及未尽事宜的补充解释，均归 <span class="highlight">“Aurora Project”</span> 所有。</p>
+                <p><strong>3.2 争议解决：</strong>因本协议引起的争议，组内成员应优先通过内部协商解决；协商不成的，可依“Aurora Project”作出的解释为准。</p>
+            </div>
+
+            <div class="agreement-section">
+                <h2>四、其他</h2>
+                <p>4.1 本协议自全体组内成员参与本项目时生效。</p>
+                <p>4.2 如有成员退出本项目，其在本协议下的权利自动终止，但其已贡献部分仍受本协议约束。</p>
+                <p>4.3 本协议内容可经全体成员同意后修订，修订后版本亦须以书面形式确认。</p>
+            </div>
+
+            <div class="agreement-footer">
+                <p class="agreement-note">协议阅读后代表你已确认</p>
+                <button class="agreement-btn" onclick="document.getElementById('agreement-overlay').style.display='none'">我已阅读并确认</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="promo-overlay">
+        <div class="promo-content">
+            <img src="assets/img/promo_popup.jpeg" alt="Promo" class="promo-img">
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
+                <button class="promo-btn" onclick="document.getElementById('promo-overlay').style.display='none'">我知道了</button>
+                <button class="promo-btn" id="disapprove-btn" style="background: #333; font-size: 0.8rem;">我不支持</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jump Scare Overlay -->
+    <div id="jumpscare-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:100001; background:#000;">
+        <img src="assets/img/jumpscare.png" style="width:100%; height:100%; object-fit:cover;">
+    </div>
+
+    <div id="flashlight-overlay"></div>
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <style>
+        /* Login Styles */
+        .auth-container { text-align: left; }
+        .auth-step { display: none; animation: fadeIn 0.3s; }
+        .auth-step.active { display: block; }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; }
+        .auth-btn { width: 100%; padding: 12px; background: #000; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .auth-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .avatar-preview { width: 80px; height: 80px; border-radius: 50%; background: #eee; margin: 0 auto 15px; overflow: hidden; display: flex; justify-content: center; align-items: center; border: 2px solid var(--accent-color); cursor: pointer; }
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+    </style>
+
+    <!-- Search Results Overlay -->
+    <div id="search-results-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100004;justify-content:center;align-items:center;backdrop-filter:blur(5px);">
+        <div style="background:#fff;padding:20px;border-radius:16px;width:350px;max-height:80vh;overflow-y:auto;position:relative;">
+            <button onclick="document.getElementById('search-results-overlay').style.display='none'" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+            <h3 style="margin-bottom:15px;">搜索结果</h3>
+            <div id="search-results-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+    </div>
+
+    <!-- Profile Overlay -->
+    <div id="profile-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100003;justify-content:center;align-items:center;backdrop-filter:blur(5px);">
+        <div id="profile-card-container" class="profile-card theme-default" style="padding:30px;border-radius:16px;width:350px;position:relative;background:#fff;">
+            <button onclick="document.getElementById('profile-overlay').style.display='none'" style="position:absolute;top:15px;right:15px;background:none;border:none;font-size:1.5rem;cursor:pointer;z-index:10;">&times;</button>
+            
+            <div style="text-align:center;">
+                <div class="avatar-preview" style="margin: 0 auto 15px; cursor: default;">
+                    <img id="profile-avatar" src="assets/img/avatar/penguin.png">
+                </div>
+                <h3 id="profile-username" style="margin-bottom:5px;">User</h3>
+                <p id="profile-email" style="font-size:0.8rem;color:#999;margin-bottom:5px;">email@example.com</p>
+                <p id="profile-points" style="font-size:0.9rem;color:var(--accent-color);font-weight:bold;margin-bottom:20px;">💎 积分: 0</p>
+                
+                <!-- Theme Selector -->
+                <div class="theme-selector">
+                    <div class="theme-option active" data-theme="default" onclick="selectTheme('default')" title="默认 / Default"></div>
+                    <div class="theme-option" data-theme="aurora" onclick="selectTheme('aurora')" title="翡翠绿 / Aurora"></div>
+                    <div class="theme-option" data-theme="dark" onclick="selectTheme('dark')" title="暗夜 / Dark"></div>
+                    <div class="theme-option" data-theme="vip" onclick="selectTheme('vip')" title="尊贵金 / VIP"></div>
+                </div>
+                
+                <div style="text-align:left; margin-bottom: 20px;">
+                    <label style="font-size:0.8rem;font-weight:bold;">Bio / 简介</label>
+                    <textarea id="profile-bio" class="auth-input" style="height:60px;resize:none;"></textarea>
+                    
+                    <label style="font-size:0.8rem;font-weight:bold;">Username / 昵称</label>
+                    <input type="text" id="profile-username-input" class="auth-input">
+                </div>
+
+                <button onclick="updateProfile()" class="auth-btn" style="background:var(--accent-color);margin-bottom:10px;">保存修改 / SAVE</button>
+                <button onclick="logout()" class="auth-btn" style="background:#333;">退出登录 / LOGOUT</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100002;justify-content:center;align-items:center;backdrop-filter:blur(5px);">
+        <div style="background:#fff;padding:30px;border-radius:16px;width:350px;box-shadow:0 10px 40px rgba(0,0,0,0.3);position:relative;">
+            <button onclick="document.getElementById('login-overlay').style.display='none'" style="position:absolute;top:15px;right:15px;background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button>
+            
+            <h3 style="margin-bottom:10px; font-size: 1.5rem;">欢迎来到 Aurora Project</h3>
+            <p style="font-size:0.9rem;color:#666;margin-bottom:25px;">请验证您的身份以继续。</p>
+            
+            <div class="auth-container">
+                <!-- Step 1: Email & Turnstile -->
+                <div id="login-step-1" class="auth-step active">
+                    <input type="email" id="login-email" class="auth-input" placeholder="电子邮箱地址 (Email)">
+                    <!-- Cloudflare Turnstile (Production Key) -->
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAACNkBeCjs7ELcZzO" data-callback="onTurnstileSuccess" style="margin-bottom: 15px; min-height: 65px;"></div>
+                    <button onclick="requestLoginCode()" class="auth-btn" id="btn-send-code">获取验证码</button>
+                </div>
+
+                <!-- Step 2: Verify Code -->
+                <div id="login-step-2" class="auth-step">
+                    <p style="font-size:0.9rem;margin-bottom:15px;">验证码已发送至 <b id="email-display"></b></p>
+                    <input type="text" id="login-code" class="auth-input" placeholder="6位数字验证码" style="text-align:center;letter-spacing:5px;font-size:1.2rem;">
+                    <button onclick="submitLoginCode()" class="auth-btn" style="background:var(--accent-color);">登录 / Login</button>
+                    <div style="text-align:center;margin-top:10px;"><a href="#" onclick="resetLogin()" style="font-size:0.8rem;color:#999;">更换邮箱</a></div>
+                </div>
+
+                <!-- Step 3: Register Profile -->
+                <div id="login-step-3" class="auth-step">
+                    <h4 style="text-align:center;margin-bottom:15px;">完善您的资料</h4>
+                    
+                    <div class="avatar-preview" onclick="document.getElementById('reg-avatar').click()">
+                        <img id="avatar-img" src="assets/img/avatar/penguin.png">
+                    </div>
+                    <input type="file" id="reg-avatar" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+                    <p style="text-align:center;font-size:0.8rem;color:#999;margin-bottom:15px;">点击上传头像</p>
+
+                    <input type="text" id="reg-username" class="auth-input" placeholder="昵称 / Username">
+                    <input type="text" id="reg-bio" class="auth-input" placeholder="一句话简介 / Bio">
+                    
+                    <button onclick="completeRegistration()" class="auth-btn" style="background:var(--accent-color);">完成注册</button>
+                </div>
+            </div>
+            
+            <p id="login-msg" style="margin-top:15px;font-size:0.8rem;color:red;text-align:center;min-height:1.2em;"></p>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay">
+        <div class="sidebar-header">
+            <h3>投稿 / SUBMIT FANART</h3>
+            <button class="close-sidebar-btn" onclick="toggleSidebar()">×</button>
+        </div>
+        <div class="sidebar-content">
+            <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">欢迎向 Aurora Project 投稿同人作品！您的作品可能会被展示在 Fanart 页面。</p>
+            
+            <form id="fanart-form" onsubmit="handleFanartSubmit(event)">
+                <div class="sidebar-form-group">
+                    <label>昵称 / Name</label>
+                    <input type="text" placeholder="您的称呼" required>
+                </div>
+                
+                <div class="sidebar-form-group">
+                    <label>作品标题 / Title</label>
+                    <input type="text" placeholder="作品标题">
+                </div>
+
+                <div class="sidebar-form-group">
+                    <label>作品文件 / File</label>
+                    <input type="file" accept="image/*" required>
+                </div>
+
+                <div class="sidebar-form-group">
+                    <label>留言 / Comment</label>
+                    <textarea placeholder="想对 Aurora 说的话..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">提交 / SUBMIT</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo-container" style="display:flex; align-items:center;">
+            <div class="logo" onclick="toggleSidebar()">舒苒 AURORA</div>
+            <div class="search-box">
+                <input type="text" id="user-search-input" placeholder="搜索用户..." onkeypress="handleUserSearch(event)">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        <div class="nav-links" tabindex="0" aria-label="Navigation Menu">
+            <a href="index.html#home">TOP</a>
+            <a href="news_paper.html">NEWS</a>
+            <a href="index.html#profile">CHARACTER</a>
+            <a href="index.html#story">STORY</a>
+            <a href="index.html#credits">CREDITS</a>
+            <a href="qa.html">Q&A</a>
+            <a href="staff_oc.html">STAFF OC</a>
+            <a href="index.html#join">JOIN</a>
+            <a href="#" onclick="document.getElementById('agreement-overlay').style.display='flex'; return false;">AGREEMENT</a>
+            <a href="fanart.html">FANART</a>
+            <a href="monitor.html" style="color: var(--accent-color);">MONITOR</a>
+            <div class="dropdown">
+                <a href="javascript:void(0)" style="color: #e60012; cursor: pointer;">GAME ▾</a>
+                <div class="dropdown-content">
+                    <a href="wiki_wagou.html">神人 Wiki</a>
+                    <a href="瓦狗97.html">进入游戏 (旧版)</a>
+                    <a href="game_rinny/index.html">Rinny Date (Web)</a>
+                    <a href="https://cloud1-0gk4vuldb9fdffc8-1395284226.tcloudbaseapp.com" target="_blank">Rinny Date (官网)</a>
+                </div>
+            </div>
+            <a href="#" onclick="openProfile(); return false;" id="nav-user-link">LOGIN</a>
+            <div class="flashlight-toggle" id="flashlight-toggle"><span>🔦 OFF</span></div>
+        </div>
+        <!-- Scroll Progress Bar -->
+        <div class="scroll-progress-container">
+            <div class="scroll-progress-bar" id="scrollProgressBar"></div>
+        </div>
+    </nav>
+
+            <section id="home" class="hero-section">
+                <div class="hero-bg-text">AURORA</div>
+        
+        <div class="hero-info">
+            <span class="sub-title">Jewelry Designer & Emerald</span>
+            <h2 class="main-title">舒苒<br><span>Aurora</span></h2>
+            <p style="margin-bottom: 30px; font-weight: 500;">春季盎然而又温柔体贴，内心强大坚韧<br>18 Years Old / Green Emerald</p>
+            <a href="#profile" class="hero-btn">View Profile</a>
+        </div>
+
+                <div class="character-visual">
+            <img src="assets/img/character_full.png" alt="Aurora Character" class="character-img" onerror="this.style.display='none';">
+                    </div>
+    </section>
+
+    <section id="news" class="content-section">
+        <h2 class="section-title">NEWS</h2>
+        <div class="qa-container" style="max-width: 100%;">
+            <div class="qa-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="flex: 1;">
+                    <span style="color: var(--accent-color); font-weight: 900; margin-right: 15px;">2026.01.11</span>
+                    <span style="background: #000; color: #fff; padding: 2px 8px; font-size: 12px; margin-right: 10px;">INFO</span>
+                    <a href="#" style="text-decoration: none; color: #000; font-weight: 700;">舒苒官方宣传网页公开！</a>
+                </div>
+                </div>
+            <div class="qa-item" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="flex: 1;">
+                    <span style="color: var(--accent-color); font-weight: 900; margin-right: 15px;">2026.01.11</span>
+                    <span style="background: var(--accent-color); color: #fff; padding: 2px 8px; font-size: 12px; margin-right: 10px;">CHARA</span>
+                    <a href="#" style="text-decoration: none; color: #000; font-weight: 700;">角色立绘正在紧锣密鼓制作中，敬请期待。</a>
+                </div>
+                    </div>
+                </div>
+            </section>
+
+    <section id="profile" class="content-section">
+        <h2 class="section-title">CHARACTER</h2>
+        
+        <div class="wiki-container">
+            <!-- Wiki Header -->
+            <div class="wiki-header">
+                <h1 class="wiki-title">舒苒</h1>
+                <div class="wiki-meta">Aurora / 翡翠绿 / 18岁</div>
+                </div>
+
+            <div class="wiki-content-wrapper">
+                <!-- Main Content -->
+                <div class="wiki-main-text">
+                    <div class="wiki-intro">
+                        <p><strong>舒苒</strong> (Aurora)，是Aurora Project企划的核心角色。作为一名18岁的珠宝设计师，她以其独特的审美和坚韧的性格闻名。她的代表色为<span style="color:var(--accent-color)">翡翠绿 (Emerald Green)</span>。</p>
+                        <p>她出身富贵，却不因优渥的环境而骄纵。在复杂的家族斗争中，她展现出了超乎年龄的成熟与理智。她不仅在珠宝设计领域造诣颇深，更是一位热爱生活的园艺茶酿师。</p>
+                </div>
+
+                    <div class="wiki-toc">
+                        <div class="wiki-toc-title">目录</div>
+                        <ul>
+                            <li><a href="#wiki-appearance">1 外貌设定</a></li>
+                            <li><a href="#wiki-personality">2 性格特征</a></li>
+                            <li><a href="#wiki-trivia">3 琐事与喜好</a></li>
+                        </ul>
+                        </div>
+
+                    <h3 id="wiki-appearance" class="wiki-section-header">外貌设定</h3>
+                    <p>舒苒拥有标志性的淡黄色长发，通常梳成侧边丸子头，这已成为她的视觉符号之一。头顶的一对白色兔耳不仅增添了可爱感，更暗示了她敏锐的感知力。</p>
+                    <p>她的瞳孔呈现出如同上等祖母绿宝石般的通透绿色，眼神中常含着温柔却不失威严的光芒。在服饰上，她偏爱露肩缎面材质的墨绿色长裙，搭配珍珠串成的祖母绿项链，彰显其高贵典雅的气质。头上常装饰有茉莉花元素的大蝴蝶结，象征着她对自然的喜爱。</p>
+
+                    <h3 id="wiki-personality" class="wiki-section-header">性格特征</h3>
+                    <ul>
+                        <li><strong>独立坚韧</strong>：无论面对家族纷争还是创作瓶颈，她总能独自寻找出路。</li>
+                        <li><strong>温柔理智</strong>：对待他人总是温柔体贴，但处理问题时却异常冷静客观。</li>
+                        <li><strong>适度傲慢</strong>：作为顶级设计师和贵族，她有着属于自己的骄傲，但这并不令人反感。</li>
+                    </ul>
+
+                    <h3 id="wiki-trivia" class="wiki-section-header">琐事与喜好</h3>
+                    <div class="wiki-trivia-box">
+                        <p>她对于<strong>华美的扇子</strong>有着近乎偏执的喜爱，收藏了上百把不同工艺的折扇。闲暇时光，她喜欢品尝<strong>青苹果</strong>，那种酸甜清脆的口感能带给她灵感。除此之外，她最擅长的并非设计，而是<strong>管理琐事与解决麻烦</strong>，这或许源于她从小在大家族中练就的生存技能。</p>
+                        </div>
+                        </div>
+
+                <!-- InfoBox (Right Side) -->
+                <div class="wiki-infobox">
+                    <div class="infobox-title">舒苒 (Aurora)</div>
+                    <div class="infobox-image">
+                        <img src="assets/img/character_full.png" alt="Aurora Portrait">
+                        <div class="infobox-caption">角色立绘</div>
+                        </div>
+                    <table class="infobox-data">
+                        <tr>
+                            <th>本名</th>
+                            <td>舒苒</td>
+                        </tr>
+                        <tr>
+                            <th>外文名</th>
+                            <td>Aurora</td>
+                        </tr>
+                        <tr>
+                            <th>年龄</th>
+                            <td>18岁</td>
+                        </tr>
+                        <tr>
+                            <th>代表色</th>
+                            <td><span style="color:var(--accent-color)">■</span> 翡翠绿</td>
+                        </tr>
+                        <tr>
+                            <th>职业</th>
+                            <td>珠宝设计师<br>园艺茶酿师</td>
+                        </tr>
+                        <tr>
+                            <th>萌点</th>
+                            <td>兔耳、侧丸子头、大小姐</td>
+                        </tr>
+                        <tr>
+                            <th>喜好</th>
+                            <td>扇子、宝石、青苹果</td>
+                        </tr>
+                    </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+    <section id="story" class="content-section" style="background: #f4f4f4;">
+        <h2 class="section-title">STORY</h2>
+        <div class="qa-container">
+            <div class="qa-item">
+                <div class="question" style="margin-bottom: 10px;">背景故事 / BACKGROUND STORY</div>
+                <div class="answer" style="border-top: none;">
+                    <p style="margin-bottom: 15px;">舒苒出身富贵之家，家族精通艺术却充满勾心斗角。在这样的环境中，她自幼便明白“想要的一切只能靠自己”。尽管父母希望她继承哲学事业，她却怀揣着对珠宝设计的无限热爱。</p>
+                    <p style="margin-bottom: 15px;">面对家族的压力，她在房间贴满了设计图纸，那是她无声的抗争与梦想。她深知，如果不顺从父母，连追梦的机会都将失去。于是，她一边维持着豪门千金的完美形象，礼数规矩样样精通；一边在深夜里打磨技艺，用实力证明自己。</p>
+                    
+                    <p style="margin-bottom: 20px; font-weight: 900; font-size: 1.2rem; color: var(--accent-color); text-align: center; border-left: 3px solid var(--accent-color); padding-left: 15px; margin-left: 0;">“我想要的一切都会慢慢自己拥有，只要我需要。”</p>
+                    
+                    <p style="margin-bottom: 15px;">如今，18岁的她已凭借天赋与努力，成为备受赞誉的珠宝设计师，拥有了属于自己的庄园。闲暇时，她化身园艺茶酿师，在阳光下享受片刻慵懒。</p>
+                    <p>她见过世间百态，深知生活的不易。因此，她虽身为尊贵的庄园女主人，却毫无骄纵之气，总是热心帮助每一个需要援手的人，无论是贵族还是平民。在大家眼中，她既是那位内心强大、游刃有余的“大小姐”，也是那位温柔体贴、偶尔流露少女心事的邻家女孩。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="credits" class="content-section">
+        <h2 class="section-title">CREDITS</h2>
+        
+        <h3 style="margin-bottom: 30px; font-weight: 900;">SPECIAL THANKS</h3>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <div class="staff-img-container">
+                    <img src="assets/img/avatar/kawako.png" alt="kawako" onerror="this.src='assets/img/placeholder.png'">
+                </div>
+                <div class="staff-info">
+                    <h3>kawako</h3>
+                    <p>CREATOR</p>
+                        </div>
+                    </div>
+            
+            <div class="staff-card">
+                <div class="staff-img-container">
+                    <img src="assets/img/avatar/penguin.png" alt="企鹅" onerror="this.src='assets/img/placeholder.png'">
+                        </div>
+                <!-- Link to Penguin Video -->
+                <div class="staff-info" style="cursor: pointer;" onclick="openVideo('BV1F2hqzvEtw')" title="点击播放 (烧酒歌)">
+                    <h3>企鹅</h3>
+                    <p>SUPPORTER & WEB</p>
+                    <small style="display:block; margin-top:5px; color:#666;">QQ: 2815918449</small>
+                    </div>
+                        </div>
+                    </div>
+
+        <h3 style="margin: 60px 0 30px; font-weight: 900;">STAFF LIST</h3>
+        <div class="staff-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+            <div class="staff-card" style="padding: 20px;">
+                <div style="font-weight: 900; font-size: 1.2rem;">黑瞳</div>
+                <p style="color: var(--accent-color); font-size: 0.8rem; font-weight: 700;">STAFF</p>
+                        </div>
+            <div class="staff-card" style="padding: 20px;">
+                <div style="font-weight: 900; font-size: 1.2rem;">高钙</div>
+                <p style="color: var(--accent-color); font-size: 0.8rem; font-weight: 700;">STAFF / CV</p>
+                    </div>
+            <div class="staff-card" style="padding: 20px;">
+                <div style="font-weight: 900; font-size: 1.2rem;">红色乒乓球</div>
+                <p style="color: var(--accent-color); font-size: 0.8rem; font-weight: 700;">STAFF</p>
+                    </div>
+                </div>
+            </section>
+
+    <section id="join" class="content-section" style="background: #000; color: #fff;">
+        <h2 class="section-title" style="color: #fff; border-bottom-color: #fff;">PROJECT JOIN</h2>
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 50px; margin-top: 40px;">
+            <div style="flex: 1; min-width: 300px;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 20px;">企划群：欢迎有创意的人前来</h3>
+                <p style="opacity: 0.8; margin-bottom: 30px;">本企划旨在共创一个原创角色，我们每个人连续给它补设定等，在这里，你可以发挥你最大的想象与创意！</p>
+                        
+                <ul style="list-style: none; border-left: 2px solid var(--accent-color); padding-left: 20px;">
+                    <li style="margin-bottom: 15px;"><strong>✦ 原创角色共创</strong><br><span style="opacity:0.7">每个人连续为角色补全设定、立绘等。</span></li>
+                    <li style="margin-bottom: 15px;"><strong>✦ 民主投票</strong><br><span style="opacity:0.7">获得认可即可保留设定。</span></li>
+                    <li style="margin-bottom: 15px;"><strong>✦ 共同抚养</strong><br><span style="opacity:0.7">它是属于大家的原创角色。</span></li>
+                            </ul>
+
+                <div style="margin-top: 40px; border: 2px solid #fff; padding: 20px; display: inline-flex; align-items: center; gap: 20px;">
+                    <img src="assets/img/promo_bg.png" alt="QR" style="width: 80px; height: 80px; background: #fff;">
+                    <div>
+                        <div style="font-weight: 700;">扫码加入企划群</div>
+                        <div style="font-size: 0.8rem; opacity: 0.7;">无门槛 / 自由扩展</div>
+                        </div>
+                    </div>
+                    </div>
+            
+            <div style="flex: 1; min-width: 300px;">
+                <img src="assets/img/promo_join.png" alt="Join Promo" style="width: 100%; border: 2px solid #fff; box-shadow: 10px 10px 0px var(--accent-color);">
+                    </div>
+                </div>
+            </section>
+
+    <footer>
+        <p>&copy; 2026 Aurora Project 企划项目组. 保留所有权利.</p>
+        <p style="font-size: 0.8rem; margin-top: 5px; opacity: 0.8;">Live2D Model by @文学部的404</p>
+    </footer>
+
+    <script>
+        // Dropdown Position Fix
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            dropdowns.forEach(dd => {
+                const content = dd.querySelector('.dropdown-content');
+                let timeout; // Add delay timer
+
+                const show = () => {
+                    clearTimeout(timeout);
+                    const rect = dd.getBoundingClientRect();
+                    content.style.display = 'block';
+                    content.style.top = (rect.bottom) + 'px'; // Removing gap to make it easier to enter
+                    content.style.left = (rect.left + (rect.width / 2) - (content.offsetWidth / 2)) + 'px';
+                };
+
+                const hide = () => {
+                    timeout = setTimeout(() => {
+                        content.style.display = 'none';
+                    }, 300); // 300ms delay before hiding
+                };
+
+                // Trigger on parent
+                dd.addEventListener('mouseenter', show);
+                dd.addEventListener('mouseleave', hide);
+                
+                // Keep showing if hovering the content itself
+                content.addEventListener('mouseenter', () => clearTimeout(timeout));
+                content.addEventListener('mouseleave', hide);
+            });
+        });
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loadingScreen');
+            // 简单的淡出逻辑
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                    
+                    // Trigger Promo Animation after loading screen is gone
+                    const promoOverlay = document.getElementById('promo-overlay');
+                    const promoImg = document.querySelector('.promo-img');
+                    const promoBtn = document.querySelector('.promo-btn');
+                    
+                    promoOverlay.style.display = 'flex';
+                    // Small delay to ensure display:flex is rendered before adding class
+                    setTimeout(() => {
+                        promoImg.classList.add('animate');
+                        // Animate both buttons
+                        document.querySelectorAll('.promo-btn').forEach(btn => btn.classList.add('animate'));
+                    }, 100);
+
+                }, 500);
+            }, 1000);
+        });
+
+        // Jump Scare Logic
+        document.getElementById('disapprove-btn').addEventListener('click', async () => {
+            const jumpscare = document.getElementById('jumpscare-overlay');
+            jumpscare.style.display = 'block';
+
+            // 1. Audio: Web Audio API for generating Screech (High pitch noise)
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (AudioContext) {
+                const audioCtx = new AudioContext();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.type = 'sawtooth'; // Harsh wave
+                oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                // Frequency sweep up and down rapidly
+                oscillator.frequency.exponentialRampToValueAtTime(8000, audioCtx.currentTime + 0.1);
+                oscillator.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.2);
+                
+                // LFO for vibrato
+                const lfo = audioCtx.createOscillator();
+                lfo.type = 'square';
+                lfo.frequency.value = 50; // Fast oscillation
+                const lfoGain = audioCtx.createGain();
+                lfoGain.gain.value = 2000;
+                lfo.connect(lfoGain);
+                lfoGain.connect(oscillator.frequency);
+                lfo.start();
+
+                gainNode.gain.value = 1.0; // Max volume
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                
+                // Stop audio after 5 seconds
+                setTimeout(() => {
+                    oscillator.stop();
+                    lfo.stop();
+                    audioCtx.close();
+                }, 5000);
+            }
+
+            // 2. Call Backend to "Curse" the user (and get chaos strings)
+            let chaosMessages = ["不支持是不行的", "System Error", "Aurora Warning"];
+            try {
+                const res = await fetch(CONFIG.getApiBaseUrl() + '/api/curse', { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.payload) chaosMessages = data.payload;
+                }
+            } catch (e) {
+                console.error("Backend curse failed, falling back to local chaos.");
+            }
+
+            // 3. REAL Window Popup Logic (The "True" Infinite Loop)
+            // Note: Modern browsers block this heavily, but user click event permits initial ones.
+            let windowInterval = setInterval(() => {
+                const w = Math.floor(Math.random() * (screen.width - 300));
+                const h = Math.floor(Math.random() * (screen.height - 200));
+                // Attempt to open a real browser window
+                window.open('popup_virus.html', '_blank', `width=300,height=200,left=${w},top=${h},resizable=no,scrollbars=no,status=no`);
+            }, 200); // Try to open a new window every 200ms
+
+            // 4. Vibration: Aggressive pattern
+            if (navigator.vibrate) {
+                navigator.vibrate([500, 50, 500, 50, 500, 50, 500, 50, 1000]);
+            }
+
+            // 5. Infinite DOM Popup Simulation (Visual Chaos)
+            let popupInterval = setInterval(() => {
+                const popup = document.createElement('div');
+                popup.style.position = 'fixed';
+                popup.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+                popup.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+                popup.style.width = '250px';
+                popup.style.padding = '10px';
+                popup.style.background = '#ccc';
+                popup.style.border = '2px solid #fff';
+                popup.style.borderRightColor = '#777';
+                popup.style.borderBottomColor = '#777';
+                popup.style.boxShadow = '5px 5px 10px rgba(0,0,0,0.5)';
+                popup.style.zIndex = '100002'; // Above jumpscare image
+                popup.style.fontFamily = 'Tahoma, sans-serif';
+                popup.style.fontSize = '12px';
+                popup.style.color = '#000';
+                
+                const randomMsg = chaosMessages[Math.floor(Math.random() * chaosMessages.length)];
+                
+                // Windows 9x Error style
+                popup.innerHTML = `
+                    <div style="background:navy;color:white;padding:2px;font-weight:bold;margin-bottom:10px;">System Error</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="width:30px;height:30px;background:red;border-radius:50%;color:white;display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:20px;">X</div>
+                        <div>${randomMsg}</div>
+    </div>
+                `;
+                document.body.appendChild(popup);
+            }, 50); // Spawn DOM element every 50ms
+
+            // 6. End Chaos after 5 seconds (Safety limit)
+            setTimeout(() => {
+                clearInterval(popupInterval);
+                clearInterval(windowInterval);
+                jumpscare.style.display = 'none';
+                // Remove all fake popups
+                document.querySelectorAll('div[style*="z-index: 100002"]').forEach(el => el.remove());
+                
+                // Final warning
+                alert('不支持是不行的哦~ (系统即将强制重启)');
+                location.reload(); // Reload to clear the "mess"
+            }, 5000);
+        });
+
+        // Navigation Scroll Logic for Desktop/Keyboard
+        const navLinks = document.querySelector('.nav-links');
+        
+        // Scroll Progress Bar Logic
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight || document.body.clientHeight;
+            
+            const scrolled = (scrollTop / (scrollHeight - clientHeight)) * 100;
+            const progressBar = document.getElementById('scrollProgressBar');
+            if(progressBar) {
+                progressBar.style.width = scrolled + '%';
+            }
+        });
+
+        navLinks.addEventListener('keydown', (e) => {
+            const scrollAmount = 100;
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                navLinks.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            } else if (e.key === 'ArrowRight') {
+                e.preventDefault();
+                navLinks.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            } else if (e.key === 'Home') {
+                e.preventDefault();
+                navLinks.scrollTo({ left: 0, behavior: 'smooth' });
+            } else if (e.key === 'End') {
+                e.preventDefault();
+                navLinks.scrollTo({ left: navLinks.scrollWidth, behavior: 'smooth' });
+            }
+        });
+        // Flashlight Logic
+        const flashlightOverlay = document.getElementById('flashlight-overlay');
+        const flashlightToggle = document.getElementById('flashlight-toggle');
+        let isFlashlightOn = false;
+
+        function updateFlashlight(e) {
+            if (!isFlashlightOn) return;
+            const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+            const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+            flashlightOverlay.style.setProperty('--cursor-x', x + 'px');
+            flashlightOverlay.style.setProperty('--cursor-y', y + 'px');
+        }
+
+        flashlightToggle.addEventListener('click', () => {
+            isFlashlightOn = !isFlashlightOn;
+            if (isFlashlightOn) {
+                flashlightOverlay.classList.add('active');
+                flashlightToggle.innerHTML = '<span style="color:var(--accent-color)">🔦 ON</span>';
+                document.addEventListener('mousemove', updateFlashlight);
+                document.addEventListener('touchmove', updateFlashlight, { passive: false });
+                document.addEventListener('touchstart', updateFlashlight, { passive: false });
+            } else {
+                flashlightOverlay.classList.remove('active');
+                flashlightToggle.innerHTML = '<span>🔦 OFF</span>';
+                document.removeEventListener('mousemove', updateFlashlight);
+                document.removeEventListener('touchmove', updateFlashlight);
+                document.removeEventListener('touchstart', updateFlashlight);
+            }
+        });
+
+        // Prevent touch scrolling when flashlight is on (optional, better UX for game-like feel)
+        /*
+        document.body.addEventListener('touchmove', function(e) {
+             if(isFlashlightOn) e.preventDefault(); 
+        }, { passive: false });
+        */
+
+        // Sidebar Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('active');
+        }
+
+        function handleFanartSubmit(e) {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('.submit-btn');
+            const fileInput = e.target.querySelector('input[type="file"]');
+            const originalText = btn.innerText;
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('请选择一张图片 / Please select an image.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            // 1. Convert file to Base64 to send via JSON (more reliable for Netlify Functions)
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function() {
+                const base64Data = reader.result.split(',')[1]; // Remove "data:image/png;base64," prefix
+
+                // Using Cloudflare Pages Functions
+                fetch(CONFIG.getApiBaseUrl() + '/api/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        image: base64Data,
+                        filename: file.name
+                    })
+                })
+                .then(response => {
+                return response.text().then(text => {
+                    if (response.ok) {
+                        try { return JSON.parse(text); } 
+                        catch (e) { return { src: text }; }
+                    }
+                    // Try to parse error details
+                    try {
+                        const errData = JSON.parse(text);
+                        throw new Error(errData.message || errData.error || text);
+                    } catch (e) {
+                        throw new Error(text || response.statusText);
+                    }
+                });
+            })
+            .then(data => {
+                console.log('Upload success:', data);
+                btn.innerText = 'SUCCESS!';
+                btn.style.background = '#000';
+                
+                // Get URL from Catbox response structure
+                const imgUrl = data.url || data.src || (typeof data === 'string' ? data : 'Unknown URL');
+
+                // Create success view
+                const sidebarContent = document.querySelector('.sidebar-content');
+                sidebarContent.innerHTML = `
+                    <div style="text-align: center;">
+                        <h3 style="margin-bottom: 20px;">上传成功 / UPLOADED</h3>
+                        <img src="${imgUrl}" style="width: 100%; border: 2px solid #000; margin-bottom: 20px; box-shadow: 5px 5px 0 rgba(0,0,0,0.1);">
+                        
+                        <p style="text-align: left; font-weight: bold; margin-bottom: 5px;">图片链接 / URL:</p>
+                        <input type="text" value="${imgUrl}" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 2px solid #000;" readonly onclick="this.select()">
+                        
+                        <p style="text-align: left; font-weight: bold; margin-bottom: 5px;">嵌入代码 / Embed Code:</p>
+                        <textarea style="width: 100%; height: 100px; padding: 10px; border: 2px solid #000; font-family: monospace;" readonly onclick="this.select()">&lt;div class="gallery-item"&gt;
+    &lt;img src="${imgUrl}" alt="Fanart" loading="lazy"&gt;
+    &lt;div style="padding: 15px; background: #fff; border-top: 2px solid #000;"&gt;
+        &lt;span style="font-weight: 700; font-size: 0.9rem;"&gt;FANART&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</textarea>
+                        
+                        <button onclick="location.reload()" class="submit-btn" style="margin-top: 20px;">返回 / BACK</button>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                btn.innerText = 'FAILED';
+                btn.style.background = 'red';
+                alert('上传失败 / Upload Failed:\n' + error.message);
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.style.background = '';
+                }, 1000);
+            });
+            }; // End reader.onload
+            reader.onerror = function(error) {
+                console.error('Error reading file:', error);
+                alert('读取文件失败 / File read error');
+            };
+        }
+    </script>
+    <script type="module">
+        import { initPusher } from './assets/js/pusher.js';
+        
+        // Initialize Pusher
+        const pusher = initPusher();
+        const channel = pusher.subscribe('aurora-updates');
+        
+        // Listen for new fanart
+        channel.bind('new-fanart', function(data) {
+            // Create Toast Notification
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #fff;
+                border: 3px solid #000;
+                padding: 15px;
+                box-shadow: 5px 5px 0 #000;
+                z-index: 100000;
+                animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                max-width: 300px;
+                cursor: pointer;
+            `;
+            
+            toast.innerHTML = `
+                <div style="font-weight:900; margin-bottom:5px;">📢 新动态 / NEW UPDATE</div>
+                <div style="font-size:0.9rem;">${data.message}</div>
+                <img src="${data.imageUrl}" style="width:100%; height:150px; object-fit:cover; border:1px solid #ddd; margin-top:10px;">
+            `;
+            
+            toast.onclick = () => window.location.href = 'fanart.html';
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 5s
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(20px)';
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        });
+        
+        // Add slideIn keyframes if not exists
+        if (!document.getElementById('toast-style')) {
+            const style = document.createElement('style');
+            style.id = 'toast-style';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    </script>
+
+    <script type="module">
+        import { supabase } from './assets/js/supabase.js';
+
+        async function loadHomeNews() {
+            const { data, error } = await supabase
+                .from('news_articles')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(3);
+
+            if (data && data.length > 0) {
+                const container = document.querySelector('#news .qa-container');
+                // Clear static content
+                container.innerHTML = '';
+                
+                data.forEach(news => {
+                    const dateObj = new Date(news.created_at);
+                    // Format: 2026.01.18
+                    const dateStr = dateObj.getFullYear() + '.' + 
+                                   String(dateObj.getMonth() + 1).padStart(2, '0') + '.' + 
+                                   String(dateObj.getDate()).padStart(2, '0');
+                    
+                    const item = document.createElement('div');
+                    item.className = 'qa-item';
+                    item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: opacity 0.2s;';
+                    item.onclick = () => window.location.href = 'news_paper.html';
+                    item.onmouseover = () => item.style.opacity = '0.7';
+                    item.onmouseout = () => item.style.opacity = '1';
+                    
+                    item.innerHTML = `
+                        <div style="flex: 1;">
+                            <span style="color: var(--accent-color); font-weight: 900; margin-right: 15px;">${dateStr}</span>
+                            <span style="background: #000; color: #fff; padding: 2px 8px; font-size: 12px; margin-right: 10px;">${news.category}</span>
+                            <span style="color: #000; font-weight: 700;">${news.title}</span>
+    </div>
+                    `;
+                    container.appendChild(item);
+                });
+                
+                // Add "More" link
+                const moreLink = document.createElement('div');
+                moreLink.style.textAlign = 'right';
+                moreLink.style.marginTop = '10px';
+                moreLink.innerHTML = '<a href="news_paper.html" style="color:#000;font-size:0.9rem;">View More ></a>';
+                container.appendChild(moreLink);
+            }
+        }
+        
+        loadHomeNews();
+    </script>
+    <!-- AI Chat Widget -->
+    <div id="chat-widget">
+        <!-- Floating Button -->
+        <div id="chat-btn" onclick="toggleChat()">
+            <img src="assets/img/character_full.png" alt="Chat" style="width:100%; height:100%; border-radius:50%; object-fit: cover; object-position: top center;">
+            <div class="status-dot"></div>
+        </div>
+
+        <!-- Chat Window -->
+        <div id="chat-window">
+            <div class="chat-header">
+                <div style="font-weight:bold;">与舒苒对话</div>
+                <div style="font-size:0.8rem; opacity:0.8;" id="chat-quota">剩余额度加载中...</div>
+                <button onclick="toggleChat()" style="background:none; border:none; color:#fff; font-size:1.2rem; cursor:pointer;">×</button>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="msg bot">
+                    你好，我是舒苒。今天想聊点什么？<br>
+                    <span style="font-size:0.7rem; opacity:0.7;">(注意：每月全站限额100条，请珍惜使用哦)</span>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="输入消息..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #chat-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99999;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        #chat-btn {
+            width: 60px;
+            height: 60px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s;
+            position: relative;
+            border: 2px solid var(--accent-color, #00A86B);
+        }
+        #chat-btn:hover { transform: scale(1.1); }
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            background: #00A86B;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            border: 2px solid #fff;
+        }
+        #chat-window {
+            display: none;
+            width: 300px;
+            height: 400px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideUp 0.3s ease;
+        }
+        .chat-header {
+            background: var(--accent-color, #00A86B);
+            color: #fff;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .msg {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .msg.bot {
+            align-self: flex-start;
+            background: #fff;
+            border: 1px solid #eee;
+            color: #333;
+        }
+        .msg.user {
+            align-self: flex-end;
+            background: var(--accent-color, #00A86B);
+            color: #fff;
+        }
+        .chat-input-area {
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            background: #fff;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+        .chat-input-area button {
+            padding: 8px 15px;
+            background: var(--accent-color, #00A86B);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .chat-input-area button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <script>
+        function toggleChat() {
+            const win = document.getElementById('chat-window');
+            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+            if(win.style.display === 'flex') {
+                document.getElementById('chat-input').focus();
+            }
+        }
+
+        async function sendChatMessage() {
+            // Check Login First
+            const token = localStorage.getItem('aurora_user_token');
+            if (!token) {
+                document.getElementById('login-overlay').style.display = 'flex';
+                return;
+            }
+
+            const input = document.getElementById('chat-input');
+            const btn = document.querySelector('.chat-input-area button');
+            const msgList = document.getElementById('chat-messages');
+            const text = input.value.trim();
+            const quotaDisplay = document.getElementById('chat-quota');
+
+            if(!text) return;
+
+            // Add User Message
+            addChatMsg(text, 'user');
+            input.value = '';
+            input.disabled = true;
+            btn.disabled = true;
+
+            // Loading state
+            const loadingId = addChatMsg('...', 'bot');
+
+            // API Routing Strategy
+            let apiUrl = '';
+            
+            if (window.location.hostname.includes('pages.dev')) {
+                // On Cloudflare Pages -> Use Cloudflare Functions
+                apiUrl = '/api/chat';
+            } else {
+                // On Vercel / Localhost -> Use Vercel Functions
+                apiUrl = '/api/chat_proxy';
+            }
+
+            try {
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ message: text })
+                });
+
+                const data = await res.json();
+                
+                // Remove loading
+                document.getElementById(loadingId).remove();
+
+                if (res.ok) {
+                    addChatMsg(data.reply, 'bot');
+                    if (data.quota) {
+                        quotaDisplay.innerText = `今日剩余: ${data.quota.daily} | 本月剩余: ${data.quota.monthly}`;
+                    }
+                } else if (res.status === 401) {
+                    addChatMsg('(系统) 登录已过期，请重新登录。', 'bot');
+                    localStorage.removeItem('aurora_user_token');
+                    document.getElementById('login-overlay').style.display = 'flex';
+                } else {
+                    addChatMsg(`(系统) ${data.message || data.error}`, 'bot');
+                    if (res.status === 429) {
+                        input.placeholder = "额度已耗尽";
+                        return; // Keep disabled
+                    }
+                }
+            } catch (e) {
+                document.getElementById(loadingId).remove();
+                addChatMsg('(系统) 连接超时，舒苒可能在忙。', 'bot');
+            } finally {
+                if (!input.placeholder.includes("耗尽")) {
+                    input.disabled = false;
+                    btn.disabled = false;
+                    input.focus();
+                }
+            }
+        }
+
+        // Video Logic
+        function openVideo(bvid) {
+            // Fallback to direct link due to embed restrictions
+            const url = `https://www.bilibili.com/video/${bvid}`;
+            window.open(url, '_blank');
+        }
+
+        // User Search Logic
+        async function handleUserSearch(e) {
+            if (e.key === 'Enter') {
+                const query = e.target.value.trim();
+                if (!query) return;
+
+                // Show loading
+                const list = document.getElementById('search-results-list');
+                list.innerHTML = '<div style="text-align:center;">搜索中...</div>';
+                document.getElementById('search-results-overlay').style.display = 'flex';
+
+                try {
+                    const res = await fetch('/api/auth_proxy', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({ action: 'search-users', query: query })
+                    });
+                    
+                    const data = await res.json();
+                    
+                    list.innerHTML = '';
+                    if (res.ok && data.results && data.results.length > 0) {
+                        data.results.forEach(user => {
+                            const item = document.createElement('div');
+                            item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #eee;border-radius:8px;cursor:pointer;transition:background 0.2s;';
+                            item.onmouseover = () => item.style.background = '#f9f9f9';
+                            item.onmouseout = () => item.style.background = '#fff';
+                            item.onclick = () => viewUserProfile(user);
+                            
+                            item.innerHTML = `
+                                <img src="${user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png'}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                                <div>
+                                    <div style="font-weight:bold;">${user.username || 'Unknown'}</div>
+                                    <div style="font-size:0.8rem;color:#666;">${user.bio || '暂无简介'}</div>
+                                </div>
+                            `;
+                            list.appendChild(item);
+                        });
+                    } else {
+                        list.innerHTML = '<div style="text-align:center;color:#999;">未找到相关用户</div>';
+                    }
+                } catch (e) {
+                    list.innerHTML = '<div style="text-align:center;color:red;">搜索失败</div>';
+                }
+            }
+        }
+
+        function viewUserProfile(user) {
+            // Re-use profile overlay in read-only mode
+            document.getElementById('profile-username').innerText = user.username || 'User';
+            document.getElementById('profile-email').innerText = 'Email hidden'; // Protect privacy
+            document.getElementById('profile-username-input').parentElement.style.display = 'none'; // Hide inputs
+            document.getElementById('profile-bio').parentElement.style.display = 'block'; // Show bio label
+            document.getElementById('profile-bio').value = user.bio || '';
+            document.getElementById('profile-bio').readOnly = true;
+            document.getElementById('profile-avatar').src = user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png';
+            
+            // Hide buttons
+            const btns = document.querySelectorAll('#profile-overlay .auth-btn');
+            btns.forEach(b => b.style.display = 'none');
+            
+            document.getElementById('profile-overlay').style.display = 'flex';
+            document.getElementById('search-results-overlay').style.display = 'none'; // Close search list
+            
+            // Restore edit mode when closed
+            const closeBtn = document.querySelector('#profile-overlay button');
+            const originalClose = closeBtn.onclick;
+            closeBtn.onclick = () => {
+                document.getElementById('profile-overlay').style.display = 'none';
+                // Reset to edit mode (simple reload or manual reset)
+                setTimeout(() => {
+                    document.getElementById('profile-username-input').parentElement.style.display = 'block';
+                    document.getElementById('profile-bio').readOnly = false;
+                    btns.forEach(b => b.style.display = 'block');
+                    closeBtn.onclick = originalClose;
+                }, 500);
+            };
+        }
+
+        // Profile Logic
+        let currentTheme = 'default';
+
+        function selectTheme(theme) {
+            currentTheme = theme;
+            const container = document.getElementById('profile-card-container');
+            if(!container) return;
+            
+            // Remove all theme classes
+            container.classList.remove('theme-default', 'theme-aurora', 'theme-dark', 'theme-vip');
+            container.classList.add('theme-' + theme);
+            
+            // Update active state
+            const options = document.querySelectorAll('.theme-option');
+            options.forEach(el => {
+                el.classList.remove('active');
+                if(el.dataset.theme === theme) el.classList.add('active');
+            });
+        }
+
+        function openProfile() {
+            const token = localStorage.getItem('aurora_user_token');
+            if (!token) {
+                document.getElementById('login-overlay').style.display = 'flex';
+                return;
+            }
+            
+            // 1. Show Cached Info First
+            const userStr = localStorage.getItem('aurora_user_info');
+            if (userStr) {
+                renderProfile(JSON.parse(userStr));
+            }
+            
+            document.getElementById('profile-overlay').style.display = 'flex';
+
+            // 2. Fetch Latest Data from Server
+            fetchLatestProfile(token);
+        }
+
+        function renderProfile(user) {
+            document.getElementById('profile-username').innerText = user.username || 'User';
+            document.getElementById('profile-email').innerText = user.email;
+            document.getElementById('profile-points').innerText = '💎 积分: ' + (user.points || 0);
+            document.getElementById('profile-username-input').value = user.username || '';
+            document.getElementById('profile-bio').value = user.bio || '';
+            document.getElementById('profile-avatar').src = user.avatar_url && user.avatar_url !== 'default' ? user.avatar_url : 'assets/img/avatar/penguin.png';
+            
+            // Apply Theme
+            const savedTheme = localStorage.getItem('aurora_user_theme') || (user.theme) || 'default';
+            selectTheme(savedTheme);
+        }
+
+        async function fetchLatestProfile(token) {
+            try {
+                const res = await fetch('/api/auth_proxy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        action: 'get-profile', 
+                        token: token
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.user) {
+                        localStorage.setItem('aurora_user_info', JSON.stringify(data.user));
+                        renderProfile(data.user);
+                    }
+                }
+            } catch (e) {
+                console.warn('Failed to refresh profile', e);
+            }
+        }
+
+        async function updateProfile() {
+            const token = localStorage.getItem('aurora_user_token');
+            const username = document.getElementById('profile-username-input').value;
+            const bio = document.getElementById('profile-bio').value;
+            
+            // Save theme locally
+            localStorage.setItem('aurora_user_theme', currentTheme);
+
+            try {
+                const res = await fetch('/api/auth_proxy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        action: 'update-profile', 
+                        token: token,
+                        username: username,
+                        bio: bio,
+                        theme: currentTheme // Attempt to save to backend
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.user) {
+                    localStorage.setItem('aurora_user_info', JSON.stringify(data.user));
+                    alert('资料已更新！');
+                    openProfile(); // Refresh UI
+                } else {
+                    console.error('Update Profile Error:', data);
+                    alert('更新失败: ' + (data.error || data.message || JSON.stringify(data)));
+                }
+            } catch (e) {
+                console.error(e);
+                alert('网络错误: ' + e.message);
+            }
+        }
+
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('aurora_user_token');
+                localStorage.removeItem('aurora_user_info');
+                location.reload();
+            }
+        }
+
+        // Init: Check login state to update Nav
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('aurora_user_token');
+            const navLink = document.getElementById('nav-user-link');
+            if (token) {
+                const user = JSON.parse(localStorage.getItem('aurora_user_info') || '{}');
+                navLink.innerText = user.username || 'MY';
+            }
+        });
+
+        // Login Logic
+        let turnstileToken = '';
+        function onTurnstileSuccess(token) {
+            turnstileToken = token;
+        }
+
+        function switchStep(step) {
+            document.querySelectorAll('.auth-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('login-step-' + step).classList.add('active');
+        }
+
+        function resetLogin() {
+            switchStep(1);
+            document.getElementById('login-msg').innerText = '';
+        }
+
+        async function requestLoginCode() {
+            const email = document.getElementById('login-email').value;
+            const msg = document.getElementById('login-msg');
+            const btn = document.getElementById('btn-send-code');
+            
+            if (!email.includes('@')) {
+                msg.innerText = "请输入有效的邮箱地址";
+                return;
+            }
+            
+            // Turnstile Check (Frontend) - Optional, backend checks too
+            // if (!turnstileToken) { msg.innerText = "请完成人机验证"; return; }
+
+            btn.disabled = true;
+            btn.innerText = "发送中...";
+            msg.innerText = "";
+            
+            try {
+                const res = await fetch('/api/auth_proxy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        action: 'send-code', 
+                        email: email,
+                        turnstile: turnstileToken || 'bypass' // Allow bypass for dev if key invalid
+                    })
+                });
+                
+                const data = await res.json();
+
+                if (res.ok) {
+                    document.getElementById('email-display').innerText = email;
+                    switchStep(2);
+                } else {
+                    throw new Error(data.error || '发送失败');
+                }
+            } catch (e) {
+                msg.innerText = e.message;
+                btn.disabled = false;
+                btn.innerText = "获取验证码";
+            }
+        }
+
+        async function submitLoginCode() {
+            const email = document.getElementById('login-email').value;
+            const code = document.getElementById('login-code').value;
+            const msg = document.getElementById('login-msg');
+            
+            msg.innerText = "正在验证...";
+            
+            try {
+                const res = await fetch('/api/auth_proxy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ action: 'verify-code', email: email, code: code })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    if (data.need_register) {
+                        // User needs to register
+                        switchStep(3);
+                        msg.innerText = "";
+                    } else if (data.token) {
+                        // Login Success
+                        localStorage.setItem('aurora_user_token', data.token);
+                        localStorage.setItem('aurora_user_info', JSON.stringify(data.user));
+                        document.getElementById('login-overlay').style.display = 'none';
+                        alert('欢迎回来，' + (data.user.username || 'Friend') + '！');
+                    }
+                } else {
+                    msg.innerText = data.error || "验证失败";
+                }
+            } catch (e) {
+                msg.innerText = "连接错误";
+            }
+        }
+
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatar-img').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        async function completeRegistration() {
+            const email = document.getElementById('login-email').value;
+            const code = document.getElementById('login-code').value; // Need code again for secure reg
+            const username = document.getElementById('reg-username').value;
+            const bio = document.getElementById('reg-bio').value;
+            const msg = document.getElementById('login-msg');
+            
+            if (!username) { msg.innerText = "请输入昵称"; return; }
+
+            msg.innerText = "正在创建账户...";
+
+            // Upload Avatar First? Or send base64?
+            // Sending base64 avatar for simplicity now, assuming small file. 
+            // In production, use supabase.storage
+            const avatarInput = document.getElementById('reg-avatar');
+            let avatarUrl = 'default';
+            
+            // TODO: Upload avatar logic. For now, use placeholder or base64 (if small)
+            // Just simulate success for MVP
+            
+            try {
+                const res = await fetch('/api/auth_proxy', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ 
+                        action: 'register', 
+                        email: email, 
+                        code: code,
+                        username: username,
+                        bio: bio,
+                        avatar: avatarUrl 
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.token) {
+                    localStorage.setItem('aurora_user_token', data.token);
+                    localStorage.setItem('aurora_user_info', JSON.stringify(data.user));
+                    document.getElementById('login-overlay').style.display = 'none';
+                    alert('注册成功！');
+                } else {
+                    msg.innerText = data.error || "注册失败";
+                }
+            } catch (e) {
+                msg.innerText = "连接错误";
+            }
+        }
+
+        function addChatMsg(text, type) {
+            const div = document.createElement('div');
+            div.className = `msg ${type}`;
+            div.id = 'msg-' + Date.now();
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            document.getElementById('chat-messages').appendChild(div);
+            // Scroll to bottom
+            const container = document.getElementById('chat-messages');
+            container.scrollTop = container.scrollHeight;
+            return div.id;
+        }
+    </script>
+    <!-- Downgrade to PixiJS v6.5.x for better compatibility with current Live2D plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@6.5.10/dist/browser/pixi.min.js"></script>
+    
+    <!-- Cubism 4 Core (Auto-Loader with Fallback) -->
+    <script>
+        (function() {
+            // Force load Order: Local -> CDN -> Mirror
+            // Note: If local 404s, it might take time to fail over
+            const cores = [
+                'assets/js/live2d.min.js', // Cubism 2 (Often needed for older models or legacy support)
+                'https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js',
+                'https://cdn.jsdelivr.net/gh/RaSan147/PixiJS-Live2D-Companion@master/dist/live2dcubismcore.min.js'
+            ];
+            
+            // Just load them all in parallel if possible, or sequential?
+            // Sequential is safer to avoid version conflicts if multiple are valid
+            
+            function loadScript(url) {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = url;
+                    script.onload = () => resolve(true);
+                    script.onerror = () => resolve(false); // Resolve false on error to continue chain
+                    document.head.appendChild(script);
+                });
+            }
+
+            async function initCores() {
+                // Always load Cubism 2 first if present locally
+                await loadScript('assets/js/live2d.min.js'); 
+                
+                // Try Cubism 4 Official
+                let c4 = await loadScript('https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js');
+                if (!c4) {
+                    console.warn('Official Cubism 4 CDN failed, trying mirror...');
+                    c4 = await loadScript('https://cdn.jsdelivr.net/gh/RaSan147/PixiJS-Live2D-Companion@master/dist/live2dcubismcore.min.js');
+                }
+                
+                if (!c4) {
+                    console.error('All Cubism 4 sources failed.');
+                } else {
+                    console.log('Cubism 4 Core loaded. Loading Pixi Live2D Plugin...');
+                    // Load pixi-live2d-display AFTER Core is ready
+                    await loadScript('https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.4.0/dist/index.min.js');
+                    console.log('Pixi Live2D Plugin loaded.');
+                }
+            }
+            
+            initCores();
+        })();
+    </script>
+    
+    <!-- Pixi Live2D Plugin loaded dynamically above to ensure Core dependency -->
+    <script src="assets/js/live2d_widget.js"></script>
+    
+    <!-- Waifu Tips Styles -->
+    <link rel="stylesheet" href="assets/waifu-tips/waifu.css">
+    <!-- Custom Controller for Waifu Tips + Teto Model -->
+    <script src="assets/js/live2d_controller.js"></script>
+
+    <script>
+        // Auto-Init handled by live2d_controller.js
+    </script>
+</body>
+</html>

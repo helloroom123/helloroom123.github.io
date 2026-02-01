@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>
+        (function() {
+            const currentHost = window.location.hostname;
+            const cfHost = 'aurora-project.pages.dev';
+            const appHost = 'helloroom123-github-io.vercel.app';
+
+            if (currentHost === cfHost || currentHost === appHost || currentHost === 'localhost' || currentHost === '127.0.0.1') return;
+
+            let redirected = false;
+
+            function check(host) {
+                return new Promise(r => {
+                    const img = new Image();
+                    img.onload = () => r(true);
+                    img.onerror = () => r(false);
+                    setTimeout(() => r(false), 2000); 
+                    img.src = 'https://' + host + '/assets/img/avatar/penguin.png?t=' + Date.now();
+                });
+            }
+
+            fetch('https://api.country.is').then(res=>res.json()).then(d=>{
+                if(d.country==='CN' && !redirected){
+                    redirected=true;
+                    window.location.href='https://'+cfHost+window.location.pathname+window.location.search+window.location.hash;
+                }
+            }).catch(e=>{});
+
+            check(cfHost).then(isCfOk => {
+                if (redirected) return;
+                if (isCfOk) {
+                    redirected = true;
+                    window.location.href = 'https://' + cfHost + window.location.pathname + window.location.search + window.location.hash;
+                } else {
+                    check(appHost).then(isVercelOk => {
+                        if (redirected) return;
+                        if (isVercelOk) {
+                            redirected = true;
+                            window.location.href = 'https://' + appHost + window.location.pathname + window.location.search + window.location.hash;
+                        } else {
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const n = document.createElement('div');
+                                n.style.cssText = 'position:fixed;top:0;left:0;width:100%;background:rgba(200,0,0,0.9);color:#fff;text-align:center;padding:5px;z-index:999999;font-size:12px;backdrop-filter:blur(5px);';
+                                n.innerHTML = '⚠️ 网络节点连接失败，已保留在 GitHub Pages。';
+                                document.body.prepend(n);
+                            });
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Live Monitor - 群组实时监控</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="assets/js/config.js"></script>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --term-color: #161b22;
+            --text-color: #c9d1d9;
+            --accent: #58a6ff;
+            --success: #238636;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        header {
+            background: var(--term-color);
+            padding: 15px 20px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+        h1 { font-size: 1.2rem; display: flex; align-items: center; gap: 10px; }
+        .live-indicator {
+            width: 10px; height: 10px; background: red; border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        .live-indicator.active { background: var(--success); }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        #terminal {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* Message Log Style */
+        .log-entry {
+            display: flex;
+            gap: 15px;
+            padding: 10px;
+            border-left: 3px solid #30363d;
+            background: rgba(255,255,255,0.02);
+            animation: slideIn 0.3s ease-out;
+        }
+        .log-entry:hover { background: rgba(255,255,255,0.05); border-left-color: var(--accent); }
+        
+        .avatar {
+            width: 40px; height: 40px; border-radius: 4px;
+            border: 1px solid #30363d;
+        }
+        .content { flex: 1; }
+        .meta {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-bottom: 5px;
+            display: flex;
+            gap: 10px;
+        }
+        .user-name { color: var(--accent); font-weight: bold; }
+        .msg-text { 
+            font-size: 0.95rem; 
+            white-space: pre-wrap; 
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        .msg-text img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 4px;
+            margin-top: 5px;
+            border: 1px solid #30363d;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #58a6ff; }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><span class="live-indicator" id="status-dot"></span> Aurora Network Monitor</h1>
+        <div style="display:flex; gap:20px; align-items:center;">
+            <div style="font-size: 0.8rem; color: #8b949e;">Target: QQ Group Relay</div>
+            <a href="index.html" style="color:var(--accent); text-decoration:none; font-size:0.9rem; border:1px solid var(--accent); padding:2px 8px; border-radius:4px;">EXIT</a>
+        </div>
+    </header>
+
+    <div id="main-container" style="flex: 1; display: flex; overflow: hidden;">
+        <div id="terminal" style="flex: 1; padding: 20px; overflow-y: auto; scroll-behavior: smooth; display: flex; flex-direction: column; gap: 15px;">
+            <div class="log-entry" style="border-left-color: var(--success);">
+                <div class="content">
+                    <div class="meta">SYSTEM</div>
+                    <div class="msg-text">Connecting to secure frequency... Waiting for incoming signals.</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Side Panel -->
+        <div id="ai-sidebar" style="width: 250px; background: #0d1117; border-left: 1px solid #30363d; padding: 15px; display: none; flex-direction: column; gap: 20px;">
+            <div class="ai-widget">
+                <h3 style="font-size: 0.9rem; color: #8b949e; margin-bottom: 10px; border-bottom: 1px solid #30363d; padding-bottom: 5px;">GROUP VIBE / 氛围</h3>
+                <div style="height: 10px; background: #30363d; border-radius: 5px; overflow: hidden; position: relative;">
+                    <div id="vibe-bar" style="width: 50%; height: 100%; background: var(--accent); transition: width 0.5s, background 0.5s;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #8b949e; margin-top: 5px;">
+                    <span>Negative</span>
+                    <span id="vibe-text">Neutral</span>
+                    <span>Positive</span>
+                </div>
+            </div>
+
+            <div class="ai-widget">
+                <h3 style="font-size: 0.9rem; color: #8b949e; margin-bottom: 10px; border-bottom: 1px solid #30363d; padding-bottom: 5px;">HOT TOPICS / 热词</h3>
+                <div id="topic-cloud" style="display: flex; flex-wrap: wrap; gap: 5px;">
+                    <span style="font-size: 0.8rem; background: #21262d; padding: 2px 6px; border-radius: 4px; color: #8b949e;">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="ai-widget" style="margin-top: auto;">
+                <h3 style="font-size: 0.9rem; color: #8b949e; margin-bottom: 10px;">SERVER STATUS</h3>
+                <div style="font-size: 0.8rem; color: var(--success);">● AI Engine: ONLINE</div>
+                <div style="font-size: 0.8rem; color: var(--success);">● VPS Load: NORMAL</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Input Area -->
+    <div style="background:#161b22; padding:15px; border-top:1px solid #30363d; display:flex; gap:10px;">
+        <input type="text" id="chat-input" placeholder="输入消息发送至 QQ 群 (每月限3条)..." style="flex:1; background:#0d1117; border:1px solid #30363d; color:#c9d1d9; padding:10px; border-radius:4px; font-family:monospace;">
+        <button id="send-btn" style="background:#238636; color:#fff; border:none; padding:0 20px; border-radius:4px; cursor:pointer; font-weight:bold; font-family:monospace;">SEND</button>
+    </div>
+
+    <script type="module">
+        import { initPusher } from './assets/js/pusher.js';
+
+        const terminal = document.getElementById('terminal');
+        const statusDot = document.getElementById('status-dot');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        // Send Logic
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            logSystem(`Sending: ${text}...`, '#8b949e');
+            chatInput.disabled = true;
+            sendBtn.disabled = true;
+
+            try {
+                const res = await fetch(CONFIG.getApiBaseUrl() + '/api/send_msg', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                
+                // Debug response
+                if (!res.ok) {
+                    const textBody = await res.text();
+                    logSystem(`Failed (${res.status}): ${textBody.substring(0, 50)}...`, 'red');
+                    return;
+                }
+
+                const data = await res.json();
+                
+                if (data.success) {
+                    logSystem(`Message Sent! (Remaining Quota: ${data.remaining})`, 'var(--success)');
+                    chatInput.value = '';
+                } else {
+                    logSystem(`Failed: ${data.error}`, 'red');
+                }
+            } catch (err) {
+                logSystem(`Error: ${err.message}`, 'red');
+            } finally {
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        // Init Pusher
+        // Note: Using the same key as other pages
+        const pusher = initPusher();
+        
+        // Enable Debugging
+        Pusher.logToConsole = true;
+
+        // Dual Channel Strategy (To catch messages from either configuration)
+        const channelChat = pusher.subscribe('aurora-chat');
+        const channelMonitor = pusher.subscribe('aurora-monitor');
+
+        pusher.connection.bind('connected', () => {
+            statusDot.classList.add('active');
+            logSystem('Connection Established. Listening on [aurora-chat] & [aurora-monitor]...');
+        });
+
+        pusher.connection.bind('disconnected', () => {
+            statusDot.classList.remove('active');
+            logSystem('Connection Lost. Reconnecting...', 'red');
+        });
+
+        // Handler function with Adapter
+        const handleMessage = (data) => {
+            console.log('Received Event:', data);
+            
+            // 1. Adapter: Normalize Data Structure (VPS vs Serverless)
+            // VPS sends flat structure: { nickname, user_id, message, ai, ... }
+            // Serverless sends nested: { sender: { nickname, user_id }, message, analysis, ... }
+            const normalized = {
+                message: data.message || '',
+                time: data.time || new Date(data.timestamp || Date.now()).toLocaleTimeString(),
+                sender: data.sender || {
+                    nickname: data.nickname || 'Unknown',
+                    user_id: data.user_id || '0'
+                },
+                avatar: data.avatar || `http://q1.qlogo.cn/g?b=qq&nk=${data.user_id || (data.sender ? data.sender.user_id : 0)}&s=640`,
+                analysis: data.analysis || data.ai || null
+            };
+
+            addMessage(normalized);
+            
+            if (normalized.analysis) {
+                updateAIStats(normalized.analysis);
+            }
+        };
+
+        // Listen on both channels for BOTH event names
+        channelChat.bind('group-message', handleMessage);
+        channelChat.bind('new-message', handleMessage);
+        
+        channelMonitor.bind('group-message', handleMessage);
+        channelMonitor.bind('new-message', handleMessage);
+
+        // Toggle Sidebar if enough space
+        function checkLayout() {
+            const sidebar = document.getElementById('ai-sidebar');
+            if (window.innerWidth > 800) {
+                sidebar.style.display = 'flex';
+            } else {
+                sidebar.style.display = 'none';
+            }
+        }
+        window.addEventListener('resize', checkLayout);
+        checkLayout();
+
+        function updateAIStats(analysis) {
+            // Update Vibe Bar
+            // Sentiment is usually -1 to 1. Map to 0% to 100%.
+            const score = analysis.sentiment || 0; 
+            const pct = ((score + 1) / 2) * 100;
+            const vibeBar = document.getElementById('vibe-bar');
+            const vibeText = document.getElementById('vibe-text');
+            
+            vibeBar.style.width = `${pct}%`;
+            
+            if (score > 0.3) {
+                vibeBar.style.background = '#238636'; // Green
+                vibeText.textContent = 'Happy';
+            } else if (score < -0.3) {
+                vibeBar.style.background = '#da3633'; // Red
+                vibeText.textContent = 'Gloomy';
+            } else {
+                vibeBar.style.background = '#58a6ff'; // Blue
+                vibeText.textContent = 'Neutral';
+            }
+
+            // Update Keywords
+            if (analysis.keywords && Array.isArray(analysis.keywords)) {
+                const cloud = document.getElementById('topic-cloud');
+                cloud.innerHTML = '';
+                analysis.keywords.forEach(word => {
+                    const span = document.createElement('span');
+                    span.style.cssText = `
+                        font-size: 0.8rem; 
+                        background: #21262d; 
+                        padding: 2px 6px; 
+                        border-radius: 4px; 
+                        color: #c9d1d9;
+                        border: 1px solid #30363d;
+                    `;
+                    span.textContent = '#' + word;
+                    cloud.appendChild(span);
+                });
+            }
+        }
+
+        function logSystem(text, color = 'var(--success)') {
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            div.style.borderLeftColor = color;
+            div.innerHTML = `
+                <div class="content">
+                    <div class="meta">SYSTEM [${new Date().toLocaleTimeString()}]</div>
+                    <div class="msg-text" style="color:${color}">${text}</div>
+                </div>
+            `;
+            append(div);
+        }
+
+        function addMessage(data) {
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            
+            // Clean up message (NapCat might send CQ codes)
+            // Simple replace for images to HTML img tags
+            let displayMsg = data.message
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\[CQ:image,file=[^,]+,url=([^\]]+)\]/g, '<br><img src="$1"><br>');
+
+            const avatarUrl = (data.avatar && data.avatar !== 'undefined' && data.avatar !== 'null') 
+                ? data.avatar 
+                : 'assets/img/avatar/penguin.png';
+
+            div.innerHTML = `
+                <img src="${avatarUrl}" class="avatar" loading="lazy" onerror="this.src='assets/img/avatar/penguin.png'">
+                <div class="content">
+                    <div class="meta">
+                        <span class="user-name">${data.sender.nickname || data.sender.user_id}</span>
+                        <span>[UID: ${data.sender.user_id}]</span>
+                        <span>${data.time}</span>
+                    </div>
+                    <div class="msg-text">${displayMsg}</div>
+                </div>
+            `;
+            append(div);
+        }
+
+        function append(element) {
+            terminal.appendChild(element);
+            // Auto scroll to bottom
+            terminal.scrollTop = terminal.scrollHeight;
+            
+            // Keep DOM size manageable (max 100 messages)
+            if (terminal.children.length > 100) {
+                terminal.removeChild(terminal.firstElementChild);
+            }
+        }
+    </script>
+    <!-- Security Layer -->
+    <script src="assets/js/security.js"></script>
+</body>
+</html>

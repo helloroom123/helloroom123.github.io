@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aurora Center | 官方启动器</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00A86B">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="../assets/img/avatar/penguin.png">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Bottom Nav -->
+        <nav class="app-nav">
+            <div class="nav-logo">
+                <img src="../assets/img/avatar/penguin.png" alt="Logo">
+            </div>
+            <a href="#" class="nav-item active" data-tab="home">
+                <span class="icon">🏠</span>
+                <span class="label">首页</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="games">
+                <span class="icon">🎮</span>
+                <span class="label">游戏</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="community">
+                <span class="icon">🌏</span>
+                <span class="label">社区</span>
+            </a>
+            <a href="#" class="nav-item" data-tab="system">
+                <span class="icon">⚙️</span>
+                <span class="label">系统</span>
+            </a>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="app-content">
+            <!-- HEADER -->
+            <header class="app-header">
+                <h1 id="page-title">Aurora Center</h1>
+                <div class="user-status">
+                    <span class="status-dot online"></span>
+                    <span id="user-name">Guest</span>
+                </div>
+            </header>
+
+            <!-- TABS -->
+            
+            <!-- HOME TAB -->
+            <div id="tab-home" class="tab-page active">
+                <div class="hero-card">
+                    <div class="hero-text">
+                        <h2>欢迎来到 Aurora Project</h2>
+                        <p>探索舒苒的世界，体验最新的互动故事与游戏。</p>
+                        <button class="btn-primary" onclick="switchTab('games')">开始探索</button>
+                    </div>
+                    <img src="../assets/img/character_full.png" class="hero-img" alt="Aurora">
+                </div>
+
+                <div class="section-header">最新动态</div>
+                <div class="news-list" id="news-feed">
+                    <div class="news-item loading">加载中...</div>
+                </div>
+            </div>
+
+            <!-- GAMES TAB -->
+            <div id="tab-games" class="tab-page">
+                <div class="game-card" style="background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('../assets/img/story/bg1.jpg')">
+                    <div class="game-info">
+                        <h3>命运的篝火</h3>
+                        <p>AVG + RPG | 互动故事</p>
+                        <div class="tags">
+                            <span>剧情</span>
+                            <span>战斗</span>
+                        </div>
+                        <button class="btn-play" onclick="window.open('../story.html', '_self')">启动 / LAUNCH</button>
+                    </div>
+                </div>
+
+                <div class="game-card" style="background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('../game_rinny/icon/icon.png')">
+                    <div class="game-info">
+                        <h3>Rinny Date</h3>
+                        <p>HTML5 | 休闲养成</p>
+                        <div class="tags">
+                            <span>恋爱</span>
+                            <span>积分</span>
+                        </div>
+                        <button class="btn-play" onclick="window.open('../game_rinny/index.html', '_self')">启动 / LAUNCH</button>
+                    </div>
+                </div>
+                
+                <div class="game-card locked">
+                    <div class="game-info">
+                        <h3>Project: Unknown</h3>
+                        <p>Coming Soon...</p>
+                        <button class="btn-play" disabled>敬请期待</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMMUNITY TAB -->
+            <div id="tab-community" class="tab-page">
+                <div class="menu-list">
+                    <a href="../fanart.html" class="menu-item">
+                        <span class="menu-icon">🎨</span>
+                        <div class="menu-text">
+                            <div class="menu-title">同人二创 / Fanart</div>
+                            <div class="menu-desc">查看大家的创作</div>
+                        </div>
+                        <span class="arrow">></span>
+                    </a>
+                    <a href="../wiki_wagou.html" class="menu-item">
+                        <span class="menu-icon">📖</span>
+                        <div class="menu-text">
+                            <div class="menu-title">世界观 Wiki</div>
+                            <div class="menu-desc">设定集与资料库</div>
+                        </div>
+                        <span class="arrow">></span>
+                    </a>
+                    <a href="#" class="menu-item" onclick="document.getElementById('chat-overlay').style.display='flex'">
+                        <span class="menu-icon">💬</span>
+                        <div class="menu-text">
+                            <div class="menu-title">舒苒 AI 对话</div>
+                            <div class="menu-desc">与角色实时互动</div>
+                        </div>
+                        <span class="arrow">></span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- SYSTEM TAB -->
+            <div id="tab-system" class="tab-page">
+                <div class="status-panel">
+                    <div class="status-row">
+                        <span>服务器状态</span>
+                        <span class="status-good">正常 (Online)</span>
+                    </div>
+                    <div class="status-row">
+                        <span>当前版本</span>
+                        <span>v1.0.2 (Beta)</span>
+                    </div>
+                    <div class="status-row">
+                        <span>用户积分</span>
+                        <span id="system-points">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="menu-list">
+                    <a href="../penguin_service.html" class="menu-item">
+                        <span class="menu-icon">🐧</span>
+                        <div class="menu-text">
+                            <div class="menu-title">技术支持</div>
+                            <div class="menu-desc">Penguin Tech Support</div>
+                        </div>
+                        <span class="arrow">></span>
+                    </a>
+                    <button class="btn-danger" onclick="logout()">退出登录</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div id="install-prompt" class="install-banner" style="display:none;">
+        <div class="install-info">
+            <img src="../assets/img/avatar/penguin.png" alt="Icon">
+            <div>
+                <strong>安装 Aurora Center</strong>
+                <p>添加到主屏幕，获得原生体验</p>
+            </div>
+        </div>
+        <button id="btn-install">安装</button>
+        <button class="close-install" onclick="this.parentElement.style.display='none'">×</button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

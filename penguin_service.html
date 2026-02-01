@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penguin Tech Support | Professional IT Services</title>
+    <link rel="icon" href="assets/img/avatar/penguin.png" type="image/png">
+    <style>
+        /* Amazon-like Reset & Base Styles */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Amazon Ember", Arial, sans-serif; background-color: #e3e6e6; color: #0F1111; font-size: 14px; }
+        a { text-decoration: none; color: #007185; }
+        a:hover { color: #c7511f; text-decoration: underline; }
+        
+        /* Header */
+        header { background-color: #131921; color: #fff; }
+        .nav-main { display: flex; align-items: center; padding: 10px 20px; gap: 20px; height: 60px; }
+        
+        .nav-logo { font-size: 1.5rem; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 5px; text-decoration: none; }
+        .nav-logo:hover { text-decoration: none; border: 1px solid #fff; border-radius: 2px; padding: 5px; margin: -6px; }
+        .nav-logo img { height: 30px; }
+        
+        .nav-search { flex: 1; display: flex; border-radius: 4px; overflow: hidden; height: 40px; }
+        .nav-search-select { background: #f3f3f3; border: none; border-right: 1px solid #cdcdcd; padding: 0 10px; color: #555; font-size: 12px; cursor: pointer; }
+        .nav-search-input { flex: 1; border: none; padding: 0 10px; font-size: 15px; outline: none; }
+        .nav-search-btn { background: #febd69; border: none; padding: 0 15px; cursor: pointer; transition: background 0.2s; }
+        .nav-search-btn:hover { background: #f3a847; }
+        
+        .nav-right { display: flex; align-items: center; gap: 20px; font-size: 12px; }
+        .nav-item { color: #fff; cursor: pointer; padding: 8px 10px; border: 1px solid transparent; border-radius: 2px; }
+        .nav-item:hover { border-color: #fff; text-decoration: none; }
+        .nav-item div:first-child { opacity: 0.9; }
+        .nav-item div:last-child { font-weight: bold; font-size: 14px; }
+        
+        .nav-sub { background-color: #232f3e; color: #fff; padding: 8px 20px; display: flex; gap: 20px; font-size: 14px; align-items: center; }
+        .nav-sub a { color: #fff; text-decoration: none; padding: 5px 8px; border: 1px solid transparent; border-radius: 2px; }
+        .nav-sub a:hover { border-color: #fff; }
+        .nav-sub-menu { font-weight: bold; display: flex; align-items: center; gap: 5px; }
+
+        /* Main Layout */
+        .container { max-width: 1500px; margin: 0 auto; padding: 20px; display: flex; gap: 20px; }
+        
+        /* Sidebar */
+        .sidebar { width: 250px; flex-shrink: 0; background: #fff; padding: 15px; border-radius: 4px; height: fit-content; }
+        .sidebar h3 { font-size: 16px; margin-bottom: 10px; font-weight: bold; }
+        .filter-group { margin-bottom: 20px; }
+        .filter-item { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; color: #0F1111; cursor: pointer; }
+        .filter-item:hover { color: #c7511f; }
+        .filter-item input { accent-color: #e47911; }
+        
+        /* Product Grid */
+        .main-content { flex: 1; }
+        .results-header { margin-bottom: 15px; padding: 10px 15px; background: #fff; border: 1px solid #ddd; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .product-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        
+        .product-card { background: #fff; border: 1px solid #eee; border-radius: 4px; padding: 20px; display: flex; flex-direction: column; transition: box-shadow 0.2s; position: relative; }
+        .product-card:hover { box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        
+        .badge-bestseller { position: absolute; top: 0; left: 0; background: #C7511F; color: #fff; padding: 4px 10px; font-size: 12px; font-weight: bold; border-top-left-radius: 4px; border-bottom-right-radius: 4px; clip-path: polygon(0 0, 100% 0, 90% 100%, 0% 100%); }
+        
+        .product-img { width: 100%; height: 180px; object-fit: contain; margin-bottom: 10px; padding: 10px; }
+        .product-title { font-size: 16px; font-weight: 500; line-height: 1.4; margin-bottom: 5px; color: #0F1111; height: 44px; overflow: hidden; }
+        .product-title:hover { color: #c7511f; }
+        
+        .rating { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+        .stars { color: #ffa41c; font-size: 14px; }
+        .rating-count { color: #007185; font-size: 12px; }
+        
+        .price-row { display: flex; align-items: baseline; gap: 5px; margin-bottom: 5px; }
+        .price-symbol { font-size: 12px; vertical-align: top; }
+        .price-whole { font-size: 21px; font-weight: 500; }
+        .price-fraction { font-size: 12px; vertical-align: top; }
+        .price-unit { color: #565959; font-size: 12px; }
+        
+        .prime-badge { color: #00a8e1; font-weight: bold; font-style: italic; margin-bottom: 10px; font-size: 13px; display: flex; align-items: center; gap: 2px; }
+        .prime-badge span { color: #ff9900; }
+        
+        .delivery-info { color: #565959; font-size: 12px; margin-bottom: 15px; }
+        
+        .add-to-cart-btn { background: #ffd814; border: 1px solid #fcd200; border-radius: 20px; padding: 8px; width: 100%; font-size: 13px; cursor: pointer; transition: background 0.2s; margin-top: auto; }
+        .add-to-cart-btn:hover { background: #f7ca00; }
+        
+        /* Banner */
+        .hero-banner { background: #232f3e; color: #fff; padding: 40px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
+        .hero-banner h1 { font-size: 2.5rem; margin-bottom: 10px; z-index: 2; position: relative; }
+        .hero-banner p { font-size: 1.2rem; z-index: 2; position: relative; }
+        .hero-banner::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, rgba(0,0,0,0.5), transparent); z-index: 1; }
+        
+        /* Footer */
+        footer { background: #232f3e; color: #fff; padding: 40px 0; margin-top: 40px; text-align: center; }
+        .footer-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; font-size: 14px; }
+        .footer-links a { color: #ddd; }
+        .footer-bottom { border-top: 1px solid #3a4553; padding-top: 20px; font-size: 12px; color: #999; }
+
+        /* Notification Toast */
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #fff; border-left: 5px solid #00A86B; padding: 15px 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transform: translateX(120%); transition: transform 0.3s; z-index: 1000; display: flex; align-items: center; gap: 10px; }
+        .toast.show { transform: translateX(0); }
+        .toast-icon { color: #00A86B; font-size: 20px; }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; padding: 10px; }
+            .sidebar { width: 100%; margin-bottom: 20px; display: none; /* Hide sidebar on mobile for now */ }
+            .product-list { grid-template-columns: 1fr; }
+            .nav-main { padding: 10px; gap: 10px; }
+            .nav-search { display: none; /* Hide search on mobile */ }
+            .nav-right { display: none; }
+            .hero-banner h1 { font-size: 1.8rem; }
+            .results-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .results-header select { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-main">
+            <a href="index.html" class="nav-logo">
+                <img src="assets/img/avatar/penguin.png" alt="Logo" style="border-radius: 50%;">
+                <span>Penguin<br>Support</span>
+            </a>
+            
+            <div class="nav-item">
+                <div>Deliver to</div>
+                <div>Server Room 1</div>
+            </div>
+            
+            <div class="nav-search">
+                <select class="nav-search-select">
+                    <option>All Services</option>
+                    <option>Web Dev</option>
+                    <option>Security</option>
+                    <option>Server Ops</option>
+                </select>
+                <input type="text" class="nav-search-input" placeholder="Search for technical support...">
+                <button class="nav-search-btn">🔍</button>
+            </div>
+            
+            <div class="nav-right">
+                <div class="nav-item" onclick="alert('Language: Chinese (ZH) / Java / Python')">
+                    <div>CN</div>
+                    <div style="font-size: 14px;">🌐</div>
+                </div>
+                <div class="nav-item">
+                    <div>Hello, Developer</div>
+                    <div>Account & Lists</div>
+                </div>
+                <div class="nav-item">
+                    <div>Returns</div>
+                    <div>& Bugs</div>
+                </div>
+                <div class="nav-item" style="display: flex; align-items: flex-end; gap: 5px;">
+                    <div style="font-size: 20px; font-weight: bold;">0</div>
+                    <div style="font-weight: bold; margin-bottom: 3px;">Cart</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-sub">
+            <div class="nav-sub-menu">☰ All</div>
+            <a href="#">Today's Deals</a>
+            <a href="#">Customer Service</a>
+            <a href="#">Registry</a>
+            <a href="#">Gift Cards</a>
+            <a href="#">Sell</a>
+        </div>
+    </header>
+
+    <div class="hero-banner">
+        <h1>Penguin Technical Solutions</h1>
+        <p>Reliable support for your Aurora Project infrastructure.</p>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h3>Department</h3>
+            <div class="filter-group">
+                <div class="filter-item"><a href="#" style="color:#000;">Web Development</a></div>
+                <div class="filter-item"><a href="#" style="color:#000;">Cloud Infrastructure</a></div>
+                <div class="filter-item"><a href="#" style="color:#000;">Cyber Security</a></div>
+                <div class="filter-item"><a href="#" style="color:#000;">Game Engines</a></div>
+            </div>
+            
+            <h3>Avg. Customer Review</h3>
+            <div class="filter-group">
+                <div class="filter-item"><span class="stars">⭐⭐⭐⭐⭐</span> & Up</div>
+                <div class="filter-item"><span class="stars">⭐⭐⭐⭐☆</span> & Up</div>
+                <div class="filter-item"><span class="stars">⭐⭐⭐☆☆</span> & Up</div>
+            </div>
+
+            <h3>Price</h3>
+            <div class="filter-group">
+                <div class="filter-item"><a href="#" style="color:#000;">Under $50</a></div>
+                <div class="filter-item"><a href="#" style="color:#000;">$50 to $100</a></div>
+                <div class="filter-item"><a href="#" style="color:#000;">$100 to $200</a></div>
+                <div class="filter-item"><a href="#" style="color:#000;">$200 & Above</a></div>
+            </div>
+
+            <h3>Service Type</h3>
+            <div class="filter-group">
+                <div class="filter-item"><input type="checkbox"> <span>Remote Support</span></div>
+                <div class="filter-item"><input type="checkbox"> <span>On-Site (Vercel)</span></div>
+                <div class="filter-item"><input type="checkbox" checked> <span>Penguin Prime</span></div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="main-content">
+            <div class="results-header">
+                <span>1-12 of over 50 results for "<strong>Technical Support</strong>"</span>
+                <select style="padding: 5px; border-radius: 4px; border: 1px solid #ddd; background: #f0f2f2;">
+                    <option>Sort by: Featured</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                    <option>Avg. Customer Review</option>
+                </select>
+            </div>
+
+            <div class="product-list">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <div class="badge-bestseller">#1 Best Seller</div>
+                    <img src="assets/img/avatar/penguin.png" alt="Service" class="product-img">
+                    <a href="#" class="product-title">Full Stack Web Development - HTML5/JS/Python Integration Service (Responsive Design)</a>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐⭐</span>
+                        <span class="rating-count">1,024</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span><span class="price-whole">99</span><span class="price-fraction">99</span>
+                        <span class="price-unit">/ hr</span>
+                    </div>
+                    <div class="delivery-info">Get it as soon as <strong>Tomorrow, Jan 26</strong></div>
+                    <div class="prime-badge"><span>✓</span>prime</div>
+                    <button class="add-to-cart-btn" onclick="addToCart('Full Stack Dev')">Add to Cart</button>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <img src="assets/img/avatar/penguin.png" alt="Service" class="product-img" style="filter: hue-rotate(90deg);">
+                    <a href="#" class="product-title">VPS Security Hardening & Firewall Configuration (UFW, Fail2Ban, Cloudflare Tunnel Setup)</a>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐☆</span>
+                        <span class="rating-count">512</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span><span class="price-whole">149</span><span class="price-fraction">00</span>
+                        <span class="price-unit">flat fee</span>
+                    </div>
+                    <div class="delivery-info">Instant Delivery (Script)</div>
+                    <div class="prime-badge"><span>✓</span>prime</div>
+                    <button class="add-to-cart-btn" onclick="addToCart('VPS Security')">Add to Cart</button>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <img src="assets/img/avatar/penguin.png" alt="Service" class="product-img" style="filter: hue-rotate(180deg);">
+                    <a href="#" class="product-title">Emergency Bug Fixing - 24/7 Response for Critical Errors (502 Bad Gateway, CORS Issues)</a>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐⭐</span>
+                        <span class="rating-count">88</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span><span class="price-whole">199</span><span class="price-fraction">50</span>
+                        <span class="price-unit">/ hr</span>
+                    </div>
+                    <div class="delivery-info">Available <strong>Immediately</strong></div>
+                    <button class="add-to-cart-btn" onclick="addToCart('Emergency Fix')">Add to Cart</button>
+                </div>
+
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <div class="badge-bestseller" style="background: #B12704;">Limited Time Deal</div>
+                    <img src="assets/img/avatar/penguin.png" alt="Service" class="product-img" style="filter: hue-rotate(270deg);">
+                    <a href="#" class="product-title">AVG Game Engine License - Visual Novel System with Battle Mechanics (JS Module)</a>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐⭐</span>
+                        <span class="rating-count">42</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span><span class="price-whole">0</span><span class="price-fraction">00</span>
+                        <span class="price-unit">(Open Source)</span>
+                    </div>
+                    <div class="delivery-info">Instant Download</div>
+                    <div class="prime-badge"><span>✓</span>prime</div>
+                    <button class="add-to-cart-btn" onclick="addToCart('AVG Engine')">Add to Cart</button>
+                </div>
+
+                <!-- Product 5 -->
+                <div class="product-card">
+                    <img src="assets/img/avatar/penguin.png" alt="Service" class="product-img" style="filter: grayscale(100%);">
+                    <a href="#" class="product-title">Legacy Code Refactoring - Convert jQuery to Vanilla JS / React</a>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐☆☆</span>
+                        <span class="rating-count">12</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span><span class="price-whole">45</span><span class="price-fraction">00</span>
+                        <span class="price-unit">/ hr</span>
+                    </div>
+                    <div class="delivery-info">Delivery by <strong>Next Week</strong></div>
+                    <button class="add-to-cart-btn" onclick="addToCart('Refactoring')">Add to Cart</button>
+                </div>
+
+                <!-- Product 6 -->
+                <div class="product-card">
+                    <img src="assets/img/avatar/penguin.png" alt="Service" class="product-img" style="filter: invert(100%);">
+                    <a href="#" class="product-title">Secret Backend API Key - Access to Hidden Features (Don't Share!)</a>
+                    <div class="rating">
+                        <span class="stars">⭐⭐⭐⭐⭐</span>
+                        <span class="rating-count">999+</span>
+                    </div>
+                    <div class="price-row">
+                        <span class="price-symbol">$</span><span class="price-whole">999</span><span class="price-fraction">99</span>
+                    </div>
+                    <div class="delivery-info">Digital Delivery</div>
+                    <div style="color: #B12704; font-size: 12px; font-weight: bold; margin-bottom: 5px;">Only 1 left in stock - order soon.</div>
+                    <button class="add-to-cart-btn" onclick="addToCart('API Key')">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="index.html">Return to Aurora Project</a>
+            <a href="#">Conditions of Use</a>
+            <a href="#">Privacy Notice</a>
+            <a href="#">Consumer Health Data Privacy Disclosure</a>
+            <a href="#">Your Ads Privacy Choices</a>
+        </div>
+        <div class="footer-bottom">
+            © 1996-2026, Penguin Services, Inc. or its affiliates. Not a real Amazon site.
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="cart-toast">
+        <div class="toast-icon">✅</div>
+        <div>
+            <div style="font-weight: bold;">Added to Cart</div>
+            <div id="toast-message" style="font-size: 12px; color: #555;"></div>
+        </div>
+    </div>
+
+    <script>
+        function addToCart(item) {
+            const toast = document.getElementById('cart-toast');
+            const msg = document.getElementById('toast-message');
+            
+            msg.innerText = `${item} has been added to your service cart.`;
+            toast.classList.add('show');
+            
+            // Update cart count visually
+            const countEl = document.querySelector('.nav-right div:first-child div:first-child');
+            if(countEl) countEl.innerText = parseInt(countEl.innerText) + 1;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

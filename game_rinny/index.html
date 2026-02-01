@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="viewport" content="user-scalable=no">
+        <link rel="icon" href="icon/icon.png" type="image/png">
+        <link rel="apple-touch-icon" href="icon/icon.png">
+        <link rel="stylesheet" type="text/css" href="css/game.css">
+        <title>RINNY DATE测试版</title>
+        <style>
+            #ui-overlay {
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1000;
+                display: flex;
+                gap: 10px;
+                font-family: "Microsoft YaHei", sans-serif;
+                pointer-events: auto; /* Ensure clickable over canvas */
+            }
+            .ui-btn {
+                background: rgba(0, 0, 0, 0.6);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.5);
+                padding: 8px 15px;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 14px;
+                transition: all 0.3s;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                backdrop-filter: blur(2px);
+            }
+            .ui-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+                border-color: white;
+            }
+            #claim-btn.disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                background: rgba(50, 50, 50, 0.6);
+            }
+            #claim-btn.ready {
+                background: rgba(0, 168, 107, 0.8); /* Aurora Green */
+                border-color: #00ffaa;
+                animation: pulse 2s infinite;
+                font-weight: bold;
+            }
+            @keyframes pulse {
+                0% { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0.4); }
+                70% { box-shadow: 0 0 0 10px rgba(0, 255, 170, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(0, 255, 170, 0); }
+            }
+            .notification {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 168, 107, 0.95);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 5px;
+                z-index: 2000;
+                display: none;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                font-family: "Microsoft YaHei", sans-serif;
+                font-weight: bold;
+                pointer-events: none;
+            }
+        </style>
+    </head>
+    <body style="background-color: black">
+        
+        <!-- UI Overlay -->
+        <div id="ui-overlay">
+            <a href="../index.html" class="ui-btn">⬅️ 返回主站</a>
+            <button id="claim-btn" class="ui-btn disabled" onclick="claimPoints()">
+                ⏳ 游玩 1 分钟后领积分
+            </button>
+        </div>
+        <div id="notification" class="notification"></div>
+
+        <script type="text/javascript" src="js/main.js"></script>
+    
+<script>
+/* Prevent Black Screen Fix & Points Logic */
+(function() {
+    // 1. Black Screen Fix
+    var interval = setInterval(function() {
+        if (typeof SceneManager !== 'undefined' && SceneManager.isGameActive) {
+            SceneManager.isGameActive = function () { return true; };
+            clearInterval(interval);
+            console.log('Black Screen Fix Applied');
+        }
+    }, 100);
+    if (typeof SceneManager !== 'undefined') {
+         SceneManager.isGameActive = function () { return true; };
+    }
+
+    // 2. Points System Logic
+    let timePlayed = 0;
+    const REQUIRED_TIME = 60; // seconds
+    let claimable = false;
+
+    // Check Daily Limit
+    const today = new Date().toDateString();
+    const lastClaim = localStorage.getItem('rinny_daily_claim');
+    
+    if (lastClaim === today) {
+        setTimeout(() => { // Wait for DOM
+            const btn = document.getElementById('claim-btn');
+            if(btn) {
+                btn.innerHTML = "✅ 今日已领取";
+                btn.classList.add('disabled');
+            }
+        }, 500);
+    } else {
+        // Timer only starts if not claimed today
+        const timerInterval = setInterval(() => {
+            timePlayed++;
+            const btn = document.getElementById('claim-btn');
+            if (!btn) return;
+            
+            if (timePlayed >= REQUIRED_TIME) {
+                if (!claimable) { // Only update once when threshold reached
+                    claimable = true;
+                    clearInterval(timerInterval);
+                    btn.classList.remove('disabled');
+                    btn.classList.add('ready');
+                    btn.innerHTML = "🎁 领取 10 积分";
+                }
+            } else {
+                btn.innerHTML = `⏳ ${REQUIRED_TIME - timePlayed}s 后可领积分`;
+            }
+        }, 1000);
+    }
+
+    // Expose function globally
+    window.claimPoints = async function() {
+        if (!claimable) return;
+        
+        const token = localStorage.getItem('aurora_user_token');
+        if (!token) {
+            showNotification('⚠️ 请先在主站登录账号！');
+            return;
+        }
+
+        const btn = document.getElementById('claim-btn');
+        btn.innerHTML = "🔄 领取中...";
+        btn.classList.add('disabled');
+        btn.classList.remove('ready');
+
+        try {
+            // Determine API URL (Handle Cloudflare/Vercel paths)
+            const apiUrl = '/api/auth_proxy'; 
+            
+            const res = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    action: 'add-points', 
+                    token: token,
+                    amount: 10, // Changed from 'points' to 'amount' to match backend
+                    reason: 'RinnyDate_PlayTime'
+                })
+            });
+            
+            const data = await res.json();
+            if (data.success) {
+                showNotification(`✅ 领取成功！当前积分: ${data.points || data.new_points || 'Updated'}`);
+                btn.innerHTML = "✅ 已领取 (明日再来)";
+                claimable = false; 
+                localStorage.setItem('rinny_daily_claim', new Date().toDateString());
+                // Don't restart timer to avoid farming
+            } else {
+                showNotification(`❌ 失败: ${data.error || data.message || 'Unknown error'}`);
+                btn.innerHTML = "🎁 领取 10 积分"; // Retry allowed
+                btn.classList.remove('disabled');
+                btn.classList.add('ready');
+                claimable = true;
+            }
+        } catch (e) {
+            console.error(e);
+            showNotification('❌ 网络错误，请重试');
+            btn.innerHTML = "🎁 领取 10 积分";
+            btn.classList.remove('disabled');
+            btn.classList.add('ready');
+            claimable = true;
+        }
+    };
+
+    function showNotification(msg) {
+        const notif = document.getElementById('notification');
+        notif.innerText = msg;
+        notif.style.display = 'block';
+        
+        setTimeout(() => {
+            notif.style.display = 'none';
+        }, 3000);
+    }
+
+    // Show welcome message
+    setTimeout(() => showNotification("🎮 Welcome to Rinny Date!"), 1000);
+
+})();
+</script>
+
+</body>
+</html>
